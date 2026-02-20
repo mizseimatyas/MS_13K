@@ -1,6 +1,7 @@
 ﻿namespace WebShop.Dto
 {
-    public class ModifyItemDto
+    public class ModifyItemDto : ItemDto
     {
+        public int itemId { get; set; }
     }
 }
