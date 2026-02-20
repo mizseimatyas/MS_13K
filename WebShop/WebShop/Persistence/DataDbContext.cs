@@ -71,7 +71,8 @@ namespace WebShop.Persistence
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ItemId { get; set; }
-        public Category CategoryId { get; set; }
+        public int CategoryId { get; set; }
+        public Category Category { get; set; }
         public string ItemName { get; set; }
         public int Quantity { get; set; }
         public string Description { get; set; }
