@@ -63,7 +63,7 @@ namespace WebShop.Persistence
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int CategoryId { get; set; }
         public string CategoryName { get; set; }
-        public List<Item> Items { get; set; }
+        public List<Item> Items { get; set; } = new();
     }
 
     public class Item

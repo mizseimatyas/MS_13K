@@ -20,6 +20,8 @@ namespace WebShop.Model
         #region DeleteCategory
         #endregion
 
+
+
         #region AllCategories
         #endregion
 
