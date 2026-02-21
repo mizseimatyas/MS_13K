@@ -1,10 +1,8 @@
-﻿using WebShop.Persistence;
-
-namespace WebShop.Dto
+﻿namespace WebShop.Dto
 {
-    public class ItemDto
+    public class AddNewItemDto
     {
-        public int categoryId { get; set; }
+        public string categoryName { get; set; }
         public string itemName { get; set; }
         public int quantity { get; set; }
         public string description { get; set; }
