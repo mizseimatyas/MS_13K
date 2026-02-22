@@ -33,6 +33,10 @@ namespace WebShop.Model
             return worker.Where(x => x.Password == hash).FirstOrDefault();
         }
 
+        #region Change Password
+
+        #endregion
+
         private string HashPassword(string password)
         {
             using var sha = SHA256.Create();

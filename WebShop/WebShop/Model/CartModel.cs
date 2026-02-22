@@ -13,7 +13,7 @@ namespace WebShop.Model
         }
 
         #region CartInventoryByUserId
-        public async Task<List<CartDto>> CartInventoryByUserId(int userId)
+        public async Task<IEnumerable<CartDto>> CartInventoryByUserId(int userId)
         {
             if(userId <= 0)
                 throw new ArgumentOutOfRangeException(nameof(userId), "Felhasználó azonosító csak pozitív lehet");
