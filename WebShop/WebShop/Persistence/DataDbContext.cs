@@ -77,7 +77,6 @@ namespace WebShop.Persistence
         public int Quantity { get; set; }
         public string Description { get; set; }
         public int Price { get; set; }
-        public List<Specs> Specifications { get; set; }
 
     }
 
@@ -105,15 +104,14 @@ namespace WebShop.Persistence
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int CartId { get; set; }
-        [Required]
-        public User UserId { get; set; }
-        [Required]
-        public Item ItemId { get; set; }
+        public int UserId { get; set; }
+        public User User { get; set; }
+        public int ItemId { get; set; }
+        public Item Item { get; set; }
         public int Quantity { get; set; }
         public int Price { get; set; }
-        public List<Item> ItemList { get; set; }
-
     }
+
     public enum OrderStatus
     {
         ItemQuantityOnHold,

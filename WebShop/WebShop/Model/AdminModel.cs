@@ -12,6 +12,7 @@ namespace WebShop.Model
             _context = context;
         }
 
+        #region Register New Admin
         public void AdminRegistration(string username, string password, string role = "Admin")
         {
             if (_context.Admins.Any(x => x.AdminName == username))
@@ -25,14 +26,18 @@ namespace WebShop.Model
                 trx.Commit();
             }
         }
+        #endregion
 
+        #region Validate Admin
         public Admin? ValidateAdmin(string username, string password)
         {
             var hash = HashPassword(password);
             var admin = _context.Admins.Where(x => x.AdminName == username);
             return admin.Where(x => x.Password == hash).FirstOrDefault();
         }
+        #endregion
 
+        #region Encrypt Password
         private string HashPassword(string password)
         {
             using var sha = SHA256.Create();
@@ -40,5 +45,6 @@ namespace WebShop.Model
             var hash = sha.ComputeHash(bytes);
             return Convert.ToBase64String(hash);
         }
+        #endregion
     }
 }
