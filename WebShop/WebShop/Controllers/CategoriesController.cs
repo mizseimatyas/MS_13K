@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using WebShop.Dto;
 using WebShop.Model;
 
 namespace WebShop.Controllers
@@ -8,10 +9,114 @@ namespace WebShop.Controllers
     [ApiController]
     public class CategoriesController : ControllerBase
     {
-        private readonly CartModel _model;
-        public CategoriesController(CartModel model)
+        private readonly CategoryModel _model;
+        public CategoriesController(CategoryModel model)
         {
             _model = model;
         }
+
+        #region AllCategories
+        [HttpGet("allcategories")]
+        public ActionResult<IEnumerable<CategoryDto>> AllCategories()
+        {
+            try
+            {
+                var response = _model.AllCategories();
+                return Ok(response);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+        #endregion
+
+        #region AddNewCategory
+        [HttpPost("addnewcategory")]
+        public async Task<ActionResult> AddNewCategory([FromQuery] string categ)
+        {
+            try
+            {
+                await _model.AddNewCategory(categ);
+                return Ok();
+            }
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
+            catch (InvalidOperationException)
+            {
+                return Conflict();
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+        #endregion
+
+        #region ModifyCategory
+        [HttpPut("modifycategory")]
+        public async Task<ActionResult> ModifyCategory([FromBody]ModifyCategoryDto dto)
+        {
+            try
+            {
+                await _model.ModifyCategory(dto);
+                return Ok();
+            }
+            catch (ArgumentNullException)
+            {
+                return BadRequest();
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return BadRequest();
+            }
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (InvalidOperationException)
+            {
+                return Conflict();
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+        #endregion
+
+        #region DeleteCategory
+        [HttpDelete("deletecategory")]
+        public async Task<ActionResult> DeleteCategory([FromQuery] int categid)
+        {
+            try
+            {
+                await _model.DeleteCategory(categid);
+                return Ok();
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return BadRequest();
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+        #endregion
     }
 }
