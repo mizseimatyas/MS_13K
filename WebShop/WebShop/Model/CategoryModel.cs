@@ -52,7 +52,7 @@ namespace WebShop.Model
 
             var verifycat = await _context.Categories.AnyAsync(x=> x.CategoryName.ToLower() == dto.categName.ToLower() && x.CategoryId != dto.categId);
             if (verifycat)
-                throw new InvalidOperationException($"Mér léteztik ilyen kategórianév: {dto.categName}");
+                throw new InvalidOperationException($"Már léteztik ilyen kategórianév: {dto.categName}");
 
             category.CategoryName = dto.categName;
 
