@@ -34,7 +34,7 @@ namespace WebShop.Model
         #endregion
 
         #region ModifyCategory
-        public async Task ModifyNewCategory(ModifyCategoryDto dto)
+        public async Task ModifyCategory(ModifyCategoryDto dto)
         {
             if(dto is null)
                 throw new ArgumentNullException(nameof(dto));

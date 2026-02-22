@@ -37,6 +37,10 @@ namespace WebShop.Model
         }
         #endregion
 
+        #region Change Password
+
+        #endregion
+
         #region Encrypt Password
         private string HashPassword(string password)
         {
