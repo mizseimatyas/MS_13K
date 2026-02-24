@@ -19,16 +19,6 @@ namespace ItemModelTest
 
 
         [Fact]
-        public void AllItems()
-        {
-            var result = _model.AllItems();
-
-            Assert.NotEmpty(result);
-            Assert.Contains(result, x => x.itemName == "MacBook Pro M3");
-            Assert.All(result, x => Assert.False(string.IsNullOrWhiteSpace(x.description)));
-        }
-
-        [Fact]
         public void AllItemsEmpty()
         {
             using var empty = DbContextFactory.CreateEmpty();
@@ -38,6 +28,15 @@ namespace ItemModelTest
             Assert.Contains("Nincs egyetlen ", exception.Message);
         }
 
+        [Fact]
+        public void AllItems()
+        {
+            var result = _model.AllItems();
+
+            Assert.NotEmpty(result);
+            Assert.Contains(result, x => x.itemName == "MacBook Pro M3");
+            Assert.All(result, x => Assert.False(string.IsNullOrWhiteSpace(x.description)));
+        }
         [Fact]
         public void ItemsByName()
         {
