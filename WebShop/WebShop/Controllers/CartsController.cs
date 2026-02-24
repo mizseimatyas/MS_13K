@@ -17,13 +17,12 @@ namespace WebShop.Controllers
 
         #region CartInventoryByUserId
         [HttpGet("cartinventory")]
-        public async Task<ActionResult<List<CartDto>>> CartInventory([FromQuery]int userid)
+        public async Task<ActionResult<CartDto>> CartInventory([FromQuery] int userid)
         {
             try
             {
                 var response = await _model.CartInventoryByUserId(userid);
                 return Ok(response);
-
             }
             catch (ArgumentOutOfRangeException)
             {
@@ -42,7 +41,7 @@ namespace WebShop.Controllers
 
         #region CartInventoryTotalPrice
         [HttpGet("cartinventorytotalprice")]
-        public async Task<ActionResult<int>> CartTotalPrice(int userid)
+        public async Task<ActionResult<int>> CartTotalPrice([FromQuery] int userid)
         {
             try
             {
@@ -62,23 +61,18 @@ namespace WebShop.Controllers
                 return BadRequest();
             }
         }
-
         #endregion
 
         #region ModifyCartItems
         [HttpPut("modifycart")]
-        public async Task<ActionResult> ModifyCartItems([FromBody]ModifyCartItemDto dto)
+        public async Task<ActionResult> ModifyCartItems([FromBody] ModifyCartItemDto dto)
         {
             try
             {
                 await _model.ModifyCartItems(dto);
                 return Ok();
             }
-            catch (ArgumentNullException)
-            {
-                return BadRequest();
-            }
-            catch (ArgumentOutOfRangeException)
+            catch (ArgumentException)
             {
                 return BadRequest();
             }
@@ -95,8 +89,6 @@ namespace WebShop.Controllers
                 return BadRequest();
             }
         }
-
         #endregion
-
     }
 }

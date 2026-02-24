@@ -13,7 +13,7 @@ namespace ModelTest
     {
         public static DataDbContext Create()
         {
-            var connection = new SqliteConnection("Data Source = :memory:");
+            var connection = new SqliteConnection("Data Source=:memory:");
             connection.Open();
 
             var options = new DbContextOptionsBuilder<DataDbContext>().UseSqlite(connection).EnableSensitiveDataLogging().Options;

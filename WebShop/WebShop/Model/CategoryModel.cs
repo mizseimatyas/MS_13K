@@ -17,17 +17,20 @@ namespace WebShop.Model
         public async Task AddNewCategory(string categ)
         {
             if (string.IsNullOrWhiteSpace(categ))
-                throw new ArgumentException("Nem lehet üres a kategória neve");
+                throw new ArgumentException("Nem lehet üres a kategória neve", nameof(categ));
 
-            var verifycat = await _context.Categories.AnyAsync(x=> x.CategoryName.ToLower() == categ.ToLower());
-            if (verifycat)
-                throw new InvalidOperationException($"Már létezik kategória ezzel a névvel {nameof(categ)}");
+            var exists = await _context.Categories
+                .AnyAsync(x => x.CategoryName.ToLower() == categ.ToLower());
+            if (exists)
+                throw new InvalidOperationException($"Már létezik kategória ezzel a névvel: {categ}");
 
             await using var trx = await _context.Database.BeginTransactionAsync();
+
             _context.Categories.Add(new Category
             {
                 CategoryName = categ,
             });
+
             await _context.SaveChangesAsync();
             await trx.CommitAsync();
         }
@@ -36,23 +39,27 @@ namespace WebShop.Model
         #region ModifyCategory
         public async Task ModifyCategory(ModifyCategoryDto dto)
         {
-            if(dto is null)
+            if (dto is null)
                 throw new ArgumentNullException(nameof(dto));
-            if(dto.categId <= 0)
+
+            if (dto.categId <= 0)
                 throw new ArgumentOutOfRangeException(nameof(dto.categId), "Kategória azonosító csak pozitív lehet");
 
             if (string.IsNullOrWhiteSpace(dto.categName))
-                throw new ArgumentException("Nem lehet üres a kategória neve");
+                throw new ArgumentException("Nem lehet üres a kategória neve", nameof(dto.categName));
 
             await using var trx = await _context.Database.BeginTransactionAsync();
 
-            var category = await _context.Categories.SingleOrDefaultAsync(x=> x.CategoryId == dto.categId);
+            var category = await _context.Categories
+                .SingleOrDefaultAsync(x => x.CategoryId == dto.categId);
             if (category is null)
                 throw new KeyNotFoundException($"Nincs kategória ezzel az azonosítóval: {dto.categId}");
 
-            var verifycat = await _context.Categories.AnyAsync(x=> x.CategoryName.ToLower() == dto.categName.ToLower() && x.CategoryId != dto.categId);
-            if (verifycat)
-                throw new InvalidOperationException($"Már léteztik ilyen kategórianév: {dto.categName}");
+            var nameTaken = await _context.Categories
+                .AnyAsync(x => x.CategoryName.ToLower() == dto.categName.ToLower()
+                               && x.CategoryId != dto.categId);
+            if (nameTaken)
+                throw new InvalidOperationException($"Már létezik ilyen kategórianév: {dto.categName}");
 
             category.CategoryName = dto.categName;
 
@@ -65,11 +72,12 @@ namespace WebShop.Model
         public async Task DeleteCategory(int categid)
         {
             if (categid <= 0)
-                throw new ArgumentOutOfRangeException(nameof(categid), "A kategória azonosoító csak pozitív lehet");
+                throw new ArgumentOutOfRangeException(nameof(categid), "A kategória azonosító csak pozitív lehet");
 
             await using var trx = await _context.Database.BeginTransactionAsync();
 
-            var categ = await _context.Categories.SingleOrDefaultAsync(x => x.CategoryId == categid);
+            var categ = await _context.Categories
+                .SingleOrDefaultAsync(x => x.CategoryId == categid);
             if (categ is null)
                 throw new KeyNotFoundException($"Nincs kategória ezzel az azonosítóval: {categid}");
 
@@ -81,15 +89,19 @@ namespace WebShop.Model
         #endregion
 
         #region AllCategories
-        public IEnumerable<CategoryDto> AllCategories()
+        public async Task<IEnumerable<CategoryDto>> AllCategories()
         {
-            if (!_context.Categories.Any())
+            var categories = await _context.Categories
+                .Select(x => new CategoryDto
+                {
+                    categoryName = x.CategoryName,
+                })
+                .ToListAsync();
+
+            if (categories.Count == 0)
                 throw new KeyNotFoundException("Nincs egyetlen kategória sem");
 
-            return _context.Categories.Select(x => new CategoryDto
-            {
-                categoryName = x.CategoryName,
-            }).ToList();
+            return categories;
         }
         #endregion
 

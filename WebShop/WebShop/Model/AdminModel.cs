@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
 using System.Text;
 using WebShop.Persistence;
 
@@ -13,32 +14,72 @@ namespace WebShop.Model
         }
 
         #region Register New Admin
-        public void AdminRegistration(string username, string password, string role = "Admin")
+        public async Task AdminRegistrationAsync(string username, string password)
         {
-            if (_context.Admins.Any(x => x.AdminName == username))
-            {
+            if (string.IsNullOrWhiteSpace(username))
+                throw new ArgumentException("Nem lehet üres az admin neve", nameof(username));
+
+            if (string.IsNullOrWhiteSpace(password))
+                throw new ArgumentException("Nem lehet üres a jelszó", nameof(password));
+
+            if (string.IsNullOrWhiteSpace(role))
+                throw new ArgumentException("Nem lehet üres a szerepkör", nameof(role));
+
+            if (await _context.Admins.AnyAsync(x => x.AdminName == username))
                 throw new InvalidOperationException("Admin already exists");
-            }
-            using var trx = _context.Database.BeginTransaction();
+
+            await using var trx = await _context.Database.BeginTransactionAsync();
+
+            _context.Admins.Add(new Admin
             {
-                _context.Admins.Add(new Admin { AdminName = username, Password = HashPassword(password), Role = role });
-                _context.SaveChanges();
-                trx.Commit();
-            }
+                AdminName = username,
+                Password = HashPassword(password)
+            });
+
+            await _context.SaveChangesAsync();
+            await trx.CommitAsync();
         }
         #endregion
 
         #region Validate Admin
-        public Admin? ValidateAdmin(string username, string password)
+        public async Task<Admin?> ValidateAdminAsync(string username, string password)
         {
+            if (string.IsNullOrWhiteSpace(username))
+                throw new ArgumentException("Nem lehet üres az admin neve", nameof(username));
+
+            if (string.IsNullOrWhiteSpace(password))
+                throw new ArgumentException("Nem lehet üres a jelszó", nameof(password));
+
             var hash = HashPassword(password);
-            var admin = _context.Admins.Where(x => x.AdminName == username);
-            return admin.Where(x => x.Password == hash).FirstOrDefault();
+
+            return await _context.Admins
+                .Where(x => x.AdminName == username && x.Password == hash)
+                .FirstOrDefaultAsync();
         }
         #endregion
 
         #region Change Password
+        public async Task ChangePasswordAsync(int adminId, string newPassword)
+        {
+            if (adminId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(adminId), "Admin azonosító csak pozitív lehet");
 
+            if (string.IsNullOrWhiteSpace(newPassword))
+                throw new ArgumentException("Nem lehet üres az új jelszó", nameof(newPassword));
+
+            await using var trx = await _context.Database.BeginTransactionAsync();
+
+            var admin = await _context.Admins
+                .FirstOrDefaultAsync(x => x.AdminId == adminId);
+
+            if (admin is null)
+                throw new KeyNotFoundException($"Nincs admin ezzel az azonosítóval: {adminId}");
+
+            admin.Password = HashPassword(newPassword);
+
+            await _context.SaveChangesAsync();
+            await trx.CommitAsync();
+        }
         #endregion
 
         #region Encrypt Password

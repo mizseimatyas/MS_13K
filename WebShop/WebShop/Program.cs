@@ -1,11 +1,12 @@
 using Microsoft.EntityFrameworkCore;
+using ModelTest;
 using WebShop.Model;
 using WebShop.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddDbContextPool<DataDbContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("Connect")));
+builder.Services.AddDbContextPool<DataDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("connect")));
 builder.Services.AddTransient<ItemModel>();
 builder.Services.AddTransient<CategoryModel>();
 builder.Services.AddTransient<CartModel>();

@@ -18,11 +18,11 @@ namespace WebShop.Controllers
 
         #region AllItems
         [HttpGet("allitems")]
-        public ActionResult<IEnumerable<ItemDto>> AllItems()
+        public async Task<ActionResult<IEnumerable<ItemDto>>> AllItems()
         {
             try
             {
-                var response = _model.AllItems();
+                var response = await _model.AllItems();
                 return Ok(response);
             }
             catch (KeyNotFoundException)
@@ -38,11 +38,11 @@ namespace WebShop.Controllers
 
         #region ItemById
         [HttpGet("itembyid")]
-        public ActionResult<ItemDto> ItemById([FromQuery]int id)
+        public async Task<ActionResult<ItemDto>> ItemById([FromQuery] int id)
         {
             try
             {
-                var response = _model.ItemById(id);
+                var response = await _model.ItemById(id);
                 return Ok(response);
             }
             catch (KeyNotFoundException)
@@ -59,11 +59,11 @@ namespace WebShop.Controllers
         #region ItemsWithQuantity0
         [Authorize(Roles = "Worker")]
         [HttpGet("itemswithquantity0")]
-        public ActionResult<IEnumerable<SearchItemsByQuantityDto>> ItemsQuantityZero()
+        public async Task<ActionResult<IEnumerable<SearchItemsByQuantityDto>>> ItemsQuantityZero()
         {
             try
             {
-                var response = _model.ItemsWithQunatity0();
+                var response = await _model.ItemsWithQunatity0();
                 return Ok(response);
             }
             catch (KeyNotFoundException)
@@ -75,17 +75,16 @@ namespace WebShop.Controllers
                 return BadRequest();
             }
         }
-
         #endregion
 
         #region ItemsQuantityOrderByLowestFirst
         [Authorize(Roles = "Worker")]
         [HttpGet("itemsquantityasc")]
-        public ActionResult<IEnumerable<SearchItemsByQuantityDto>> ItemsByQuantityAsc()
+        public async Task<ActionResult<IEnumerable<SearchItemsByQuantityDto>>> ItemsByQuantityAsc()
         {
             try
             {
-                var response = _model.ItemsWithQuantityOrderByAsc();
+                var response = await _model.ItemsWithQuantityOrderByAsc();
                 return Ok(response);
             }
             catch (Exception)
@@ -98,11 +97,11 @@ namespace WebShop.Controllers
         #region ItemsQuantityOrderByHighestFirst
         [Authorize(Roles = "Worker")]
         [HttpGet("itemsquantitydesc")]
-        public ActionResult<IEnumerable<SearchItemsByQuantityDto>> ItemsByQuantityDesc()
+        public async Task<ActionResult<IEnumerable<SearchItemsByQuantityDto>>> ItemsByQuantityDesc()
         {
             try
             {
-                var response = _model.ItemsWithQuantityOrderByDesc();
+                var response = await _model.ItemsWithQuantityOrderByDesc();
                 return Ok(response);
             }
             catch (Exception)
@@ -115,11 +114,11 @@ namespace WebShop.Controllers
         #region ItemsQuantityInCategoryOrderByLowestFirst
         [Authorize(Roles = "Worker")]
         [HttpGet("itemsquantityincategoryasc")]
-        public ActionResult<IEnumerable<SearchItemsByQuantityDto>> CategoryItemsQuantityAsc([FromQuery]string category)
+        public async Task<ActionResult<IEnumerable<SearchItemsByQuantityDto>>> CategoryItemsQuantityAsc([FromQuery] string category)
         {
             try
             {
-                var response = _model.CategoryItemsQuantityOrderByAsc(category);
+                var response = await _model.CategoryItemsQuantityOrderByAsc(category);
                 return Ok(response);
             }
             catch (Exception)
@@ -132,11 +131,11 @@ namespace WebShop.Controllers
         #region ItemsQuantityInCategoryOrderByHighestFirst
         [Authorize(Roles = "Worker")]
         [HttpGet("itemsquantityincategorydesc")]
-        public ActionResult<IEnumerable<SearchItemsByQuantityDto>> CategoryItemsQuantityDesc([FromQuery] string category)
+        public async Task<ActionResult<IEnumerable<SearchItemsByQuantityDto>>> CategoryItemsQuantityDesc([FromQuery] string category)
         {
             try
             {
-                var response = _model.CategoryItemsQuantityOrderByDesc(category);
+                var response = await _model.CategoryItemsQuantityOrderByDesc(category);
                 return Ok(response);
             }
             catch (Exception)
@@ -219,7 +218,7 @@ namespace WebShop.Controllers
         #region DeleteItem
         [Authorize(Roles = "Worker")]
         [HttpPost("deleteitem")]
-        public async Task<ActionResult> DeleteItem([FromQuery]int id)
+        public async Task<ActionResult> DeleteItem([FromQuery] int id)
         {
             try
             {
@@ -243,11 +242,11 @@ namespace WebShop.Controllers
 
         #region ItemByName
         [HttpGet("itembyname")]
-        public ActionResult<ItemDto> ItemByName([FromQuery]string name)
+        public async Task<ActionResult<ItemDto>> ItemByName([FromQuery] string name)
         {
             try
             {
-                var response = _model.ItemByName(name);
+                var response = await _model.ItemByName(name);
                 return Ok(response);
             }
             catch (KeyNotFoundException)
@@ -263,11 +262,11 @@ namespace WebShop.Controllers
 
         #region ItemByNameFragment
         [HttpGet("itemnamebyfragment")]
-        public ActionResult<IEnumerable<SearchItemsByDto>> ItemsByNameFragment([FromQuery]string fragname)
+        public async Task<ActionResult<IEnumerable<SearchItemsByDto>>> ItemsByNameFragment([FromQuery] string fragname)
         {
             try
             {
-                var response = _model.ItemsByNameSnipet(fragname);
+                var response = await _model.ItemsByNameSnipet(fragname);
                 return Ok(response);
             }
             catch (KeyNotFoundException)
@@ -283,11 +282,11 @@ namespace WebShop.Controllers
 
         #region ItemsInCategoryNameAsc
         [HttpGet("categoryitemsnameasc")]
-        public ActionResult<IEnumerable<SearchItemsByDto>> ItemsInCategoryNameAsc([FromQuery]string category)
+        public async Task<ActionResult<IEnumerable<SearchItemsByDto>>> ItemsInCategoryNameAsc([FromQuery] string category)
         {
             try
             {
-                var response = _model.ItemsByCategoryNameAsc(category);
+                var response = await _model.ItemsByCategoryNameAsc(category);
                 return Ok(response);
             }
             catch (KeyNotFoundException)
@@ -301,13 +300,13 @@ namespace WebShop.Controllers
         }
         #endregion
 
-        # region ItemsInCategoryNameDesc
+        #region ItemsInCategoryNameDesc
         [HttpGet("categoryitemsnamedesc")]
-        public ActionResult<IEnumerable<SearchItemsByDto>> ItemsInCategoryNameDesc([FromQuery] string category)
+        public async Task<ActionResult<IEnumerable<SearchItemsByDto>>> ItemsInCategoryNameDesc([FromQuery] string category)
         {
             try
             {
-                var response = _model.ItemsByCategoryNameDesc(category);
+                var response = await _model.ItemsByCategoryNameDesc(category);
                 return Ok(response);
             }
             catch (KeyNotFoundException)
@@ -323,11 +322,11 @@ namespace WebShop.Controllers
 
         #region ItemsInCategory
         [HttpGet("itemsincategory")]
-        public ActionResult<IEnumerable<SearchItemsByDto>> ItemsInCategory([FromQuery]string category)
+        public async Task<ActionResult<IEnumerable<SearchItemsByDto>>> ItemsInCategory([FromQuery] string category)
         {
             try
             {
-                var response = _model.ItemsByCategory(category);
+                var response = await _model.ItemsByCategory(category);
                 return Ok(response);
             }
             catch (KeyNotFoundException)
@@ -343,11 +342,11 @@ namespace WebShop.Controllers
 
         #region ItemsByPriceMax
         [HttpGet("itemsbypricemax")]
-        public ActionResult<IEnumerable<SearchItemsByPriceDto>> ItemsByMaxPrice([FromQuery]int max)
+        public async Task<ActionResult<IEnumerable<SearchItemsByPriceDto>>> ItemsByMaxPrice([FromQuery] int max)
         {
             try
             {
-                var response = _model.ItemsByPriceMax(max);
+                var response = await _model.ItemsByPriceMax(max);
                 return Ok(response);
             }
             catch (KeyNotFoundException)
@@ -363,11 +362,11 @@ namespace WebShop.Controllers
 
         #region ItemsByPriceMin
         [HttpGet("itemsbypricemin")]
-        public ActionResult<IEnumerable<SearchItemsByPriceDto>> ItemsByMinPrice([FromQuery] int min)
+        public async Task<ActionResult<IEnumerable<SearchItemsByPriceDto>>> ItemsByMinPrice([FromQuery] int min)
         {
             try
             {
-                var response = _model.ItemsByPriceMin(min);
+                var response = await _model.ItemsByPriceMin(min);
                 return Ok(response);
             }
             catch (KeyNotFoundException)
@@ -383,11 +382,11 @@ namespace WebShop.Controllers
 
         #region ItemsInPriceRange
         [HttpGet("itemsinpricerange")]
-        public ActionResult<IEnumerable<SearchItemsByPriceDto>> ItemsInPriceRange([FromQuery] int min, [FromQuery] int max)
+        public async Task<ActionResult<IEnumerable<SearchItemsByPriceDto>>> ItemsInPriceRange([FromQuery] int min, [FromQuery] int max)
         {
             try
             {
-                var response = _model.ItemsByPriceMinMax(min, max);
+                var response = await _model.ItemsByPriceMinMax(min, max);
                 return Ok(response);
             }
             catch (KeyNotFoundException)
@@ -403,11 +402,11 @@ namespace WebShop.Controllers
 
         #region ItemsInCategoryPriceAsc
         [HttpGet("itemsincategorypriceasc")]
-        public ActionResult<IEnumerable<SearchItemsByDto>> ItemsIncategoryPriceAsc([FromQuery]string category)
+        public async Task<ActionResult<IEnumerable<SearchItemsByDto>>> ItemsIncategoryPriceAsc([FromQuery] string category)
         {
             try
             {
-                var response = _model.ItemsByCategoryPriceAsc(category);
+                var response = await _model.ItemsByCategoryPriceAsc(category);
                 return Ok(response);
             }
             catch (KeyNotFoundException)
@@ -423,11 +422,11 @@ namespace WebShop.Controllers
 
         #region ItemsInCategoryPriceDesc
         [HttpGet("itemsincategorypricedesc")]
-        public ActionResult<IEnumerable<SearchItemsByDto>> ItemsIncategoryPriceDesc([FromQuery] string category)
+        public async Task<ActionResult<IEnumerable<SearchItemsByDto>>> ItemsIncategoryPriceDesc([FromQuery] string category)
         {
             try
             {
-                var response = _model.ItemsByCategoryPriceDesc(category);
+                var response = await _model.ItemsByCategoryPriceDesc(category);
                 return Ok(response);
             }
             catch (KeyNotFoundException)

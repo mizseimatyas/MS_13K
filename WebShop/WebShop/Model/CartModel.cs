@@ -13,28 +13,32 @@ namespace WebShop.Model
         }
 
         #region CartInventoryByUserId
-        public async Task<IEnumerable<CartDto>> CartInventoryByUserId(int userId)
+        public async Task<CartDto> CartInventoryByUserId(int userId)
         {
-            if(userId <= 0)
+            if (userId <= 0)
                 throw new ArgumentOutOfRangeException(nameof(userId), "Felhasználó azonosító csak pozitív lehet");
 
-            var cartrows = await _context.Carts.Include(x=> x.Item).Where(x=> x.User.UserId == userId).OrderBy(x=> x.Item.ItemId).Select(x=> new CartDto
+            var items = await _context.Carts
+                .Include(x => x.Item)
+                .Where(x => x.UserId == userId)
+                .OrderBy(x => x.ItemId)
+                .Select(x => new CartItemDto
+                {
+                    itemId = x.Item.ItemId,
+                    itemName = x.Item.ItemName,
+                    quantity = x.Quantity,
+                    price = x.Price
+                })
+                .ToListAsync();
+
+            if (items.Count == 0)
+                throw new KeyNotFoundException("Üres a kosár");
+
+            return new CartDto
             {
                 userId = userId,
-                itemList = new List<CartItemDto>
-                {
-                    new CartItemDto
-                    {
-                        itemId = x.Item.ItemId,
-                        itemName = x.Item.ItemName,
-                        quantity = x.Quantity,
-                        price = x.Price
-                    }
-                }
-            }).ToListAsync();
-            if (!cartrows.Any())
-                throw new KeyNotFoundException("Üres a kosár");
-            return cartrows;
+                itemList = items
+            };
         }
         #endregion
 
@@ -44,21 +48,22 @@ namespace WebShop.Model
             if (userId <= 0)
                 throw new ArgumentOutOfRangeException(nameof(userId), "Felhasználó azonosító csak pozitív lehet");
 
-            var totalp = await _context.Carts.Where(x=> x.User.UserId == userId).SumAsync(x=> x.Quantity *  x.Price);
+            var totalp = await _context.Carts
+                .Where(x => x.UserId == userId)
+                .SumAsync(x => x.Quantity * x.Price);
 
-            if(totalp == 0)
-            {
+            if (totalp == 0)
                 throw new KeyNotFoundException("Üres a kosarad");
-            }
+
             return totalp;
         }
-
         #endregion
+
 
         #region ModifyCartItems
         public async Task ModifyCartItems(ModifyCartItemDto dto)
         {
-            if(dto == null)
+            if (dto is null)
                 throw new ArgumentNullException(nameof(dto));
             if (dto.userId <= 0)
                 throw new ArgumentOutOfRangeException(nameof(dto.userId), "Felhasználó azonosító csak pozitív lehet");
@@ -67,21 +72,26 @@ namespace WebShop.Model
             if (dto.quantity < 0)
                 throw new ArgumentOutOfRangeException(nameof(dto.quantity), "Mennyiség nem lehet negatív");
 
-             var cartItem = await _context.Carts.Include(x=> x.Item).FirstOrDefaultAsync(x=> x.UserId == dto.userId && x.ItemId == dto.itemId);
-            if (cartItem == null)
-                throw new KeyNotFoundException($"Nem található termék ezzel az azonosítóval: {dto.itemId}");
+            var cartItem = await _context.Carts
+                .Include(x => x.Item)
+                .FirstOrDefaultAsync(x => x.UserId == dto.userId && x.ItemId == dto.itemId);
 
-            if(dto.quantity == 0)
+            if (cartItem is null)
+                throw new KeyNotFoundException($"Nem található termék ezzel az azonosítóval a kosárban: {dto.itemId}");
+
+            if (dto.quantity == 0)
             {
                 _context.Carts.Remove(cartItem);
             }
             else
             {
                 if (dto.quantity > cartItem.Item.Quantity)
-                    throw new InvalidOperationException("Nincs készleten");
+                    throw new InvalidOperationException("Nincs készleten elegendő mennyiség");
+
                 cartItem.Quantity = dto.quantity;
                 cartItem.Price = dto.price > 0 ? dto.price : cartItem.Item.Price;
             }
+
             await _context.SaveChangesAsync();
         }
         #endregion

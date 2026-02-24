@@ -18,22 +18,34 @@ namespace WebShop.Controllers
             _model = model;
         }
 
+        #region Admin Registration
         [Authorize(Roles = "Admin")]
         [HttpPost("adminregistry")]
-        public ActionResult RegisterAdmin([FromQuery]string username, [FromQuery] string password)
+        public async Task<ActionResult> RegisterAdmin(
+            [FromQuery] string username,
+            [FromQuery] string password)
         {
             try
             {
-                _model.AdminRegistration(username, password, "Admin");
-                return Ok(); //change from void to async!!
+                await _model.AdminRegistrationAsync(username, password);
+                return Ok();
             }
-            catch(Exception)
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
+            catch (InvalidOperationException)
+            {
+                return Conflict(); // már létezik
+            }
+            catch (Exception)
             {
                 return BadRequest();
             }
         }
+        #endregion
 
-        
+        #region Admin Login
         [HttpPost("adminlogin")]
         public async Task<ActionResult> LogIn(
             [FromQuery] string username,
@@ -41,8 +53,8 @@ namespace WebShop.Controllers
         {
             try
             {
-                var admin = _model.ValidateAdmin(username, password);
-                if (admin == null)
+                var admin = await _model.ValidateAdminAsync(username, password);
+                if (admin is null)
                     return Unauthorized();
 
                 List<Claim> claims = new()
@@ -58,18 +70,49 @@ namespace WebShop.Controllers
 
                 return Ok(new { message = "Belepve", Role = admin.Role });
             }
-            catch
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
+            catch (Exception)
             {
                 return BadRequest();
             }
         }
-
-        #region Change Password
-
         #endregion
 
+        #region Change Password
+        [Authorize(Roles = "Admin")]
+        [HttpPost("changepassword")]
+        public async Task<ActionResult> ChangePassword(
+            [FromQuery] int adminId,
+            [FromQuery] string newPassword)
+        {
+            try
+            {
+                await _model.ChangePasswordAsync(adminId, newPassword);
+                return Ok();
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return BadRequest();
+            }
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+        #endregion
 
-        [HttpPost("/logout")]
+        [HttpPost("logout")]
         public async Task<ActionResult> LogOut()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);

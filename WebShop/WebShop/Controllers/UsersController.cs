@@ -18,18 +18,22 @@ namespace WebShop.Controllers
         }
 
         [HttpPost("userregistry")]
-        public ActionResult Registration(
+        public async Task<ActionResult> Registration(
             [FromQuery] string email,
             [FromQuery] string password)
         {
             try
             {
-                _model.Registration(email, password, "User");
+                await _model.RegistrationAsync(email, password);
                 return Ok();
             }
             catch (InvalidOperationException e)
             {
                 return BadRequest(e.Message);
+            }
+            catch (ArgumentException)
+            {
+                return BadRequest();
             }
             catch
             {
@@ -37,15 +41,15 @@ namespace WebShop.Controllers
             }
         }
 
-        [HttpPost("/login-user")]
+        [HttpPost("loginuser")]
         public async Task<ActionResult> LogIn(
             [FromQuery] string email,
             [FromQuery] string password)
         {
             try
             {
-                var user = _model.ValidateUser(email, password);
-                if (user == null)
+                var user = await _model.ValidateUserAsync(email, password);
+                if (user is null)
                     return Unauthorized();
 
                 List<Claim> claims = new()
@@ -61,6 +65,10 @@ namespace WebShop.Controllers
 
                 return Ok(new { message = "Belepve", Role = user.Role });
             }
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
             catch
             {
                 return BadRequest();
@@ -68,14 +76,26 @@ namespace WebShop.Controllers
         }
 
         [HttpPut("changepassword")]
-        public ActionResult ChangePassword(
+        public async Task<ActionResult> ChangePassword(
             [FromQuery] int userid,
             [FromQuery] string newpassword)
         {
             try
             {
-                _model.ChangePassword(userid, newpassword);
+                await _model.ChangePasswordAsync(userid, newpassword);
                 return Ok();
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return BadRequest();
+            }
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
             }
             catch
             {
