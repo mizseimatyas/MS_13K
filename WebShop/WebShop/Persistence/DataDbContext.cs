@@ -13,7 +13,7 @@ namespace WebShop.Persistence
         public DbSet<Cart> Carts { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<Category> Categories { get; set; }
-        public DbSet<Specs> Specifications { get; set; }
+
         public DbSet<OrderItem> OrderItems { get; set; }
         public DataDbContext(DbContextOptions<DataDbContext> options) : base(options) { }
     }
@@ -79,11 +79,6 @@ namespace WebShop.Persistence
         public string Description { get; set; }
         public int Price { get; set; }
 
-    }
-
-    public class Specs
-    {
-        public string Spec { get; set; }
     }
 
     public class Order

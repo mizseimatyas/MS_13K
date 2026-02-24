@@ -20,14 +20,24 @@ namespace WebShop.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPost("workerregistry")]
-        public ActionResult RegisterAdmin([FromQuery] string username, [FromQuery] string password)
+        public async Task<ActionResult> RegisterWorker(
+            [FromQuery] string username,
+            [FromQuery] string password)
         {
             try
             {
-                _model.WorkerRegistration(username, password, "Worker");
-                return Ok(); //change from void to async!!
+                await _model.WorkerRegistration(username, password);
+                return Ok();
             }
-            catch (Exception)
+            catch (InvalidOperationException)
+            {
+                return Conflict();
+            }
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
+            catch
             {
                 return BadRequest();
             }
@@ -40,8 +50,8 @@ namespace WebShop.Controllers
         {
             try
             {
-                var worker = _model.ValidateWorker(username, password);
-                if (worker == null)
+                var worker = await _model.ValidateWorker(username, password);
+                if (worker is null)
                     return Unauthorized();
 
                 List<Claim> claims = new()
@@ -57,17 +67,46 @@ namespace WebShop.Controllers
 
                 return Ok(new { message = "Belepve", Role = worker.Role });
             }
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
             catch
             {
                 return BadRequest();
             }
         }
 
-        #region Change Password
+        [Authorize(Roles = "Worker,Admin")]
+        [HttpPut("changepassword")]
+        public async Task<ActionResult> ChangePassword(
+            [FromQuery] int workerId,
+            [FromQuery] string newPassword)
+        {
+            try
+            {
+                await _model.ChangePassword(workerId, newPassword);
+                return Ok();
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return BadRequest();
+            }
+            catch (ArgumentException)
+            {
+                return BadRequest();
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
 
-        #endregion
-
-        [HttpPost("/logout")]
+        [HttpPost("logout")]
         public async Task<ActionResult> LogOut()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);

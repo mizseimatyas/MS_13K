@@ -27,8 +27,7 @@ namespace WebShop.Model
                     date = x.Date,
                     status = x.Status.ToString(),
                     totalPrice = x.TotalPrice,
-                    targetAddress = x.TargetAddress,
-
+                    targetAddress = x.TargetAddress
                 })
                 .ToListAsync();
             if (!orders.Any())

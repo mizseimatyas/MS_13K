@@ -18,7 +18,7 @@ namespace WebShop.Controllers
 
         #region OrderHistory
         [HttpGet("orderhistory")]
-        public async Task<ActionResult<List<OrderAllDto>>> OrderHistory(int userid)
+        public async Task<ActionResult<List<OrderAllDto>>> OrderHistory([FromQuery] int userid)
         {
             try
             {
@@ -42,7 +42,9 @@ namespace WebShop.Controllers
 
         #region OrderDetails
         [HttpGet("orderdetails")]
-        public async Task<ActionResult<OrderDetailsDto>> OrderDetails([FromQuery]int userid, [FromQuery]int orderId)
+        public async Task<ActionResult<OrderDetailsDto>> OrderDetails(
+            [FromQuery] int userid,
+            [FromQuery] int orderId)
         {
             try
             {
@@ -66,7 +68,9 @@ namespace WebShop.Controllers
 
         #region CancelOrder
         [HttpPut("usercancelorder")]
-        public async Task<ActionResult> CancelOrderByUser(int orderid, int userid)
+        public async Task<ActionResult> CancelOrderByUser(
+            [FromQuery] int orderid,
+            [FromQuery] int userid)
         {
             try
             {
@@ -115,17 +119,13 @@ namespace WebShop.Controllers
 
         #region UpdateOrderStatus
         [Authorize(Roles = "Worker")]
-        [HttpGet("updateorderstatus")]
+        [HttpPut("updateorderstatus")]
         public async Task<ActionResult> UpdateOrderStatus([FromBody] UpdateOrderStatusDto dto)
         {
             try
             {
                 await _model.UpdateOrderStatus(dto);
                 return Ok();
-            }
-            catch (ArgumentOutOfRangeException)
-            {
-                return BadRequest();
             }
             catch (ArgumentException)
             {
@@ -135,17 +135,20 @@ namespace WebShop.Controllers
             {
                 return NotFound();
             }
+            catch (InvalidOperationException)
+            {
+                return Conflict();
+            }
             catch (Exception)
             {
                 return BadRequest();
             }
         }
-
         #endregion
 
         #region CompleteOrder
         [Authorize(Roles = "Worker")]
-        [HttpGet("completeorder")]
+        [HttpPut("completeorder")]
         public async Task<ActionResult> CompleteOrder([FromQuery] int orderid)
         {
             try

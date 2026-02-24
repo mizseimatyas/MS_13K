@@ -17,11 +17,11 @@ namespace WebShop.Controllers
 
         #region AllCategories
         [HttpGet("allcategories")]
-        public ActionResult<IEnumerable<CategoryDto>> AllCategories()
+        public async Task<ActionResult<IEnumerable<CategoryDto>>> AllCategories()
         {
             try
             {
-                var response = _model.AllCategories();
+                var response = await _model.AllCategories();
                 return Ok(response);
             }
             catch (KeyNotFoundException)
@@ -61,22 +61,14 @@ namespace WebShop.Controllers
 
         #region ModifyCategory
         [HttpPut("modifycategory")]
-        public async Task<ActionResult> ModifyCategory([FromBody]ModifyCategoryDto dto)
+        public async Task<ActionResult> ModifyCategory([FromBody] ModifyCategoryDto dto)
         {
             try
             {
                 await _model.ModifyCategory(dto);
                 return Ok();
             }
-            catch (ArgumentNullException)
-            {
-                return BadRequest();
-            }
-            catch (ArgumentOutOfRangeException)
-            {
-                return BadRequest();
-            }
-            catch (ArgumentException)
+            catch (ArgumentException) // Null, range, stb. mind 400
             {
                 return BadRequest();
             }
