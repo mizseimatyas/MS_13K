@@ -13,16 +13,13 @@ namespace WebShop.Model
             _context = context;
         }
 
-        public async Task RegistrationAsync(string email, string password, string role = "User")
+        public async Task Registration(string email, string password)
         {
             if (string.IsNullOrWhiteSpace(email))
                 throw new ArgumentException("Nem lehet üres az email", nameof(email));
 
             if (string.IsNullOrWhiteSpace(password))
                 throw new ArgumentException("Nem lehet üres a jelszó", nameof(password));
-
-            if (string.IsNullOrWhiteSpace(role))
-                throw new ArgumentException("Nem lehet üres a szerepkör", nameof(role));
 
             if (await _context.Users.AnyAsync(x => x.Email == email))
                 throw new InvalidOperationException("User already exists");
@@ -33,14 +30,13 @@ namespace WebShop.Model
             {
                 Email = email,
                 Password = HashPassword(password),
-                Role = role
             });
 
             await _context.SaveChangesAsync();
             await trx.CommitAsync();
         }
 
-        public async Task<User?> ValidateUserAsync(string email, string password)
+        public async Task<User?> ValidateUser(string email, string password)
         {
             if (string.IsNullOrWhiteSpace(email))
                 throw new ArgumentException("Nem lehet üres az email", nameof(email));
@@ -55,7 +51,7 @@ namespace WebShop.Model
                 .FirstOrDefaultAsync();
         }
 
-        public async Task ChangePasswordAsync(int userid, string newpassword)
+        public async Task ChangePassword(int userid, string newpassword)
         {
             if (userid <= 0)
                 throw new ArgumentOutOfRangeException(nameof(userid), "Felhasználó azonosító csak pozitív lehet");

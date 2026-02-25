@@ -24,7 +24,7 @@ namespace WebShop.Controllers
         {
             try
             {
-                await _model.RegistrationAsync(email, password);
+                await _model.Registration(email, password);
                 return Ok();
             }
             catch (InvalidOperationException e)
@@ -48,7 +48,7 @@ namespace WebShop.Controllers
         {
             try
             {
-                var user = await _model.ValidateUserAsync(email, password);
+                var user = await _model.ValidateUser(email, password);
                 if (user is null)
                     return Unauthorized();
 
@@ -82,7 +82,7 @@ namespace WebShop.Controllers
         {
             try
             {
-                await _model.ChangePasswordAsync(userid, newpassword);
+                await _model.ChangePassword(userid, newpassword);
                 return Ok();
             }
             catch (ArgumentOutOfRangeException)

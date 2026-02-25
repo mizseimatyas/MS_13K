@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using System.Text;
+using WebShop.Dto;
 using WebShop.Persistence;
 
 namespace WebShop.Model
