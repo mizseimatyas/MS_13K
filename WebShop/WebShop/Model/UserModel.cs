@@ -22,7 +22,7 @@ namespace WebShop.Model
                 throw new ArgumentException("Nem lehet üres a jelszó", nameof(password));
 
             if (await _context.Users.AnyAsync(x => x.Email == email))
-                throw new InvalidOperationException("User already exists");
+                throw new InvalidOperationException("Már létezik felhasználó ezzel az emailel");
 
             await using var trx = await _context.Database.BeginTransactionAsync();
 

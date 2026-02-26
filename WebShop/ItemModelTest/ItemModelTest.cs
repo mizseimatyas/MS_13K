@@ -1,12 +1,14 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
-using ModelTest;
+ï»¿using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using WebShop.Dto;
 using WebShop.Model;
 using WebShop.Persistence;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace ItemModelTest
+namespace ModelTest
 {
     public class ItemModelTest
     {
@@ -27,9 +29,9 @@ namespace ItemModelTest
             var result = await _model.AllItems();
 
             Assert.NotEmpty(result);
-            Assert.Contains(result, x => x.itemName == "MacBook Pro M3");       //név = név
-            Assert.Contains(result, x => x.itemName == "Laptop Táska 15\"");    //talál ilyet
-            Assert.Contains(result, x => x.itemName == "RTX 4080 GPU");         //létezik
+            Assert.Contains(result, x => x.itemName == "MacBook Pro M3");       //nÃ©v = nÃ©v
+            Assert.Contains(result, x => x.itemName == "Laptop TÃ¡ska 15\"");    //talÃ¡l ilyet
+            Assert.Contains(result, x => x.itemName == "RTX 4080 GPU");         //lÃ©tezik
         }
 
         [Fact]
@@ -39,8 +41,8 @@ namespace ItemModelTest
             var first = result.First();
 
             Assert.True(first.categoryId > 0);                                  //categoryid nem negativ
-            Assert.False(string.IsNullOrWhiteSpace(first.itemName));            //nem üres név
-            Assert.False(string.IsNullOrWhiteSpace(first.description));         //nem üres leírás
+            Assert.False(string.IsNullOrWhiteSpace(first.itemName));            //nem Ã¼res nÃ©v
+            Assert.False(string.IsNullOrWhiteSpace(first.description));         //nem Ã¼res leÃ­rÃ¡s
             Assert.True(first.price > 0);
         }
 
@@ -145,7 +147,7 @@ namespace ItemModelTest
 
             var after = await _context.Items.CountAsync();
             Assert.Equal(before + 1, after);
-            
+
             var created = await _context.Items.SingleOrDefaultAsync(x => x.ItemName == dto.itemName);
 
             Assert.NotNull(created);
@@ -182,7 +184,7 @@ namespace ItemModelTest
         public async Task AddNewItem_ThrowsNameTaken()
         {
             var existitem = _context.Items.First();
-            var categ = _context.Categories.Single(x=> x.CategoryId == existitem.CategoryId);
+            var categ = _context.Categories.Single(x => x.CategoryId == existitem.CategoryId);
             var dto = new AddNewItemDto
             {
                 itemName = existitem.ItemName,
@@ -193,7 +195,7 @@ namespace ItemModelTest
             };
             var exc = await Assert.ThrowsAsync<InvalidOperationException>(() => _model.AddNewItem(dto));
 
-            Assert.Contains("Már létezik", exc.Message);
+            Assert.Contains("MÃ¡r lÃ©tezik", exc.Message);
         }
         #endregion
 
@@ -220,7 +222,7 @@ namespace ItemModelTest
         {
             var exc = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => _model.DeleteItem(id));
 
-            Assert.Contains("pozitív", exc.Message);
+            Assert.Contains("pozitÃ­v", exc.Message);
         }
 
         [Fact]
@@ -230,7 +232,7 @@ namespace ItemModelTest
 
             var exc = await Assert.ThrowsAsync<KeyNotFoundException>(() => _model.DeleteItem(notexistId));
 
-            Assert.Contains("Nincs termék", exc.Message);
+            Assert.Contains("Nincs termÃ©k", exc.Message);
             Assert.Contains(notexistId.ToString(), exc.Message);
         }
 
@@ -285,7 +287,7 @@ namespace ItemModelTest
 
             var exc = await Assert.ThrowsAsync<KeyNotFoundException>(() => _model.ModifyItem(dto));
 
-            Assert.Contains("Nincs termék", exc.Message);
+            Assert.Contains("Nincs termÃ©k", exc.Message);
             Assert.Contains(dto.itemId.ToString(), exc.Message);
         }
 
@@ -299,7 +301,7 @@ namespace ItemModelTest
             var dto = new ModifyItemDto
             {
                 itemId = item2.ItemId,
-                itemName = item1.ItemName,                                          //létezo nev
+                itemName = item1.ItemName,                                          //lÃ©tezo nev
                 categoryName = categ.CategoryName,
                 quantity = item2.Quantity,
                 description = item2.Description,
@@ -308,7 +310,7 @@ namespace ItemModelTest
 
             var exc = await Assert.ThrowsAsync<InvalidOperationException>(() => _model.ModifyItem(dto));
 
-            Assert.Contains("Már létezik", exc.Message);
+            Assert.Contains("MÃ¡r lÃ©tezik", exc.Message);
         }
         #endregion
 

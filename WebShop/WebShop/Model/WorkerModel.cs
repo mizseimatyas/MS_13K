@@ -17,7 +17,7 @@ namespace WebShop.Model
         public async Task WorkerRegistration(string username, string password, string role = "Worker")
         {
             if (await _context.Workers.AnyAsync(x => x.WorkerName == username))
-                throw new InvalidOperationException("Worker already exists");
+                throw new InvalidOperationException("Már létezik ilyen dolgozónév");
 
             await using var trx = await _context.Database.BeginTransactionAsync();
 

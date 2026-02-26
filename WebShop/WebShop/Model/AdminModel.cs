@@ -23,7 +23,7 @@ namespace WebShop.Model
                 throw new ArgumentException("Nem lehet üres a jelszó", nameof(password));
 
             if (await _context.Admins.AnyAsync(x => x.AdminName == username))
-                throw new InvalidOperationException("Admin already exists");
+                throw new InvalidOperationException("Már létezik ilyen admin");
 
             await using var trx = await _context.Database.BeginTransactionAsync();
 
