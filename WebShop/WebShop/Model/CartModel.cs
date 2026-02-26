@@ -59,7 +59,6 @@ namespace WebShop.Model
         }
         #endregion
 
-
         #region ModifyCartItems
         public async Task ModifyCartItems(ModifyCartItemDto dto)
         {

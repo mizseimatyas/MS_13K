@@ -22,11 +22,8 @@ namespace WebShop.Model
             if (string.IsNullOrWhiteSpace(password))
                 throw new ArgumentException("Nem lehet üres a jelszó", nameof(password));
 
-            if (string.IsNullOrWhiteSpace(role))
-                throw new ArgumentException("Nem lehet üres a szerepkör", nameof(role));
-
             if (await _context.Admins.AnyAsync(x => x.AdminName == username))
-                throw new InvalidOperationException("Admin already exists");
+                throw new InvalidOperationException("Már létezik ilyen admin");
 
             await using var trx = await _context.Database.BeginTransactionAsync();
 

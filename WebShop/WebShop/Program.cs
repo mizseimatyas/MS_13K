@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using ModelTest;
 using WebShop.Model;
 using WebShop.Persistence;
 
@@ -26,7 +25,6 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<DataDbContext>();
     db.Database.EnsureCreated();
-    DbSeeder.Seed(db);
 }
 
 
@@ -44,3 +42,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }

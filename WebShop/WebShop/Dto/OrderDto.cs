@@ -6,7 +6,7 @@ namespace WebShop.Dto
     {
         public int orderId { get; set; }
         public string targetAddress { get; set; }
-        public DateTimeOffset date { get; set; }
+        public DateTime date { get; set; }
         public string status { get; set; }
         public int totalPrice { get; set; }
         public List<OrderItem> items { get; set; }
