@@ -175,7 +175,7 @@ namespace WebShop.Model
                         product.Quantity += item.Quantity;
                 }
             }
-            _context.Orders.Remove(order);
+            order.Status = OrderStatus.OrderCompleted;
             await _context.SaveChangesAsync();
         }
         #endregion

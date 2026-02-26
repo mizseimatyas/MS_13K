@@ -130,7 +130,7 @@ namespace ModelTest
                 {
                     UserId = user1Id,
                     TargetAddress = "Budapest, Gaming ház 5.",
-                    Date = DateTimeOffset.Now.AddDays(-3),
+                    Date = DateTime.Now.AddDays(-3),
                     Status = OrderStatus.Delivering,
                     TotalPrice = 475000,
                     OrderItems =
@@ -143,7 +143,7 @@ namespace ModelTest
                 {
                     UserId = user2Id,
                     TargetAddress = "Debrecen, Alkatrész ház 10.",
-                    Date = DateTimeOffset.Now.AddDays(-1),
+                    Date = DateTime.Now.AddDays(-1),
                     Status = OrderStatus.PaymentSuccess,
                     TotalPrice = 65000,
                     OrderItems =
@@ -156,7 +156,7 @@ namespace ModelTest
                 {
                     UserId = user3Id,
                     TargetAddress = "Budapest, Monitor utca 7.",
-                    Date = DateTimeOffset.Now.AddDays(-5),
+                    Date = DateTime.Now.AddDays(-5),
                     Status = OrderStatus.OrderCompleted,
                     TotalPrice = 120000,
                     OrderItems =

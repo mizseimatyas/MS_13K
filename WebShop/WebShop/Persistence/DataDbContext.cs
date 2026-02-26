@@ -91,7 +91,7 @@ namespace WebShop.Persistence
         public User User { get; set; }
         [Required]
         public string TargetAddress { get; set; }
-        public DateTimeOffset Date { get; set; }
+        public DateTime Date { get; set; }
         public OrderStatus Status { get; set; } = OrderStatus.PendingPayment;
         public int TotalPrice { get; set; }
         public List<OrderItem> OrderItems { get; set; } = new();
