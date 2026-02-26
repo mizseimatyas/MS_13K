@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WebShop.Persistence;
 
-namespace ModelTest
+namespace WebShop.Persistence
 {
     public class DbSeeder
     {
