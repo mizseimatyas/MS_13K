@@ -39,7 +39,7 @@ namespace ModelTest
 
                 db.Database.EnsureCreated();
 
-                if (!db.Categories.Any())
+                if (!db.Items.Any())
                 {
                     DbSeeder.Seed(db);
                 }
