@@ -2,6 +2,7 @@
 using System.Security.Cryptography;
 using System.Text;
 using WebShop.Persistence;
+using WebShop.Utils;
 
 namespace WebShop.Model
 {
@@ -29,7 +30,7 @@ namespace WebShop.Model
             _context.Users.Add(new User
             {
                 Email = email,
-                Password = HashPassword(password),
+                Password = PasswordHasher.Hash(password),
             });
 
             await _context.SaveChangesAsync();
@@ -44,7 +45,7 @@ namespace WebShop.Model
             if (string.IsNullOrWhiteSpace(password))
                 throw new ArgumentException("Nem lehet üres a jelszó", nameof(password));
 
-            var hash = HashPassword(password);
+            var hash = PasswordHasher.Hash(password);
 
             return await _context.Users
                 .Where(x => x.Email == email && x.Password == hash)
@@ -67,18 +68,10 @@ namespace WebShop.Model
             if (user is null)
                 throw new KeyNotFoundException($"Nincs felhasználó ezzel az azonosítóval: {userid}");
 
-            user.Password = HashPassword(newpassword);
+            user.Password = PasswordHasher.Hash(newpassword);
 
             await _context.SaveChangesAsync();
             await trx.CommitAsync();
-        }
-
-        private string HashPassword(string password)
-        {
-            using var sha = SHA256.Create();
-            var bytes = Encoding.UTF8.GetBytes(password);
-            var hash = sha.ComputeHash(bytes);
-            return Convert.ToBase64String(hash);
         }
     }
 }

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using WebShop.Model;
 using WebShop.Persistence;
+using WebShop.Utils;
 
 namespace ModelTest
 {
@@ -20,19 +21,6 @@ namespace ModelTest
             _context = DbContextFactory.Create();
             _model = new UserModel(_context);
         }
-
-        #region Hash
-        public static class PassHash
-        {
-            public static string Hash(string password)
-            {
-                using var sha = SHA256.Create();
-                var bytes = Encoding.UTF8.GetBytes(password);
-                var hash = sha.ComputeHash(bytes);
-                return Convert.ToBase64String(hash);
-            }
-        }
-        #endregion
 
         #region Register
         [Fact]
@@ -87,7 +75,7 @@ namespace ModelTest
         {
             var email = "teszta@gmail.com";
             var password = "jelszo123";
-            var hash = PassHash.Hash(password);
+            var hash = PasswordHasher.Hash(password);
             
             _context.Users.Add(new User
             {
@@ -106,7 +94,7 @@ namespace ModelTest
         public async Task ValidateUser_ThrowsWrongPassword()
         {
             var email = "tesztaaa@gmail.com";
-            var hash = PassHash.Hash("jelszo");
+            var hash = PasswordHasher.Hash("jelszo");
 
             _context.Users.Add(new User
             {
@@ -129,8 +117,8 @@ namespace ModelTest
             var email = "valtozottjelszo@gmail.com";
             var regiJelszo = "regi123";
             var ujJelszo = "uj123";
-            var regiHash = PassHash.Hash(regiJelszo);
-            var ujHash = PassHash.Hash(ujJelszo);
+            var regiHash = PasswordHasher.Hash(regiJelszo);
+            var ujHash = PasswordHasher.Hash(ujJelszo);
 
             var user = new User
             {

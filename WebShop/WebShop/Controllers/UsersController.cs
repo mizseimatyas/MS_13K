@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -75,6 +76,7 @@ namespace WebShop.Controllers
             }
         }
 
+        [Authorize]
         [HttpPut("changepassword")]
         public async Task<ActionResult> ChangePassword(
             [FromQuery] int userid,
@@ -103,6 +105,7 @@ namespace WebShop.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost("logout")]
         public async Task<ActionResult> LogOut()
         {

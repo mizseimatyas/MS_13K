@@ -42,7 +42,7 @@ namespace WebShop.Persistence
         [Required]
         public string Password { get; set; }
         public string Role { get; set; } = "Worker";
-        public int Phone { get; set; }
+        public int? Phone { get; set; }
     }
 
     public class Admin

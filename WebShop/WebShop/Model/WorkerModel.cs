@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Text;
 using WebShop.Dto;
 using WebShop.Persistence;
+using WebShop.Utils;
 
 namespace WebShop.Model
 {
@@ -14,7 +15,7 @@ namespace WebShop.Model
             _context = context;
         }
 
-        public async Task WorkerRegistration(string username, string password, string role = "Worker")
+        public async Task WorkerRegistration(string username, string password)
         {
             if (await _context.Workers.AnyAsync(x => x.WorkerName == username))
                 throw new InvalidOperationException("Már létezik ilyen dolgozónév");
@@ -24,8 +25,8 @@ namespace WebShop.Model
             _context.Workers.Add(new Worker
             {
                 WorkerName = username,
-                Password = HashPassword(password),
-                Role = role
+                Password = PasswordHasher.Hash(password),
+                Role = "Worker"
             });
 
             await _context.SaveChangesAsync();
@@ -34,11 +35,15 @@ namespace WebShop.Model
 
         public async Task<Worker?> ValidateWorker(string username, string password)
         {
-            var hash = HashPassword(password);
+            if (string.IsNullOrWhiteSpace(username))
+                throw new ArgumentException("Nem lehet üres a dolgozó neve", nameof(username));
 
+            if (string.IsNullOrWhiteSpace(password))
+                throw new ArgumentException("Nem lehet üres a jelszó", nameof(password));
+
+            var hash = PasswordHasher.Hash(password);
             return await _context.Workers
-                .Where(x => x.WorkerName == username && x.Password == hash)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(x => x.WorkerName == username && x.Password == hash);
         }
 
         #region Change Password
@@ -52,19 +57,12 @@ namespace WebShop.Model
             if (worker is null)
                 throw new KeyNotFoundException($"Nincs dolgozó ezzel az azonosítóval: {workerId}");
 
-            worker.Password = HashPassword(newPassword);
+            worker.Password = PasswordHasher.Hash(newPassword);
 
             await _context.SaveChangesAsync();
             await trx.CommitAsync();
         }
         #endregion
 
-        private string HashPassword(string password)
-        {
-            using var sha = SHA256.Create();
-            var bytes = Encoding.UTF8.GetBytes(password);
-            var hash = sha.ComputeHash(bytes);
-            return Convert.ToBase64String(hash);
-        }
     }
 }

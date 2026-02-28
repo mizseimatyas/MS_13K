@@ -27,7 +27,7 @@ namespace WebShop.Controllers
         {
             try
             {
-                await _model.AdminRegistrationAsync(username, password);
+                await _model.AdminRegistration(username, password);
                 return Ok();
             }
             catch (ArgumentException)
@@ -53,7 +53,7 @@ namespace WebShop.Controllers
         {
             try
             {
-                var admin = await _model.ValidateAdminAsync(username, password);
+                var admin = await _model.ValidateAdmin(username, password);
                 if (admin is null)
                     return Unauthorized();
 
@@ -90,7 +90,7 @@ namespace WebShop.Controllers
         {
             try
             {
-                await _model.ChangePasswordAsync(adminId, newPassword);
+                await _model.ChangePassword(adminId, newPassword);
                 return Ok();
             }
             catch (ArgumentOutOfRangeException)

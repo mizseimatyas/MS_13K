@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WebShop.Model;
 using WebShop.Persistence;
+using WebShop.Utils;
 
 namespace ModelTest
 {
@@ -21,17 +22,6 @@ namespace ModelTest
             _model = new AdminModel(_context);
         }
 
-        public static class PassHash
-        {
-            public static string Hash(string password)
-            {
-                using var sha = SHA256.Create();
-                var bytes = Encoding.UTF8.GetBytes(password);
-                var hash = sha.ComputeHash(bytes);
-                return Convert.ToBase64String(hash);
-            }
-        }
-
         #region Register
         [Fact]
         public async Task AdminRegistration_Correct()
@@ -41,7 +31,7 @@ namespace ModelTest
 
             var before = await _context.Admins.CountAsync();
 
-            await _model.AdminRegistrationAsync(username, password);
+            await _model.AdminRegistration(username, password);
 
             var after = await _context.Admins.CountAsync();
             Assert.Equal(before + 1, after);
@@ -58,7 +48,7 @@ namespace ModelTest
         public async Task AdminRegistration_ThrowsEmptyName()
         {
             var exc = await Assert.ThrowsAsync<ArgumentException>(
-                () => _model.AdminRegistrationAsync("", "valami"));
+                () => _model.AdminRegistration("", "valami"));
 
             Assert.Contains("Nem lehet", exc.Message);
         }
@@ -76,7 +66,7 @@ namespace ModelTest
             await _context.SaveChangesAsync();
 
             var exc = await Assert.ThrowsAsync<InvalidOperationException>(
-                () => _model.AdminRegistrationAsync(username, "valami"));
+                () => _model.AdminRegistration(username, "valami"));
 
             Assert.Contains("Már", exc.Message);
         }
@@ -89,7 +79,7 @@ namespace ModelTest
         {
             var username = "admina";
             var password = "jelszo";
-            var hash = PassHash.Hash(password);
+            var hash = PasswordHasher.Hash(password);
 
             _context.Admins.Add(new Admin
             {
@@ -98,7 +88,7 @@ namespace ModelTest
             });
             await _context.SaveChangesAsync();
 
-            var result = await _model.ValidateAdminAsync(username, password);
+            var result = await _model.ValidateAdmin(username, password);
 
             Assert.NotNull(result);
             Assert.Equal(username, result!.AdminName);
@@ -108,7 +98,7 @@ namespace ModelTest
         public async Task ValidateAdmin_WrongPassword_ReturnsNull()
         {
             var username = "rosszadmin";
-            var hash = PassHash.Hash("helyesjelszo");
+            var hash = PasswordHasher.Hash("helyesjelszo");
 
             _context.Admins.Add(new Admin
             {
@@ -117,7 +107,7 @@ namespace ModelTest
             });
             await _context.SaveChangesAsync();
 
-            var result = await _model.ValidateAdminAsync(username, "hibasjelszo");
+            var result = await _model.ValidateAdmin(username, "hibasjelszo");
 
             Assert.Null(result);
         }
@@ -132,8 +122,8 @@ namespace ModelTest
             var regiJelszo = "regi123";
             var ujJelszo = "uj123";
 
-            var regiHash = PassHash.Hash(regiJelszo);
-            var ujHash = PassHash.Hash(ujJelszo);
+            var regiHash = PasswordHasher.Hash(regiJelszo);
+            var ujHash = PasswordHasher.Hash(ujJelszo);
 
             var admin = new Admin
             {
@@ -143,7 +133,7 @@ namespace ModelTest
             _context.Admins.Add(admin);
             await _context.SaveChangesAsync();
 
-            await _model.ChangePasswordAsync(admin.AdminId, ujJelszo);
+            await _model.ChangePassword(admin.AdminId, ujJelszo);
 
             var modositott = await _context.Admins.SingleAsync(x => x.AdminId == admin.AdminId);
 
@@ -155,7 +145,7 @@ namespace ModelTest
         public async Task ChangePassword_ThrowsNotFound()
         {
             var exc = await Assert.ThrowsAsync<KeyNotFoundException>(
-                () => _model.ChangePasswordAsync(int.MaxValue, "ujjelszo"));
+                () => _model.ChangePassword(int.MaxValue, "ujjelszo"));
 
             Assert.Contains("Nincs", exc.Message);
         }
