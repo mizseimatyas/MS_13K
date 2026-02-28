@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WebShop.Persistence;
+using WebShop.Utils;
 
 namespace WebShop.Persistence
 {
@@ -73,11 +74,11 @@ namespace WebShop.Persistence
 
             // Users
             var users = new List<User>
-            {
-                new User { Email = "gamer@example.com", Password = "pass123", Address = "Budapest, PC utca 1.", Phone = 201234567, Role = "User" },
-                new User { Email = "tesztfelhasznalo@example.com", Password = "pass123", Address = "Debrecen, Alkatrész u. 2.", Phone = 302345678, Role = "User" },
-                new User { Email = "monitoros@example.com", Password = "pass123", Address = "Budapest, Monitor utca 7.", Phone = 303334445, Role = "User" }
-            };
+{
+    new User { Email = "gamer@example.com", Password = PasswordHasher.Hash("pass123"), Address = "Budapest, PC utca 1.", Phone = 201234567, Role = "User" },
+    new User { Email = "tesztfelhasznalo@example.com", Password = PasswordHasher.Hash("pass123"), Address = "Debrecen, Alkatrész u. 2.", Phone = 302345678, Role = "User" },
+    new User { Email = "monitoros@example.com", Password = PasswordHasher.Hash("pass123"), Address = "Budapest, Monitor utca 7.", Phone = 303334445, Role = "User" }
+};
 
             db.Users.AddRange(users);
             db.SaveChanges();
@@ -95,7 +96,7 @@ namespace WebShop.Persistence
             // Workers
             var workers = new List<Worker>
             {
-                new Worker { WorkerName = "Raktáros PC", Password = "worker123", Role = "Worker", Phone = 301112233 }
+                new Worker { WorkerName = "RaktarosPC", Password = PasswordHasher.Hash("worker123"), Role = "Worker", Phone = 301112233 }
             };
 
             db.Workers.AddRange(workers);
@@ -104,7 +105,8 @@ namespace WebShop.Persistence
             // Admins
             var admins = new List<Admin>
             {
-                new Admin { AdminName = "Webshop Admin", Password = "admin123", Role = "Admin" }
+                new Admin
+                {AdminName = "WebshopAdmin", Password = PasswordHasher.Hash("admin123"), Role = "Admin"}
             };
 
             db.Admins.AddRange(admins);

@@ -45,8 +45,8 @@ namespace WebShop.Controllers
 
         [HttpPost("workerlogin")]
         public async Task<ActionResult> LogIn(
-            [FromQuery] string username,
-            [FromQuery] string password)
+        [FromQuery] string username,
+        [FromQuery] string password)
         {
             try
             {
@@ -55,11 +55,11 @@ namespace WebShop.Controllers
                     return Unauthorized();
 
                 List<Claim> claims = new()
-                {
-                    new Claim(ClaimTypes.NameIdentifier, worker.WorkerId.ToString()),
-                    new Claim(ClaimTypes.Name, worker.WorkerName),
-                    new Claim(ClaimTypes.Role, worker.Role)
-                };
+        {
+            new Claim(ClaimTypes.NameIdentifier, worker.WorkerId.ToString()),
+            new Claim(ClaimTypes.Name, worker.WorkerName),
+            new Claim(ClaimTypes.Role, worker.Role)
+        };
 
                 var id = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 var principal = new ClaimsPrincipal(id);
@@ -106,6 +106,7 @@ namespace WebShop.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost("logout")]
         public async Task<ActionResult> LogOut()
         {

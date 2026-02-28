@@ -2,6 +2,7 @@
 using System.Security.Cryptography;
 using System.Text;
 using WebShop.Persistence;
+using WebShop.Utils;
 
 namespace WebShop.Model
 {
@@ -14,7 +15,7 @@ namespace WebShop.Model
         }
 
         #region Register New Admin
-        public async Task AdminRegistrationAsync(string username, string password)
+        public async Task AdminRegistration(string username, string password)
         {
             if (string.IsNullOrWhiteSpace(username))
                 throw new ArgumentException("Nem lehet üres az admin neve", nameof(username));
@@ -30,7 +31,7 @@ namespace WebShop.Model
             _context.Admins.Add(new Admin
             {
                 AdminName = username,
-                Password = HashPassword(password)
+                Password = PasswordHasher.Hash(password),
             });
 
             await _context.SaveChangesAsync();
@@ -39,7 +40,7 @@ namespace WebShop.Model
         #endregion
 
         #region Validate Admin
-        public async Task<Admin?> ValidateAdminAsync(string username, string password)
+        public async Task<Admin?> ValidateAdmin(string username, string password)
         {
             if (string.IsNullOrWhiteSpace(username))
                 throw new ArgumentException("Nem lehet üres az admin neve", nameof(username));
@@ -47,7 +48,7 @@ namespace WebShop.Model
             if (string.IsNullOrWhiteSpace(password))
                 throw new ArgumentException("Nem lehet üres a jelszó", nameof(password));
 
-            var hash = HashPassword(password);
+            var hash = PasswordHasher.Hash(password);
 
             return await _context.Admins
                 .Where(x => x.AdminName == username && x.Password == hash)
@@ -56,7 +57,7 @@ namespace WebShop.Model
         #endregion
 
         #region Change Password
-        public async Task ChangePasswordAsync(int adminId, string newPassword)
+        public async Task ChangePassword(int adminId, string newPassword)
         {
             if (adminId <= 0)
                 throw new ArgumentOutOfRangeException(nameof(adminId), "Admin azonosító csak pozitív lehet");
@@ -72,20 +73,10 @@ namespace WebShop.Model
             if (admin is null)
                 throw new KeyNotFoundException($"Nincs admin ezzel az azonosítóval: {adminId}");
 
-            admin.Password = HashPassword(newPassword);
+            admin.Password = PasswordHasher.Hash(newPassword);
 
             await _context.SaveChangesAsync();
             await trx.CommitAsync();
-        }
-        #endregion
-
-        #region Encrypt Password
-        private string HashPassword(string password)
-        {
-            using var sha = SHA256.Create();
-            var bytes = Encoding.UTF8.GetBytes(password);
-            var hash = sha.ComputeHash(bytes);
-            return Convert.ToBase64String(hash);
         }
         #endregion
     }

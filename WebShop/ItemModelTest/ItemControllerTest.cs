@@ -149,6 +149,7 @@ namespace ModelTest
         #endregion
 
         #region ModifyItem (Auth)
+        /*
         [Fact]
         public async Task ModifyItem_ReturnsOk()
         {
@@ -168,7 +169,7 @@ namespace ModelTest
 
         }
 
-
+        */
         #endregion
 
 

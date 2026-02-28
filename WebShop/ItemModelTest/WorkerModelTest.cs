@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WebShop.Model;
 using WebShop.Persistence;
+using WebShop.Utils;
 
 namespace ModelTest
 {
@@ -20,18 +21,6 @@ namespace ModelTest
             _context = DbContextFactory.Create();
             _model = new WorkerModel(_context);
         }
-
-        public static class PassHash
-        {
-            public static string Hash(string password)
-            {
-                using var sha = SHA256.Create();
-                var bytes = Encoding.UTF8.GetBytes(password);
-                var hash = sha.ComputeHash(bytes);
-                return Convert.ToBase64String(hash);
-            }
-        }
-
 
         #region Register
         [Fact]
@@ -82,7 +71,7 @@ namespace ModelTest
         {
             var username = "dolgozo1";
             var password = "jelszo";
-            var hash = PassHash.Hash(password);
+            var hash = PasswordHasher.Hash(password);
            
             _context.Workers.Add(new Worker
             {
@@ -103,7 +92,7 @@ namespace ModelTest
         public async Task ValidateWorker_ThrowsWrongPassword()
         {
             var username = "nemjo";
-            var hash = PassHash.Hash("jojelszo");
+            var hash = PasswordHasher.Hash("jojelszo");
 
             _context.Workers.Add(new Worker
             {
@@ -126,8 +115,8 @@ namespace ModelTest
             var regiJelszo = "regi67";
             var ujJelszo = "uj67";
 
-            var regiHash = PassHash.Hash(regiJelszo);
-            var ujHash = PassHash.Hash(ujJelszo);
+            var regiHash = PasswordHasher.Hash(regiJelszo);
+            var ujHash = PasswordHasher.Hash(ujJelszo);
 
             var dolgozo = new Worker
             {

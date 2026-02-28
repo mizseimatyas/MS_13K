@@ -36,13 +36,9 @@ namespace ModelTest
                 var sp = services.BuildServiceProvider();
                 using var scope = sp.CreateScope();
                 var db = scope.ServiceProvider.GetRequiredService<DataDbContext>();
-
+                db.Database.EnsureDeleted();
                 db.Database.EnsureCreated();
-
-                if (!db.Items.Any())
-                {
-                    DbSeeder.Seed(db);
-                }
+                DbSeeder.Seed(db);
             });
         }
         protected override void Dispose(bool disposing)
