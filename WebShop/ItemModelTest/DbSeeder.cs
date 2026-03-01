@@ -133,7 +133,7 @@ namespace WebShop.Persistence
                     UserId = user1Id,
                     TargetAddress = "Budapest, Gaming ház 5.",
                     Date = DateTime.Now.AddDays(-3),
-                    Status = OrderStatus.Delivering,
+                    Status = OrderStatus.PendingPayment,
                     TotalPrice = 475000,
                     OrderItems =
                     {
