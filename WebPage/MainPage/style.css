@@ -1,0 +1,27 @@
+body{
+    color: white;
+    background:linear-gradient(to right,teal,rgb(3, 60, 75))
+}
+.form-text{
+    color: black;
+    font-weight: bold;
+}
+
+p{
+    color: gray;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.container{
+    width: 500px;
+    background-color: rgb(62, 160, 160);
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 50px;
+}
+
+h1{
+    font-size: 40px;
+}
+

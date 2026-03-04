@@ -111,7 +111,6 @@ namespace ModelTest
 
         #endregion
 
-
         #region CancelOrder
         [Fact]
         public async Task CancelOrderByUser_Correct()

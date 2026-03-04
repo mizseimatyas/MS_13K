@@ -27,7 +27,6 @@ builder.Services
         options.Cookie.Name = "webshop_auth";
         options.SlidingExpiration = true;
 
-        // API esetén tipikusan nem redirectelünk login oldalra:
         options.Events = new CookieAuthenticationEvents
         {
             OnRedirectToLogin = ctx =>
