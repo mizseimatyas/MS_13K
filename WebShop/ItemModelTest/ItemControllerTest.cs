@@ -136,20 +136,113 @@ namespace ModelTest
         }
         #endregion
 
+        #region ItemsInCategoryPriceDesc
+        [Fact]
+        public async Task ItemsInCategoryPriceDesc_Correct()
+        {
+            var response = await _client.GetAsync("api/items/itemsincategorypricedesc?category=Számítógépek");
+            response.EnsureSuccessStatusCode();
+            var items = await response.Content.ReadFromJsonAsync<List<SearchItemsByDto>>();
+            Assert.NotNull(items);
+            for (int i = 0; i < items.Count - 1; i++)
+            {
+                Assert.True(items[i].pricE >= items[i + 1].pricE);
+            }
+        }
+
+        [Fact]
+        public async Task ItemsInCategoryPriceDesc_NotFound()
+        {
+            var response = await _client.GetAsync("api/items/itemsincategorypricedesc?category=Nemjó");
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+        #endregion
+
+
+
 
 
 
         #region AddNewItem (Auth)
+        [Fact]
+        public async Task AddNewItem_ReturnsOk()
+        {
+            var dto = new AddNewItemDto
+            {
+                categoryName = "Számítógépek",
+                itemName = "Kaja",
+                quantity = 67,
+                description = "Rizz",
+                price = 69000,
+            };
+            var response = await _client.PutAsJsonAsync("api/items/addnewitem", dto);
 
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
 
+        [Fact]
+        public async Task AddNewItem_ThrowsNotFoundCategory()
+        {
+            var dto = new AddNewItemDto
+            {
+                categoryName = "Kutyakaja",
+                itemName = "Kaja",
+                quantity = 67,
+                description = "Rizz",
+                price = 69000,
+            };
+            var response = await _client.PutAsJsonAsync("api/items/addnewitem", dto);
+
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task AddNewItem_ThrowsPriceNegative()
+        {
+            var dto = new AddNewItemDto
+            {
+                categoryName = "Kutyakaja",
+                itemName = "Kaja",
+                quantity = 67,
+                description = "Rizz",
+                price = -69000,
+            };
+            var response = await _client.PutAsJsonAsync("api/items/addnewitem", dto);
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
         #endregion
 
         #region DeleteItem (Auth)
+        [Fact]
+        public async Task DeleteCategory_ReturnsOk()
+        {
+            var response = await _client.DeleteAsync(
+                "api/items/deleteitem?id=1");
 
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task DeleteCategory_IdNotFound()
+        {
+            var response = await _client.DeleteAsync(
+                "api/items/deleteitem?id=1000");
+
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task DeleteCategory_Invalid()
+        {
+            var response = await _client.DeleteAsync(
+                "api/items/deleteitem?id=-10");
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
         #endregion
 
         #region ModifyItem (Auth)
-        /*
         [Fact]
         public async Task ModifyItem_ReturnsOk()
         {
@@ -169,11 +262,45 @@ namespace ModelTest
 
         }
 
-        */
+        [Fact]
+        public async Task ModifyItem_ThrowsNoName()
+        {
+
+            var modifyDto = new ModifyItemDto
+            {
+                itemId = 1,
+                itemName = "",
+                categoryName = "Kiegészítők",
+                quantity = 67,
+                description = "kutyakaja",
+                price = 200000
+            };
+
+            var response = await _client.PutAsJsonAsync("api/items/modifyitem", modifyDto);
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+        }
+
+        [Fact]
+        public async Task ModifyItem_Invalid()
+        {
+
+            var modifyDto = new ModifyItemDto
+            {
+                itemId = 5000,
+                itemName = "Vau",
+                categoryName = "Kiegészítők",
+                quantity = 67,
+                description = "kutyakaja",
+                price = 200000
+            };
+
+            var response = await _client.PutAsJsonAsync("api/items/modifyitem", modifyDto);
+
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+
+        }
         #endregion
-
-
-
-
     }
 }
