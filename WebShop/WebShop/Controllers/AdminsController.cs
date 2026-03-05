@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using WebShop.Dto;
 using WebShop.Model;
 
 namespace WebShop.Controllers
@@ -110,6 +111,28 @@ namespace WebShop.Controllers
                 return BadRequest();
             }
         }
+        #endregion
+
+        #region AllWorkers
+        [HttpGet("allworkers")]
+        public async Task<ActionResult<IEnumerable<WorkerDto>>> AllWorkers()
+        {
+            try
+            {
+                var response = await _model.AllWorkers();
+                return Ok(response);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+
+
         #endregion
 
         [HttpPost("logout")]

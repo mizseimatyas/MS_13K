@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using System.Text;
+using WebShop.Dto;
 using WebShop.Persistence;
 using WebShop.Utils;
 
@@ -77,6 +78,22 @@ namespace WebShop.Model
 
             await _context.SaveChangesAsync();
             await trx.CommitAsync();
+        }
+        #endregion
+
+        #region GetAllUsers
+        public async Task<IEnumerable<WorkerDto>> AllWorkers()
+        {
+            var workers = await _context.Workers.Select(x => new WorkerDto
+            {
+                workerId = x.WorkerId,
+                workerName = x.WorkerName,
+                password = x.Password
+            }).ToListAsync();
+
+            if (workers.Count == 0)
+                throw new KeyNotFoundException("Nincsenek dolgozók");
+            return workers;
         }
         #endregion
     }
