@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Interface</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="layout">
+        <aside class="sidebar">
+            <h2 class="logo">Mi a téma?</h2>
+            <nav>
+                <button class="nav-btn" data-view="user-panel">Felhasználók</button>
+                <button class="nav-btn" data-view="item-panel">Termékek</button>
+            </nav>
+        </aside>
+
+        <main class="main">
+            <header class="topbar">
+                <h1>Admin felület</h1>
+            </header>
+
+            <section id="user-panel" class="panel active">
+                <h2>Felhasználókezelés</h2>
+                <div class="grid-2">
+                    <!-- REGISZTRÁCIÓ -->
+                    <div class="card">
+                        <h3>Regisztráció</h3>
+                        <form id="register-form">
+                            <label>
+                                Felhasználónév
+                                <input type="text" name="username" required>
+                            </label>
+                            <label>
+                                Jelszó
+                                <input type="password" name="password" required>
+                            </label>
+                            <label>
+                                Telefonszám  
+                                <input type="tel" name="phone" required>
+                            </label>
+                            <label>
+                                Beosztás
+                                <select name="role" required>
+                                    <option value="">Válassz...</option>
+                                    <option value="admin">admin</option>
+                                    <option value="dolgozó">dolgozó</option>
+                                </select>
+                            </label>
+                            <button type="submit" class="primary-btn">Regisztrálás</button>
+                        </form>
+                        <div class="log" id="register-log"></div>
+                    </div>
+
+                    <!-- JELSZÓVÁLTOZTATÁS -->
+                    <div class="card">
+                        <h3>Jelszóváltoztatás</h3>
+                        <form id="password-form">
+                            <label>
+                                Worker ID
+                                <input type="number" name="workerId" min="1" required>
+                            </label>
+                            <label>
+                                Új jelszó
+                                <input type="password" name="newPassword" required>
+                            </label>
+                            <button type="submit" class="primary-btn">Jelszó módosítása</button>
+                        </form>
+                        <div class="log" id="password-log"></div>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="card">
+                        <button id="btn-all-workers" class="primary-btn">Dolgozók lekérése</button>
+                        <form id="worker-form" class="inline-form">
+                            <label>Azonosító</label>
+                            <label>Felhaszálónév</label>
+                            <label>Jelszó</label>
+                        </form>
+                        <div class="log" id="worker-query-log"></div>
+                    </div>
+                    <div class="card"></div>
+                </div>
+            </section>
+
+            <section id="item-panel" class="panel">
+                <h2>Termékek kezelése</h2>
+                <div class="grid-2">
+                    <!-- ALL ITEMS + ITEM BY ID -->
+                    <div class="card">
+                        <h3>Item lekérdezések</h3>
+                        <div class="stack">
+                            <button id="btn-all-items" class="secondary-btn">Összes termék (AllItems)</button>
+
+                            <form id="item-by-id-form" class="inline-form">
+                                <label>
+                                    Item ID
+                                    <input type="number" name="itemId" min="1" required>
+                                </label>
+                                <button type="submit" class="secondary-btn">ItemById</button>
+                            </form>
+                        </div>
+                        <div class="log" id="item-query-log"></div>
+                    </div>
+
+                    <!-- ADD, MODIFY, DELETE -->
+                    <div class="card">
+                        <h3>Item módosítások</h3>
+                        <!-- AddNewItem -->
+                        <form id="add-item-form">
+                            <h4>Új termék (AddNewItem)</h4>
+                            <label>
+                                Név
+                                <input type="text" name="itemName" required>
+                            </label>
+                            <label>
+                                Kategória név
+                                <input type="text" name="categoryName" required>
+                            </label>
+                            <label>
+                                Mennyiség
+                                <input type="number" name="quantity" min="1" required>
+                            </label>
+                            <label>
+                                Leírás
+                                <textarea name="description" required></textarea>
+                            </label>
+                            <label>
+                                Ár
+                                <input type="number" step="1" min="1" name="price" required>
+                            </label>
+                            <button type="submit" class="primary-btn">Hozzáadás</button>
+                        </form>
+
+                        <!-- ModifyItem -->
+                        <form id="modify-item-form">
+                            <h4>Termék módosítása (ModifyItem)</h4>
+                            <label>
+                                Item ID
+                                <input type="number" name="itemId" min="1" required>
+                            </label>
+                            <label>
+                                Név
+                                <input type="text" name="itemName" required>
+                            </label>
+                            <label>
+                                Kategória név
+                                <input type="text" name="categoryName" required>
+                            </label>
+                            <label>
+                                Mennyiség
+                                <input type="number" name="quantity" min="1" required>
+                            </label>
+                            <label>
+                                Leírás
+                                <textarea name="description" required></textarea>
+                            </label>
+                            <label>
+                                Ár
+                                <input type="number" step="1" min="1" name="price" required>
+                            </label>
+                            <button type="submit" class="secondary-btn">Módosítás</button>
+                        </form>
+
+                        <!-- DeleteItem -->
+                        <form id="delete-item-form">
+                            <h4>Termék törlése (DeleteItem)</h4>
+                            <label>
+                                Item ID
+                                <input type="number" name="itemId" min="1" required>
+                            </label>
+                            <button type="submit" class="danger-btn">Törlés</button>
+                        </form>
+                        <div class="log" id="item-modify-log"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
