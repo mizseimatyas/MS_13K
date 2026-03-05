@@ -13,40 +13,40 @@
     <title>Document</title>
   </head>
   <body>
+    <button class="btn btn-light" id="themeBtn">Dark/Light</button>
     <div class="container">
-      <h1>Regisztráció</h1>
-      <div class="container mt-2">
-        <div class="row">
-          <div class="col-md-6">
+      <h1>WoltMarket</h1>
+      <div class="row">
+          <div class="col-md-6 registration">
             <div class="card p-4 shadow">
               <h2>Regisztráció</h2>
 
               <div class="mb-3">
+                <label for="basic-url" class="form-label">E-mail</label>
                 <div class="input-group">
-                  <label for="basic-url" class="form-label">E-mail</label>
-                  <input type="email" class="form-control" />
+                  <input type="email" class="form-control"/>
                 </div>
               </div>
 
               <div class="mb-3">
+                <label for="basic-url" class="form-label">Jelszó</label>
                 <div class="input-group">
-                  <label for="basic-url" class="form-label">Jelszó</label>
-                  <input type="password" class="form-control" />
+                  <input type="password" class="form-control"/>
                 </div>
               </div>
 
               <div class="mb-3">
+                <label for="basic-url" class="form-label">Lakcím</label>
                 <div class="input-group">
-                  <label for="basic-url" class="form-label">Lakcím</label>
-                  <input type="text" class="form-control" />
+                  <input type="text" class="form-control"/>
                 </div>
               </div>
 
               <div class="mb-3">
+                <label for="basic-url" class="form-label">Telefonszám</label>
                 <div class="input-group">
-                  <label for="basic-url" class="form-label">Telefonszám</label>
-                  <span class="input-group-text">+36-30</span>
-                  <input type="number" class="form-control" />
+                  <span class="input-group-text">+36/30</span>
+                  <input type="number" class="form-control"/>
                 </div>
               </div>
 
@@ -54,25 +54,28 @@
             </div>
           </div>
 
-          <div class="col-md-6">
+          <div class="col-md-6 login">
             <div class="card p-4 shadow">
               <h2>Belépés</h2>
 
               <div class="mb-3">
                 <label class="form-label">E-mail</label>
-                <input type="email" class="form-control" />
+                <div class="input-group">
+                  <input type="email" class="form-control"/>
+                </div>
               </div>
 
               <div class="mb-3">
                 <label class="form-label">Jelszó</label>
-                <input type="password" class="form-control" />
+                <div class="input-group">
+                  <input type="password" class="form-control"/>
+                </div>
               </div>
 
               <button class="btn btn-primary w-100">Belépek</button>
             </div>
           </div>
         </div>
-      </div>
     </div>
     <script src="main.js"></script>
   </body>
