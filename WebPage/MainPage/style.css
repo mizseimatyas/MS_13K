@@ -1,27 +1,133 @@
 body{
     color: white;
-    background:linear-gradient(to right,teal,rgb(3, 60, 75))
-}
-.form-text{
-    color: black;
-    font-weight: bold;
+    background: linear-gradient(to right, teal, rgb(3, 60, 75));
 }
 
-p{
-    color: gray;
-    font-weight: bold;
-    font-size: 12px;
+.header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:10px 20px;
+    background-color: rgb(62, 160, 160);
 }
+
+.logo{
+    background-color: darkgrey;
+    color:white;
+    padding:8px 25px;
+    border-radius:5px;
+    font-weight:bold;
+}
+
+.search{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.search input{
+    width:350px;
+    padding:8px;
+    background-color: darkgrey;
+    border-radius:5px;
+    text-align:center;
+}
+
+.header-right{
+    display:flex;
+    gap:10px;
+}
+
+.cart{
+    background:black;
+    color:white;
+    padding:5px 15px;
+    border-radius:10px;
+}
+
+.profile{
+    background:red;
+    color:white;
+    padding:5px 15px;
+    border-radius:10px;
+}
+
+/* MAIN LAYOUT */
 
 .container{
-    width: 500px;
+    display:grid;
+    grid-template-columns:200px 1fr 200px;
+    gap:20px;
+    padding:20px;
+}
+
+/* LEFT SIDEBAR */
+
+.sidebar{
     background-color: rgb(62, 160, 160);
-    padding: 20px;
-    border-radius: 10px;
-    margin-top: 50px;
+    padding:15px;
+    color:white;
 }
 
-h1{
-    font-size: 40px;
+.sidebar h3{
+    margin-top:0;
 }
 
+.category{
+    height:8px;
+    background:black;
+    margin:12px 0;
+}
+
+/* RIGHT SIDEBAR */
+
+.rightbar{
+    background-color: rgb(62, 160, 160);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:30px;
+    color:white;
+}
+
+/* CENTER CONTENT */
+
+.content{
+    background-color: rgb(62, 160, 160);
+    padding:30px;
+}
+
+/* ADS */
+
+.ads{
+    display:flex;
+    justify-content:space-between;
+}
+
+.ad{
+    width:30%;
+    height:20px;
+    background:#2f2f6d;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:white;
+}
+
+/* PRODUCTS */
+
+.products{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    gap:20px;
+}
+
+.product{
+    height:120px;
+    background:linear-gradient(#5d5dff,#3b3bd9);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:white;
+    font-weight:bold;
+}

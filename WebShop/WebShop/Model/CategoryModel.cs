@@ -12,7 +12,6 @@ namespace WebShop.Model
             _context = context;
         }
 
-
         #region AddNewCategory
         public async Task AddNewCategory(string categ)
         {
