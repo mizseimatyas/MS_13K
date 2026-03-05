@@ -114,6 +114,51 @@ document.getElementById('password-form').addEventListener('submit', async e => {
     }
 });
 
+/*===== WORKER TÁBLÁZAT RENDER =====*/
+
+function renderWorkersTable(workers) {
+    const container = document.getElementById('woker-table-container');
+    if(!container) return;
+
+    if(!workes || workers.length === 0){
+        container.innerHTML = '<p>Nincsenek dolgozók.</p>';
+        return;
+    }
+    const headers = ['workerid', 'workername', 'password'];
+
+    let html = '<table><thead><tr>';
+    headers.forEach(w=> {
+        html += `<th>${h}</th>`;
+    });
+    workers.forEach(work => {
+        html += '<tr>';
+        headers.forEach(h => {
+            html += `<td>${work[h]}</td>`;
+        });
+        html += '</tr>';
+    });
+
+    html += '</tbody></table>';
+
+    container.innerHTML = html;
+}
+
+
+/*===== ALLWOKERS =====*/
+document.getElementById('btn-all-workers').addEventListener('click', async () =>{
+    try{
+        const workers = await apiFetch(`${API_BASE}/api/admins/allwokers`,{
+            method: 'GET'
+        });
+        renderWorkersTable(workers);
+        setLog('workers-query-log', `Dolgozók száma: ${work.length}`)
+    }
+    catch (err) {
+        setLog('workers-query-log', `Hiba AllWorkers hívás közben: ${err.message}`, true);
+    }
+});
+
+
 /* ===== ITEM TÁBLÁZAT RENDER ===== */
 
 function renderItemsTable(items) {
