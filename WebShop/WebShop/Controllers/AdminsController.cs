@@ -114,6 +114,7 @@ namespace WebShop.Controllers
         #endregion
 
         #region AllWorkers
+        [Authorize(Roles = "Admin")]
         [HttpGet("allworkers")]
         public async Task<ActionResult<IEnumerable<WorkerDto>>> AllWorkers()
         {
@@ -135,6 +136,7 @@ namespace WebShop.Controllers
 
         #endregion
 
+        [Authorize]
         [HttpPost("logout")]
         public async Task<ActionResult> LogOut()
         {
