@@ -64,31 +64,26 @@ h4{
 .hamburger {
     display: none;
     cursor: pointer;
+    background-color: black;
+    padding: 7px;
+    border-radius: 5px;
 }
 
-/* Sidebar lista alapstílus */
 .sidebar .list-group-item {
-    background-color: rgb(62,160,160); /* alap háttér */
-    color: white;                      /* szöveg színe */
-    border: none;                      /* bootstrap alap border eltüntetése */
-    border-radius: 5px;                /* lekerekített sarkok */
-    margin-bottom: 5px;                /* kis távolság a gombok között */
-    cursor: pointer;                   /* kéz kurzor hover-re */
-    transition: background 0.3s;       /* sima átmenet hover-re */
-    text-align: center;                /* szöveg középre */
-}
-
-/* Hover effekt */
-.sidebar .list-group-item:hover {
-    background-color: darkgrey;        /* hoverkor sötétszürke háttér */
-    color: white;                      /* szöveg marad fehér */
-}
-
-/* Aktív listaelem (opcionális) */
-.sidebar .list-group-item.active {
-    background-color: darkgrey;        /* aktív elem színe */
+    background-color: rgb(62,160,160);
     color: white;
     border: none;
+    border-radius: 5px;
+    margin-bottom: 5px;                /* kis távolság a gombok között */
+    cursor: pointer;
+    transition: background 0.3s;       /* sima átmenet hover-re */
+    text-align: center;                /* szöveg középre */
+
+}
+
+.sidebar .list-group-item:hover {
+    background-color: darkgrey;
+    color: white;
 }
 
 .mobile-menu {
@@ -108,7 +103,6 @@ h4{
 
 .mobile-list li {
     padding: 10px;
-    border-bottom: 1px solid rgba(255,255,255,0.2);
     cursor: pointer;
 }
 
@@ -142,7 +136,7 @@ h4{
     background: #2f2f6d;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 769px) {
     .desktop-menu {
         display: none !important;
     }
