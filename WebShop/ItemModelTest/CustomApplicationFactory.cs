@@ -55,7 +55,7 @@ namespace ModelTest
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
-            if (disposing)
+            if (!disposing)
             {
                 _connection?.Dispose();
             }

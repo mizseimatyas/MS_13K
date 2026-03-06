@@ -103,7 +103,7 @@ namespace ModelTest
                 "api/admins/adminlogin?username=WebshopAdmin&password=admin123", null);
             loginResponse.EnsureSuccessStatusCode();
 
-            var response = await _client.PostAsync(
+            var response = await _client.PutAsync(
                 "api/admins/adminregistry?username=testadmin123&password=NewAdmin123!", null);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -115,7 +115,7 @@ namespace ModelTest
             var response = await _client.PostAsync(
                 "api/admins/adminregistry?username=valaki&password=Valami123!", null);
 
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
         }
 
         #endregion
@@ -134,8 +134,8 @@ namespace ModelTest
             var db = scope.ServiceProvider.GetRequiredService<DataDbContext>();
             var admin = db.Admins.Single(a => a.AdminName == "WebshopAdmin");
             var adminId = admin.AdminId;
-
-            var response = await _client.PostAsync(
+            Assert.Equal(admin.Role, "Admin");
+            var response = await _client.PutAsync(
                 $"api/admins/changepassword?adminId={adminId}&newPassword=NewAdmin456", null);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -148,10 +148,10 @@ namespace ModelTest
                 "api/admins/adminlogin?username=WebshopAdmin&password=admin123", null);
             loginResponse.EnsureSuccessStatusCode();
 
-            var response = await _client.PostAsync(
+            var response = await _client.PutAsync(
                 "api/admins/changepassword?adminId=-1&newPassword=asd", null);
 
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
         }
 
         [Fact]
@@ -165,7 +165,7 @@ namespace ModelTest
             var response = await _client.PostAsync(
                 $"api/admins/changepassword?adminId={int.MaxValue}&newPassword=Valami123", null);
 
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
         }
 
         #endregion

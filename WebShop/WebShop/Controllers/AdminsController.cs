@@ -84,7 +84,7 @@ namespace WebShop.Controllers
 
         #region Change Password
         [Authorize(Roles = "Admin")]
-        [HttpPost("changepassword")]
+        [HttpPut("changepassword")]
         public async Task<ActionResult> ChangePassword(
             [FromQuery] int adminId,
             [FromQuery] string newPassword)

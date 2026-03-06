@@ -257,7 +257,7 @@ namespace ModelTest
             var workerClient = CreateWorkerClient();
             var modifyDto = new ModifyItemDto
             {
-                itemId = 1,
+                itemId = 4,
                 itemName = "teszteles",
                 categoryName = "Kiegészítők",
                 quantity = 67,
