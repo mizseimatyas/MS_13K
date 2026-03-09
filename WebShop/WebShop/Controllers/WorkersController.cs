@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using WebShop.Dto;
 using WebShop.Model;
 
 namespace WebShop.Controllers
@@ -99,6 +100,30 @@ namespace WebShop.Controllers
             catch (KeyNotFoundException)
             {
                 return NotFound();
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpPut("changedata/{id}")]
+        public async Task<ActionResult> UpdateWorker(
+            int id,
+            [FromBody] ModifyWorkerDto dto)
+        {
+            try
+            {
+                await _model.ModifyWorkerData(id, dto.WorkerName, dto.Role, dto.Phone);
+                return Ok();
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (ArgumentException)
+            {
+                return BadRequest();
             }
             catch
             {

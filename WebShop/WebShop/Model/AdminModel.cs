@@ -88,7 +88,9 @@ namespace WebShop.Model
             {
                 workerId = x.WorkerId,
                 workerName = x.WorkerName,
-                password = x.Password
+                password = x.Password,
+                role = x.Role,
+                phone = x.Phone
             }).ToListAsync();
 
             if (workers.Count == 0)

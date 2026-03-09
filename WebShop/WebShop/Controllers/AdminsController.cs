@@ -20,7 +20,6 @@ namespace WebShop.Controllers
         }
 
         #region Admin Registration
-        [Authorize(Roles = "Admin")]
         [HttpPost("adminregistry")]
         public async Task<ActionResult> RegisterAdmin(
             [FromQuery] string username,
@@ -83,7 +82,6 @@ namespace WebShop.Controllers
         #endregion
 
         #region Change Password
-        [Authorize(Roles = "Admin")]
         [HttpPut("changepassword")]
         public async Task<ActionResult> ChangePassword(
             [FromQuery] int adminId,
@@ -114,7 +112,6 @@ namespace WebShop.Controllers
         #endregion
 
         #region AllWorkers
-        [Authorize(Roles = "Admin")]
         [HttpGet("allworkers")]
         public async Task<ActionResult<IEnumerable<WorkerDto>>> AllWorkers()
         {
@@ -136,7 +133,7 @@ namespace WebShop.Controllers
 
         #endregion
 
-        [Authorize]
+
         [HttpPost("logout")]
         public async Task<ActionResult> LogOut()
         {
