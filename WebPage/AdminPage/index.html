@@ -22,8 +22,8 @@
 
             <section id="user-panel" class="panel active">
                 <h2>Felhasználókezelés</h2>
+
                 <div class="grid-2">
-                    <!-- REGISZTRÁCIÓ -->
                     <div class="card">
                         <h3>Regisztráció</h3>
                         <form id="register-form">
@@ -36,7 +36,7 @@
                                 <input type="password" name="password" required>
                             </label>
                             <label>
-                                Telefonszám  
+                                Telefonszám
                                 <input type="tel" name="phone" required>
                             </label>
                             <label>
@@ -52,7 +52,6 @@
                         <div class="log" id="register-log"></div>
                     </div>
 
-                    <!-- JELSZÓVÁLTOZTATÁS -->
                     <div class="card">
                         <h3>Jelszóváltoztatás</h3>
                         <form id="password-form">
@@ -70,24 +69,17 @@
                     </div>
                 </div>
 
-                <div class="grid-2">
-                    <div class="card">
-                        <button id="btn-all-workers" class="primary-btn">Dolgozók lekérése</button>
-                        <form id="worker-form" class="inline-form">
-                            <label>Azonosító</label>
-                            <label>Felhaszálónév</label>
-                            <label>Jelszó</label>
-                        </form>
-                        <div class="log" id="worker-query-log"></div>
-                    </div>
-                    <div class="card"></div>
+                <!-- Dolgozók – teljes szélességű kártya -->
+                <div class="card">
+                    <h3>Dolgozók</h3>
+                    <div class="log" id="worker-query-log"></div>
+                    <div id="worker-table-container"></div>
                 </div>
             </section>
 
             <section id="item-panel" class="panel">
                 <h2>Termékek kezelése</h2>
                 <div class="grid-2">
-                    <!-- ALL ITEMS + ITEM BY ID -->
                     <div class="card">
                         <h3>Item lekérdezések</h3>
                         <div class="stack">
@@ -104,10 +96,9 @@
                         <div class="log" id="item-query-log"></div>
                     </div>
 
-                    <!-- ADD, MODIFY, DELETE -->
                     <div class="card">
                         <h3>Item módosítások</h3>
-                        <!-- AddNewItem -->
+
                         <form id="add-item-form">
                             <h4>Új termék (AddNewItem)</h4>
                             <label>
@@ -133,7 +124,6 @@
                             <button type="submit" class="primary-btn">Hozzáadás</button>
                         </form>
 
-                        <!-- ModifyItem -->
                         <form id="modify-item-form">
                             <h4>Termék módosítása (ModifyItem)</h4>
                             <label>
@@ -163,7 +153,6 @@
                             <button type="submit" class="secondary-btn">Módosítás</button>
                         </form>
 
-                        <!-- DeleteItem -->
                         <form id="delete-item-form">
                             <h4>Termék törlése (DeleteItem)</h4>
                             <label>
@@ -174,6 +163,11 @@
                         </form>
                         <div class="log" id="item-modify-log"></div>
                     </div>
+                </div>
+
+                <div class="card">
+                    <h3>Termékek táblázat</h3>
+                    <div id="items-table-container"></div>
                 </div>
             </section>
         </main>

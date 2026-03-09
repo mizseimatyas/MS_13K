@@ -233,3 +233,32 @@ textarea {
     min-height: 1.4rem;
     white-space: pre-wrap;
 }
+
+/* Táblázatok (dolgozók, termékek) */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+}
+
+.data-table thead {
+    background: #f3f4f6;
+}
+
+.data-table th,
+.data-table td {
+    padding: 0.4rem 0.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.data-table th:last-child,
+.data-table td:last-child {
+    text-align: right;
+}
+
+.data-table tr:hover {
+    background: #f9fafb;
+}
