@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using WebShop.Dto;
 using WebShop.Model;
 
 namespace WebShop.Controllers
@@ -19,7 +20,6 @@ namespace WebShop.Controllers
         }
 
         #region Admin Registration
-        [Authorize(Roles = "Admin")]
         [HttpPost("adminregistry")]
         public async Task<ActionResult> RegisterAdmin(
             [FromQuery] string username,
@@ -82,8 +82,7 @@ namespace WebShop.Controllers
         #endregion
 
         #region Change Password
-        [Authorize(Roles = "Admin")]
-        [HttpPost("changepassword")]
+        [HttpPut("changepassword")]
         public async Task<ActionResult> ChangePassword(
             [FromQuery] int adminId,
             [FromQuery] string newPassword)
@@ -111,6 +110,29 @@ namespace WebShop.Controllers
             }
         }
         #endregion
+
+        #region AllWorkers
+        [HttpGet("allworkers")]
+        public async Task<ActionResult<IEnumerable<WorkerDto>>> AllWorkers()
+        {
+            try
+            {
+                var response = await _model.AllWorkers();
+                return Ok(response);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+
+
+        #endregion
+
 
         [HttpPost("logout")]
         public async Task<ActionResult> LogOut()

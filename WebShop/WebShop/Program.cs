@@ -5,6 +5,17 @@ using WebShop.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("DevCors", policy =>
+    {
+        policy
+            .AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 // Add services to the container.
 builder.Services.AddDbContextPool<DataDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("connect")));
 builder.Services.AddTransient<ItemModel>();
@@ -59,6 +70,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("DevCors");
 
 app.UseAuthentication();
 app.UseAuthorization();

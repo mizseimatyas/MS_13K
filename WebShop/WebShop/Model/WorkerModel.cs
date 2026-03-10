@@ -64,5 +64,20 @@ namespace WebShop.Model
         }
         #endregion
 
+
+        #region ModifyWorkerData
+        public async Task ModifyWorkerData(int workerId, string workerName, string role, int? phone)
+        {
+            var worker = await _context.Workers.FindAsync(workerId);
+            if (worker == null)
+                throw new KeyNotFoundException("Dolgozó nem található.");
+
+            worker.WorkerName = workerName;
+            worker.Role = role;
+            worker.Phone = phone;
+
+            await _context.SaveChangesAsync();
+        }
+        #endregion
     }
 }

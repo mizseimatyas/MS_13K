@@ -1,7 +1,9 @@
 ﻿namespace WebShop.Dto
 {
-    public class ModifyWorkerDto : WorkerDto
+    public class ModifyWorkerDto
     {
-        public int id { get; set; }
+        public string WorkerName { get; set; }
+        public string Role { get; set; }
+        public int? Phone { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,12 +14,24 @@ namespace ModelTest
 {
     public class ItemControllerTest : IClassFixture<CustomApplicationFactory>
     {
+        private readonly CustomApplicationFactory _factory;
         private readonly HttpClient _client;
 
         public ItemControllerTest(CustomApplicationFactory factory)
         {
+            _factory = factory;
             _client = factory.CreateClient();
         }
+
+        #region Helper
+        private HttpClient CreateWorkerClient()
+        {
+            var client = _factory.CreateClient();
+            client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Test");
+            return client;
+        }
+        #endregion
 
         #region AllItems
         [Fact]
@@ -31,14 +44,13 @@ namespace ModelTest
 
         [Fact]
         public async Task GetItems_ReturnsItemList()
-        { 
+        {
             var response = await _client.GetAsync("api/items/allitems");
-            var items = await response.Content.ReadFromJsonAsync<List<ItemDto>>();
             response.EnsureSuccessStatusCode();
+            var items = await response.Content.ReadFromJsonAsync<List<ItemDto>>();
             Assert.NotNull(items);
             Assert.NotEmpty(items);
         }
-
         #endregion
 
         #region ItemById
@@ -54,19 +66,17 @@ namespace ModelTest
         public async Task GetItemById_ReturnsItemDto()
         {
             var response = await _client.GetAsync("api/items/itembyid?id=2");
-            var item = await response.Content.ReadFromJsonAsync<ItemDto>();
             response.EnsureSuccessStatusCode();
+            var item = await response.Content.ReadFromJsonAsync<ItemDto>();
             Assert.NotNull(item);
         }
 
         [Fact]
-        public async Task GetItemById_ReturnsBadRequest()
+        public async Task GetItemById_ReturnsNotFound()
         {
             var response = await _client.GetAsync("api/items/itembyid?id=-1");
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
-
-
         #endregion
 
         #region ItemByName
@@ -81,12 +91,11 @@ namespace ModelTest
         public async Task GetItemByName_ReturnsNotFound()
         {
             var response = await _client.GetAsync("api/items/itembyname?name=nemjo");
-            Assert.Equal(HttpStatusCode.NotFound,response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
-
         #endregion
 
-        #region ItemByNameSnipet
+        #region ItemByNameSnippet
         [Fact]
         public async Task GetItemByNameFragment_ReturnsOk()
         {
@@ -95,9 +104,6 @@ namespace ModelTest
             var items = await response.Content.ReadFromJsonAsync<List<SearchItemsByDto>>();
             Assert.NotNull(items);
         }
-
-
-
         #endregion
 
         #region ItemsInCategory
@@ -114,7 +120,6 @@ namespace ModelTest
             var response = await _client.GetAsync("api/items/itemsincategory?category=nemjo");
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
-
         #endregion
 
         #region ItemsByPriceRange
@@ -128,11 +133,10 @@ namespace ModelTest
         }
 
         [Fact]
-        public async Task GetItemsInPriceRange_ReturnsOutOfRange()
+        public async Task GetItemsInPriceRange_ReturnsNotFound()
         {
             var response = await _client.GetAsync("api/items/itemsinpricerange?min=1&max=100");
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-
         }
         #endregion
 
@@ -158,15 +162,11 @@ namespace ModelTest
         }
         #endregion
 
-
-
-
-
-
         #region AddNewItem (Auth)
         [Fact]
         public async Task AddNewItem_ReturnsOk()
         {
+            var workerClient = CreateWorkerClient();
             var dto = new AddNewItemDto
             {
                 categoryName = "Számítógépek",
@@ -175,7 +175,8 @@ namespace ModelTest
                 description = "Rizz",
                 price = 69000,
             };
-            var response = await _client.PutAsJsonAsync("api/items/addnewitem", dto);
+
+            var response = await workerClient.PostAsJsonAsync("api/items/addnewitem", dto);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
@@ -183,6 +184,7 @@ namespace ModelTest
         [Fact]
         public async Task AddNewItem_ThrowsNotFoundCategory()
         {
+            var workerClient = CreateWorkerClient();
             var dto = new AddNewItemDto
             {
                 categoryName = "Kutyakaja",
@@ -191,7 +193,8 @@ namespace ModelTest
                 description = "Rizz",
                 price = 69000,
             };
-            var response = await _client.PutAsJsonAsync("api/items/addnewitem", dto);
+
+            var response = await workerClient.PostAsJsonAsync("api/items/addnewitem", dto);
 
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
@@ -199,6 +202,7 @@ namespace ModelTest
         [Fact]
         public async Task AddNewItem_ThrowsPriceNegative()
         {
+            var workerClient = CreateWorkerClient();
             var dto = new AddNewItemDto
             {
                 categoryName = "Kutyakaja",
@@ -207,7 +211,8 @@ namespace ModelTest
                 description = "Rizz",
                 price = -69000,
             };
-            var response = await _client.PutAsJsonAsync("api/items/addnewitem", dto);
+
+            var response = await workerClient.PostAsJsonAsync("api/items/addnewitem", dto);
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
@@ -215,28 +220,31 @@ namespace ModelTest
 
         #region DeleteItem (Auth)
         [Fact]
-        public async Task DeleteCategory_ReturnsOk()
+        public async Task DeleteItem_ReturnsOk()
         {
-            var response = await _client.DeleteAsync(
-                "api/items/deleteitem?id=1");
+            var workerClient = CreateWorkerClient();
+
+            var response = await workerClient.PostAsync("api/items/deleteitem?id=1", null);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
-        public async Task DeleteCategory_IdNotFound()
+        public async Task DeleteItem_IdNotFound()
         {
-            var response = await _client.DeleteAsync(
-                "api/items/deleteitem?id=1000");
+            var workerClient = CreateWorkerClient();
+
+            var response = await workerClient.PostAsync("api/items/deleteitem?id=1000", null);
 
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Fact]
-        public async Task DeleteCategory_Invalid()
+        public async Task DeleteItem_Invalid()
         {
-            var response = await _client.DeleteAsync(
-                "api/items/deleteitem?id=-10");
+            var workerClient = CreateWorkerClient();
+
+            var response = await workerClient.PostAsync("api/items/deleteitem?id=-10", null);
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
@@ -246,10 +254,10 @@ namespace ModelTest
         [Fact]
         public async Task ModifyItem_ReturnsOk()
         {
-            
+            var workerClient = CreateWorkerClient();
             var modifyDto = new ModifyItemDto
             {
-                itemId = 1,
+                itemId = 4,
                 itemName = "teszteles",
                 categoryName = "Kiegészítők",
                 quantity = 67,
@@ -257,15 +265,14 @@ namespace ModelTest
                 price = 200000
             };
 
-            var response = await _client.PutAsJsonAsync("api/items/modifyitem", modifyDto);
+            var response = await workerClient.PostAsJsonAsync("api/items/modifyitem", modifyDto);
             response.EnsureSuccessStatusCode();
-
         }
 
         [Fact]
         public async Task ModifyItem_ThrowsNoName()
         {
-
+            var workerClient = CreateWorkerClient();
             var modifyDto = new ModifyItemDto
             {
                 itemId = 1,
@@ -276,16 +283,15 @@ namespace ModelTest
                 price = 200000
             };
 
-            var response = await _client.PutAsJsonAsync("api/items/modifyitem", modifyDto);
+            var response = await workerClient.PostAsJsonAsync("api/items/modifyitem", modifyDto);
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-
         }
 
         [Fact]
         public async Task ModifyItem_Invalid()
         {
-
+            var workerClient = CreateWorkerClient();
             var modifyDto = new ModifyItemDto
             {
                 itemId = 5000,
@@ -296,10 +302,9 @@ namespace ModelTest
                 price = 200000
             };
 
-            var response = await _client.PutAsJsonAsync("api/items/modifyitem", modifyDto);
+            var response = await workerClient.PostAsJsonAsync("api/items/modifyitem", modifyDto);
 
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-
         }
         #endregion
     }

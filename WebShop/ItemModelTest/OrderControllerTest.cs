@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,10 +12,12 @@ namespace ModelTest
 {
     public class OrderControllerTest : IClassFixture<CustomApplicationFactory>
     {
+        private readonly CustomApplicationFactory _factory;
         private readonly HttpClient _client;
 
         public OrderControllerTest(CustomApplicationFactory factory)
         {
+            _factory = factory;
             _client = factory.CreateClient();
         }
 
@@ -108,15 +111,50 @@ namespace ModelTest
 
         #endregion
 
-
+        #region Helper
+        private HttpClient CreateWorkerClient()
+        {
+            var client = _factory.CreateClient();
+            client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Test");
+            return client;
+        }
+        #endregion
 
         //authorize, bejelentkezett worker
         #region AllOrders
+        [Fact]
+        public async Task AllOrders_ReturnsOk()
+        {
+            var workerClient = CreateWorkerClient();
 
+            var response = await workerClient.GetAsync("api/orders/allorders");
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var orders = await response.Content.ReadFromJsonAsync<List<OrderAllDto>>();
+            Assert.NotNull(orders);
+            Assert.NotEmpty(orders);
+        }
         #endregion
 
         #region UpdateOrderStatus
+        [Fact]
+        public async Task UpdateOrderStatus_ReturnsOk()
+        {
+            var workerClient = CreateWorkerClient();
 
+            var dto = new UpdateOrderStatusDto
+            {
+                orderId = 2,
+                orderStatus = "Delivering"
+            };
+
+            var response = await workerClient.PutAsJsonAsync(
+                "api/orders/updateorderstatus", dto);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
         #endregion
 
         #region CompleteOrder
