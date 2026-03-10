@@ -1,0 +1,484 @@
+/* =============== 1. BASE ================= */
+body {
+  color: white;
+  background: linear-gradient(to right, teal, rgb(3, 60, 75));
+}
+
+h4 {
+  background-color: darkgrey;
+  padding: 7px;
+  border-radius: 5px;
+  display: inline-block;
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+  cursor: default;
+}
+
+#homeLogo {
+  cursor: pointer;
+}
+
+#searchSection.d-none {
+  display: none !important;
+}
+
+.page-section {
+  width: 100%;
+}
+
+/* =============== 2. LAYOUT ======================== */
+.header {
+  background-color: rgb(62, 160, 160);
+  position: relative;
+  z-index: 1000;
+}
+
+.sidebar,
+.rightbar {
+  background-color: rgb(62, 160, 160);
+  padding: 15px;
+}
+
+.content {
+  background-color: rgb(62, 160, 160);
+  padding: 30px;
+}
+
+/* =============== 3. COMPONENTS ==================== */
+.logo {
+  background-color: darkgrey;
+  padding: 7px;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.icon-btn {
+  padding: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: black;
+  border: 1px solid black;
+  border-radius: 5px;
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+}
+
+.search-container {
+  display: flex;
+  width: 370px;
+}
+
+.search-input {
+  flex: 1;
+  padding: 7px;
+  border: 1px solid black;
+  border-right: none;
+  border-radius: 5px 0 0 5px;
+  outline: none;
+}
+
+.search-container #search_icon {
+  border-left: none;
+  border-radius: 0 5px 5px 0;
+}
+
+/* =============== 4. NAVIGATION ==================== */
+.desktop-menu {
+  display: flex;
+}
+
+.sidebar .list-group-item {
+  background-color: #1f8f8f;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  padding: 10px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.sidebar .list-group-item.active {
+  background-color: white !important;
+  color: black !important;
+  border-left: 6px solid black;
+}
+
+.sidebar .list-group-item:not(.active):hover {
+  background-color: darkgrey;
+  color: white;
+}
+
+.sidebar .list-group-item.active,
+.sidebar .list-group-item.active:hover,
+.sidebar .list-group-item.active:focus,
+.sidebar .list-group-item.active:active {
+  background-color: white !important;
+  color: black !important;
+  box-shadow: none;
+  outline: none;
+}
+
+/* Mobile navigation */
+.hamburger {
+  display: none;
+  cursor: pointer;
+  background-color: black;
+  padding: 7px;
+  border-radius: 5px;
+  position: relative;
+}
+
+.mobile-menu {
+  display: none;
+  position: absolute;
+  top: 60px;
+  right: 0;
+  background-color: rgb(62, 160, 160);
+  border-radius: 5px;
+  padding: 10px;
+  width: 180px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  z-index: 999;
+}
+
+.mobile-list {
+  list-style: none;
+  background-color: rgb(62, 160, 160);
+  padding: 0;
+  margin: 0;
+}
+
+.mobile-list li {
+  padding: 10px;
+  cursor: pointer;
+  background-color: rgb(62, 160, 160);
+  border-radius: 5px;
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+.mobile-list li:hover {
+  background-color: darkgrey;
+}
+
+/* Profile navigation */
+.profile-dropdown-wrapper {
+  position: relative;
+}
+
+.profile-menu {
+  display: none;
+  position: absolute;
+  top: 60px;
+  right: 0;
+  background-color: rgb(62, 160, 160);
+  border-radius: 5px;
+  padding: 10px;
+  width: 180px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  z-index: 999;
+}
+
+.profile-list {
+  list-style: none;
+  background-color: rgb(62, 160, 160);
+  padding: 0;
+  margin: 0;
+}
+
+.profile-list li {
+  padding: 10px;
+  cursor: pointer;
+  background-color: rgb(62, 160, 160);
+  border-radius: 5px;
+  margin-bottom: 5px;
+  text-align: center;
+}
+
+.profile-list li:hover {
+  background-color: darkgrey;
+}
+
+.profile-list li:last-child {
+  margin-bottom: 0;
+}
+
+/* =============== 5. CONTENT ======================= */
+.product {
+  background-color: white;
+  border-radius: 10px;
+  min-height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.product:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+}
+
+.ads {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.ad {
+  background-color: white;
+  color: black;
+  border-radius: 10px;
+  min-height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  text-align: center;
+  padding: 10px;
+}
+
+/* =============== 3. HOMEPAGE ================= */
+.section-top {
+  display: flex;
+  justify-content: center;
+}
+
+/* =============== 5. SEARCH SECTION ================= */
+.filter-box {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.filter-label {
+  font-weight: bold;
+  background-color: darkgrey;
+  color: white;
+  padding: 8px 10px;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.filter-input,
+.sort-select,
+.control-btn {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  outline: none;
+}
+
+.filter-input,
+.sort-select {
+  background-color: white;
+  color: black;
+}
+
+.control-btn {
+  background-color: darkgrey;
+  color: white;
+  font-weight: bold;
+  min-width: 120px;
+}
+
+.active-view {
+  background-color: white;
+  color: black;
+}
+
+.content-title {
+  width: auto;
+  margin-bottom: 0;
+  padding-inline: 20px;
+}
+
+.price-values {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.price-input {
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 5px;
+  outline: none;
+  background-color: white;
+  color: black;
+  text-align: center;
+}
+
+.price-input:focus {
+  box-shadow: none;
+  outline: none;
+}
+
+.range-slider {
+  position: relative;
+  height: 20px;
+  margin-top: 6px;
+}
+
+.slider-track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 8px;
+  background: #d9d9d9;
+  border-radius: 999px;
+}
+
+.slider-fill {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 8px;
+  background: #004cff;
+  border-radius: 999px;
+}
+
+.slider {
+  position: absolute;
+  width: 100%;
+  height: 20px;
+  background: transparent;
+  appearance: none;
+  -webkit-appearance: none;
+  pointer-events: none;
+}
+
+.slider::-webkit-slider-runnable-track {
+  height: 20px;
+  background: transparent;
+}
+
+.slider::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  pointer-events: auto;
+  width: 20px;
+  height: 20px;
+  margin-top: 0;
+  border-radius: 50%;
+  background: white;
+  border: 3px solid #004cff;
+  cursor: pointer;
+}
+
+.slider::-moz-range-track {
+  height: 20px;
+  background: transparent;
+}
+
+.slider::-moz-range-thumb {
+  pointer-events: auto;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: white;
+  border: 3px solid #004cff;
+  cursor: pointer;
+}
+
+.price-limits {
+  display: flex;
+  justify-content: space-between;
+  color: white;
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+.reset-filters-btn {
+  width: 100%;
+  margin-top: 16px;
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: white;
+  color: black;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.reset-filters-btn:hover {
+  background-color: #e9e9e9;
+}
+
+.product-card {
+  background: linear-gradient(#dfe7ea, #c8d4d8);
+  border-radius: 10px;
+  padding: 14px;
+  text-align: center;
+  color: black;
+  height: 100%;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+}
+
+.product-image {
+  height: 180px;
+  background: linear-gradient(#5d5dff, #3b3bd9);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: white;
+  margin-bottom: 12px;
+}
+
+.product-name {
+  font-size: 20px;
+  font-weight: bold;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-price {
+  background: linear-gradient(#5d5dff, #3b3bd9);
+  color: white;
+  font-weight: bold;
+  padding: 10px;
+  border-radius: 6px;
+  margin-top: 12px;
+}
+
+/* =============== 6. RESPONSIVE ================= */
+@media (max-width: 769px) {
+  .desktop-menu {
+    display: none !important;
+  }
+
+  .hamburger {
+    display: block !important;
+  }
+
+  .search-container {
+    width: 250px !important;
+  }
+
+  h4,
+  .content-title {
+    width: 100%;
+  }
+}
