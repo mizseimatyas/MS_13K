@@ -14,13 +14,14 @@ namespace WebShop.Model
 
         //For workers
         #region AllItems
-        public async Task<IEnumerable<ItemDto>> AllItems()
+        public async Task<IEnumerable<AllItemDto>> AllItems()
         {
             var items = await _context.Items
                 .Include(x => x.Category)
-                .Select(x => new ItemDto
+                .Select(x => new AllItemDto
                 {
                     categoryId = x.Category.CategoryId,
+                    itemId = x.ItemId,
                     itemName = x.ItemName,
                     quantity = x.Quantity,
                     description = x.Description,

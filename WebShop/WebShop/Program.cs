@@ -10,9 +10,10 @@ builder.Services.AddCors(options =>
     options.AddPolicy("DevCors", policy =>
     {
         policy
-            .AllowAnyOrigin()
+            .WithOrigins("http://127.0.0.1:5500")
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
@@ -36,8 +37,9 @@ builder.Services
     .AddCookie(options =>
     {
         options.Cookie.Name = "webshop_auth";
+        options.Cookie.SameSite = SameSiteMode.None;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
         options.SlidingExpiration = true;
-
         options.Events = new CookieAuthenticationEvents
         {
             OnRedirectToLogin = ctx =>
