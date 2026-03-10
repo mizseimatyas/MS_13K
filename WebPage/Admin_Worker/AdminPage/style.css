@@ -262,3 +262,93 @@ textarea {
 .data-table tr:hover {
     background: #f9fafb;
 }
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+.modal-box {
+    background: white;
+    border-radius: 0.75rem;
+    padding: 1.5rem 2rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    max-width: 380px;
+    width: 100%;
+    text-align: center;
+}
+
+.modal-box p {
+    font-size: 1rem;
+    margin-bottom: 1.25rem;
+    color: #111827;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+}
+
+.danger-btn {
+    background: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 0.4rem;
+    padding: 0.35rem 0.7rem;
+    font-size: 0.8rem;
+    cursor: pointer;
+    margin-left: 0.4rem;
+    transition: background 0.15s ease;
+}
+
+.danger-btn:hover {
+    background: #dc2626;
+}
+
+.password-edit {
+    display: flex;
+    gap: 0.25rem;
+    margin-top: 0.15rem;
+}
+
+.user-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+    .user-layout {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+
+    .user-layout > .card {
+        flex: 1;
+    }
+
+    .user-layout > .card:first-child {
+        order: 2;
+        max-width: 380px;
+    }
+
+    .user-layout > .card:last-child {
+        order: 1;
+    }
+}
+
+.password-edit {
+    display: flex;
+    gap: 0.25rem;
+    margin-top: 0.15rem;
+}
+
+.item-highlight {
+    background-color: #fef3c7 !important;
+}

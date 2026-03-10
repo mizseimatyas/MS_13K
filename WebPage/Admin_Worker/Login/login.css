@@ -1,0 +1,106 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+body {
+    background: #f3f4f6;
+    color: #111827;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-layout {
+    width: 100%;
+    max-width: 420px;
+    padding: 1rem;
+}
+
+.login-card {
+    background: #ffffff;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+    padding: 1.5rem 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.login-card h1 {
+    font-size: 1.3rem;
+    margin-bottom: 0.25rem;
+}
+
+.subtitle {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-bottom: 0.75rem;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-top: 0.25rem;
+}
+
+label {
+    font-size: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    color: #374151;
+}
+
+input,
+select {
+    padding: 0.45rem 0.6rem;
+    border-radius: 0.4rem;
+    border: 1px solid #d1d5db;
+    font-size: 0.9rem;
+}
+
+input:focus,
+select:focus {
+    outline: 2px solid #2563eb;
+    border-color: transparent;
+}
+
+.primary-btn {
+    margin-top: 0.75rem;
+    border-radius: 0.4rem;
+    border: none;
+    padding: 0.5rem 0.8rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.05s ease;
+    align-self: flex-start;
+    background: #2563eb;
+    color: white;
+}
+
+.primary-btn:hover {
+    background: #1d4ed8;
+}
+
+.primary-btn:active {
+    transform: scale(0.98);
+}
+
+.log {
+    margin-top: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.8rem;
+    background: #f9fafb;
+    border: 1px dashed #e5e7eb;
+    color: #b91c1c;
+    min-height: 1.4rem;
+    white-space: pre-wrap;
+}

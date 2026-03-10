@@ -23,7 +23,7 @@
             <section id="user-panel" class="panel active">
                 <h2>Felhasználókezelés</h2>
 
-                <div class="grid-2">
+                <div class="user-layout">
                     <div class="card">
                         <h3>Regisztráció</h3>
                         <form id="register-form">
@@ -53,27 +53,10 @@
                     </div>
 
                     <div class="card">
-                        <h3>Jelszóváltoztatás</h3>
-                        <form id="password-form">
-                            <label>
-                                Worker ID
-                                <input type="number" name="workerId" min="1" required>
-                            </label>
-                            <label>
-                                Új jelszó
-                                <input type="password" name="newPassword" required>
-                            </label>
-                            <button type="submit" class="primary-btn">Jelszó módosítása</button>
-                        </form>
-                        <div class="log" id="password-log"></div>
+                        <h3>Dolgozók</h3>
+                        <div class="log" id="worker-query-log"></div>
+                        <div id="worker-table-container"></div>
                     </div>
-                </div>
-
-                <!-- Dolgozók – teljes szélességű kártya -->
-                <div class="card">
-                    <h3>Dolgozók</h3>
-                    <div class="log" id="worker-query-log"></div>
-                    <div id="worker-table-container"></div>
                 </div>
             </section>
 
@@ -171,6 +154,17 @@
                 </div>
             </section>
         </main>
+    </div>
+
+    <div id="delete-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-box">
+            <button id="modal-close-x" class="secondary-btn" style="position:absolute; top:0.5rem; right:0.7rem;">×</button>
+            <p id="modal-message"></p>
+            <div class="modal-buttons">
+                <button id="modal-confirm" class="danger-btn">Törlés</button>
+                <button id="modal-cancel" class="secondary-btn">Mégse</button>
+            </div>
+        </div>
     </div>
 
     <script src="admin.js"></script>
