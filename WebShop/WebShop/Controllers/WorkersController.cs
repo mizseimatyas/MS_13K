@@ -22,12 +22,13 @@ namespace WebShop.Controllers
         [Authorize(Roles = "Admin")]
         [HttpPost("workerregistry")]
         public async Task<ActionResult> RegisterWorker(
-            [FromQuery] string username,
-            [FromQuery] string password)
+    [FromQuery] string username,
+    [FromQuery] string password,
+    [FromQuery] int phone)
         {
             try
             {
-                await _model.WorkerRegistration(username, password);
+                await _model.WorkerRegistration(username, password, phone);
                 return Ok();
             }
             catch (InvalidOperationException)
@@ -43,6 +44,7 @@ namespace WebShop.Controllers
                 return BadRequest();
             }
         }
+
 
         [HttpPost("workerlogin")]
         public async Task<ActionResult> LogIn(
@@ -71,6 +73,24 @@ namespace WebShop.Controllers
             catch (ArgumentException)
             {
                 return BadRequest();
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteWorker(int id)
+        {
+            try
+            {
+                await _model.DeleteWorker(id);
+                return Ok();
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
             }
             catch
             {

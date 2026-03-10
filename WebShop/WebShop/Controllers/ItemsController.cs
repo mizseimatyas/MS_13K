@@ -18,7 +18,7 @@ namespace WebShop.Controllers
 
         #region AllItems
         [HttpGet("allitems")]
-        public async Task<ActionResult<IEnumerable<ItemDto>>> AllItems()
+        public async Task<ActionResult<IEnumerable<AllItemDto>>> AllItems()
         {
             try
             {

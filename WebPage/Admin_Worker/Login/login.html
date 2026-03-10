@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin / Worker bejelentkezés</title>
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+    <div class="login-layout">
+        <div class="login-card">
+            <h1>Mi a téma? – Admin belépés</h1>
+            <p class="subtitle">Jelentkezz be admin vagy worker fiókkal</p>
+
+            <form id="login-form">
+                <label>
+                    Felhasználónév
+                    <input type="text" name="username" required>
+                </label>
+                <label>
+                    Jelszó
+                    <input type="password" name="password" required>
+                </label>
+                <label>
+                    Szerepkör
+                    <select name="role" required>
+                        <option value="">Válassz...</option>
+                        <option value="admin">Admin</option>
+                        <option value="worker">Worker</option>
+                    </select>
+                </label>
+                <button type="submit" class="primary-btn">Bejelentkezés</button>
+            </form>
+
+            <div class="log" id="login-log"></div>
+        </div>
+    </div>
+
+    <script src="login.js"></script>
+</body>
+</html>
