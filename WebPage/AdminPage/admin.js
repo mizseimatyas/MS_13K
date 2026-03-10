@@ -1,4 +1,4 @@
-const API_BASE = 'https://localhost:5001';
+const API_BASE = 'https://localhost:7149/api';
 
 const navButtons = document.querySelectorAll('.nav-btn');
 const panels = document.querySelectorAll('.panel');
@@ -7,7 +7,10 @@ navButtons.forEach(btn => {
     btn.addEventListener('click', () => {
         const target = btn.dataset.view;
         panels.forEach(p => p.classList.remove('active'));
-        document.getElementById(target).classList.add('active');
+        const panel = document.getElementById(target);
+        if (panel) {
+            panel.classList.add('active');
+        }
     });
 });
 
@@ -50,8 +53,7 @@ async function apiFetch(url, options = {}) {
     return await response.text();
 }
 
-/* ===== REGISZTRÁCIÓ ===== */
-
+/* Regisztráció */
 document.getElementById('register-form').addEventListener('submit', async e => {
     e.preventDefault();
     const form = e.target;
@@ -66,7 +68,7 @@ document.getElementById('register-form').addEventListener('submit', async e => {
     }
 
     try {
-        await apiFetch(`${API_BASE}/api/users/register`, {
+        await apiFetch(`${API_BASE}/users/register`, {
             method: 'POST',
             body: JSON.stringify({
                 username: data.username,
@@ -83,8 +85,7 @@ document.getElementById('register-form').addEventListener('submit', async e => {
     }
 });
 
-/* ===== JELSZÓVÁLTÁS ===== */
-
+/* Jelszó módosítás */
 document.getElementById('password-form').addEventListener('submit', async e => {
     e.preventDefault();
     const form = e.target;
@@ -99,7 +100,7 @@ document.getElementById('password-form').addEventListener('submit', async e => {
     }
 
     try {
-        await apiFetch(`${API_BASE}/api/users/password`, {
+        await apiFetch(`${API_BASE}/users/password`, {
             method: 'PUT',
             body: JSON.stringify({
                 workerId: Number(data.workerId),
@@ -114,53 +115,127 @@ document.getElementById('password-form').addEventListener('submit', async e => {
     }
 });
 
-/*===== WORKER TÁBLÁZAT RENDER =====*/
-
+/* Dolgozók táblázat renderelése + inline szerkesztés (jelszó NEM módosítható) */
 function renderWorkersTable(workers) {
-    const container = document.getElementById('woker-table-container');
-    if(!container) return;
+    const container = document.getElementById('worker-table-container');
+    if (!container) return;
 
-    if(!workes || workers.length === 0){
+    if (!workers || workers.length === 0) {
         container.innerHTML = '<p>Nincsenek dolgozók.</p>';
         return;
     }
-    const headers = ['workerid', 'workername', 'password'];
 
-    let html = '<table><thead><tr>';
-    headers.forEach(w=> {
-        html += `<th>${h}</th>`;
-    });
+    let html = '<table class="data-table"><thead><tr>';
+    html += '<th>WorkerId</th>';
+    html += '<th>WorkerName</th>';
+    html += '<th>Role</th>';
+    html += '<th>Phone</th>';
+    html += '<th>Password</th>';
+    html += '<th></th>';
+    html += '</tr></thead><tbody>';
+
     workers.forEach(work => {
-        html += '<tr>';
-        headers.forEach(h => {
-            html += `<td>${work[h]}</td>`;
-        });
-        html += '</tr>';
+        const phoneValue = work.phone ?? '';
+        html += `<tr data-id="${work.workerId}">
+            <td class="cell-id">${work.workerId}</td>
+            <td class="cell-name">${work.workerName}</td>
+            <td class="cell-role">${work.role}</td>
+            <td class="cell-phone">${phoneValue}</td>
+            <td class="cell-password">********</td>
+            <td>
+                <button class="secondary-btn btn-edit-worker">Módosítás</button>
+            </td>
+        </tr>`;
     });
 
     html += '</tbody></table>';
 
     container.innerHTML = html;
+
+    const editButtons = container.querySelectorAll('.btn-edit-worker');
+    editButtons.forEach(btn => {
+        btn.addEventListener('click', onEditWorkerClick);
+    });
 }
 
+function onEditWorkerClick(e) {
+    const btn = e.currentTarget;
+    const row = btn.closest('tr');
+    const isEditing = row.dataset.editing === 'true';
 
-/*===== ALLWOKERS =====*/
-document.getElementById('btn-all-workers').addEventListener('click', async () =>{
-    try{
-        const workers = await apiFetch(`${API_BASE}/api/admins/allwokers`,{
+    if (!isEditing) {
+        // Edit mód (csak name, phone)
+        row.dataset.editing = 'true';
+        btn.textContent = 'Mentés';
+
+        const nameCell = row.querySelector('.cell-name');
+        const phoneCell = row.querySelector('.cell-phone');
+
+        const name = nameCell.textContent.trim();
+        const phone = phoneCell.textContent.trim();
+
+        nameCell.innerHTML = `<input type="text" class="input-name" value="${name}">`;
+        phoneCell.innerHTML = `<input type="number" class="input-phone" value="${phone}">`;
+        // role/password cellhez nem nyúlunk
+    } else {
+        // Mentés
+        saveWorkerRow(row, btn);
+    }
+}
+
+async function saveWorkerRow(row, btn) {
+    const id = Number(row.dataset.id);
+
+    const nameInput = row.querySelector('.input-name');
+    const phoneInput = row.querySelector('.input-phone');
+
+    const workerName = nameInput.value.trim();
+    const phone = phoneInput.value ? Number(phoneInput.value) : null;
+
+    if (!workerName) {
+        alert('A név nem lehet üres.');
+        return;
+    }
+
+    const currentRole = row.querySelector('.cell-role').textContent.trim();
+
+    try {
+        await apiFetch(`${API_BASE}/Workers/changedata/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify({
+        workerName,
+        role: currentRole,
+        phone
+    })
+});
+
+        row.dataset.editing = 'false';
+        btn.textContent = 'Módosítás';
+
+        row.querySelector('.cell-name').textContent = workerName;
+        row.querySelector('.cell-phone').textContent = phone ?? '';
+        // role/password változatlan
+        row.querySelector('.cell-password').textContent = '********';
+
+        setLog('worker-query-log', `Dolgozó módosítva (id = ${id}).`);
+    } catch (err) {
+        setLog('worker-query-log', `Hiba dolgozó módosítás közben: ${err.message}`, true);
+    }
+}
+/* Dolgozók automatikus betöltése */
+async function loadAllWorkers() {
+    try {
+        const workers = await apiFetch(`${API_BASE}/Admins/allworkers`, {
             method: 'GET'
         });
         renderWorkersTable(workers);
-        setLog('workers-query-log', `Dolgozók száma: ${work.length}`)
+        setLog('worker-query-log', `Dolgozók száma: ${workers.length}`);
+    } catch (err) {
+        setLog('worker-query-log', `Hiba AllWorkers hívás közben: ${err.message}`, true);
     }
-    catch (err) {
-        setLog('workers-query-log', `Hiba AllWorkers hívás közben: ${err.message}`, true);
-    }
-});
+}
 
-
-/* ===== ITEM TÁBLÁZAT RENDER ===== */
-
+/* Termék táblázat */
 function renderItemsTable(items) {
     const container = document.getElementById('items-table-container');
     if (!container) return;
@@ -172,7 +247,7 @@ function renderItemsTable(items) {
 
     const headers = ['categoryId', 'itemName', 'quantity', 'description', 'price'];
 
-    let html = '<table><thead><tr>';
+    let html = '<table class="data-table"><thead><tr>';
     headers.forEach(h => {
         html += `<th>${h}</th>`;
     });
@@ -191,11 +266,10 @@ function renderItemsTable(items) {
     container.innerHTML = html;
 }
 
-/* ===== ALLITEMS ===== */
-
+/* Összes termék */
 document.getElementById('btn-all-items').addEventListener('click', async () => {
     try {
-        const items = await apiFetch(`${API_BASE}/api/items/allitems`, {
+        const items = await apiFetch(`${API_BASE}/items/allitems`, {
             method: 'GET'
         });
         renderItemsTable(items);
@@ -205,8 +279,7 @@ document.getElementById('btn-all-items').addEventListener('click', async () => {
     }
 });
 
-/* ===== ITEMBYID ===== */
-
+/* ItemById */
 document.getElementById('item-by-id-form').addEventListener('submit', async e => {
     e.preventDefault();
     const form = e.target;
@@ -221,7 +294,7 @@ document.getElementById('item-by-id-form').addEventListener('submit', async e =>
     }
 
     try {
-        const url = `${API_BASE}/api/items/itembyid?id=${encodeURIComponent(id)}`;
+        const url = `${API_BASE}/items/itembyid?id=${encodeURIComponent(id)}`;
         const item = await apiFetch(url, { method: 'GET' });
 
         renderItemsTable([item]);
@@ -232,8 +305,7 @@ document.getElementById('item-by-id-form').addEventListener('submit', async e =>
     }
 });
 
-/* ===== ADDNEWITEM ===== */
-
+/* Új termék */
 document.getElementById('add-item-form').addEventListener('submit', async e => {
     e.preventDefault();
     const form = e.target;
@@ -251,7 +323,7 @@ document.getElementById('add-item-form').addEventListener('submit', async e => {
     }
 
     try {
-        await apiFetch(`${API_BASE}/api/items`, {
+        await apiFetch(`${API_BASE}/items`, {
             method: 'POST',
             body: JSON.stringify({
                 itemName: data.itemName,
@@ -269,8 +341,7 @@ document.getElementById('add-item-form').addEventListener('submit', async e => {
     }
 });
 
-/* ===== MODIFYITEM ===== */
-
+/* Termék módosítás */
 document.getElementById('modify-item-form').addEventListener('submit', async e => {
     e.preventDefault();
     const form = e.target;
@@ -293,7 +364,7 @@ document.getElementById('modify-item-form').addEventListener('submit', async e =
     }
 
     try {
-        await apiFetch(`${API_BASE}/api/items/${id}`, {
+        await apiFetch(`${API_BASE}/items/${id}`, {
             method: 'PUT',
             body: JSON.stringify({
                 itemId: id,
@@ -312,8 +383,7 @@ document.getElementById('modify-item-form').addEventListener('submit', async e =
     }
 });
 
-/* ===== DELETEITEM ===== */
-
+/* Termék törlés */
 document.getElementById('delete-item-form').addEventListener('submit', async e => {
     e.preventDefault();
     const form = e.target;
@@ -332,7 +402,7 @@ document.getElementById('delete-item-form').addEventListener('submit', async e =
     }
 
     try {
-        await apiFetch(`${API_BASE}/api/items/${id}`, {
+        await apiFetch(`${API_BASE}/items/${id}`, {
             method: 'DELETE'
         });
 
@@ -341,4 +411,9 @@ document.getElementById('delete-item-form').addEventListener('submit', async e =
     } catch (err) {
         setLog('item-modify-log', `Hiba termék törlése közben: ${err.message}`, true);
     }
+});
+
+/* Oldal betöltésekor dolgozók betöltése */
+window.addEventListener('DOMContentLoaded', () => {
+    loadAllWorkers();
 });
