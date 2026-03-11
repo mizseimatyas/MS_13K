@@ -15,7 +15,7 @@ namespace WebShop.Model
             _context = context;
         }
 
-        public async Task WorkerRegistration(string username, string password)
+        public async Task WorkerRegistration(string username, string password, int phone)
         {
             if (await _context.Workers.AnyAsync(x => x.WorkerName == username))
                 throw new InvalidOperationException("Már létezik ilyen dolgozónév");
@@ -26,6 +26,7 @@ namespace WebShop.Model
             {
                 WorkerName = username,
                 Password = PasswordHasher.Hash(password),
+                Phone = phone,
                 Role = "Worker"
             });
 
@@ -64,6 +65,18 @@ namespace WebShop.Model
         }
         #endregion
 
+        #region RemoveWorker
+        public async Task DeleteWorker(int workerId)
+        {
+            var worker = await _context.Workers.FindAsync(workerId);
+            if (worker == null)
+                throw new KeyNotFoundException("Dolgozó nem található.");
+
+            _context.Workers.Remove(worker);
+            await _context.SaveChangesAsync();
+        }
+
+        #endregion
 
         #region ModifyWorkerData
         public async Task ModifyWorkerData(int workerId, string workerName, string role, int? phone)

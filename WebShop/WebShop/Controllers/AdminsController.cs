@@ -19,6 +19,18 @@ namespace WebShop.Controllers
             _model = model;
         }
 
+        #region Identify
+        [Authorize]
+        [HttpGet("me")]
+        public ActionResult GetMe()
+        {
+            var name = User.Identity?.Name;
+            var role = User.FindFirstValue(ClaimTypes.Role);
+            return Ok(new { name, role });
+        }
+        #endregion
+
+
         #region Admin Registration
         [HttpPost("adminregistry")]
         public async Task<ActionResult> RegisterAdmin(
