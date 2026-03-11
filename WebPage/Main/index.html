@@ -15,7 +15,7 @@
       <div class="container-fluid">
         <div class="d-flex justify-content-between align-items-center">
           <div class="logo">
-            <h2 id="homeLogo">WoltMarket</h2>
+            <h2 id="homeLogo"><span title="Főoldal">WoltMarket</span></h2>
           </div>
 
           <div class="search-container">
@@ -30,7 +30,11 @@
           </div>
 
           <div class="desktop-menu d-flex gap-2">
-            <button class="icon-btn" type="button">
+            <button class="btn btn-light theme-toggle-btn" id="themeBtn">
+              Dark/Light
+            </button>
+
+            <button class="icon-btn">
               <img src="shopping-cart.svg" alt="Shopping Cart" />
             </button>
 
@@ -41,23 +45,24 @@
 
               <div id="profileMenu" class="profile-menu">
                 <ul class="profile-list">
-                  <li>Bejelentkezés</li>
-                  <li>Regisztráció</li>
+                  <li id="loginBtn">Bejelentkezés</li>
+                  <li id="registerBtn">Regisztráció</li>
                 </ul>
               </div>
             </div>
           </div>
 
-          <div class="hamburger" onclick="toggleMenu()">
+          <div class="icon-btn hamburger" onclick="toggleMenu()">
             <img src="menu.svg" alt="Menu" />
           </div>
         </div>
 
         <div id="mobileMenu" class="mobile-menu">
           <ul class="mobile-list">
+            <li id="mobileThemeBtn">Dark/Light</li>
             <li>Kosár</li>
-            <li>Bejelentkezés</li>
-            <li>Regisztráció</li>
+            <li id="mobileLoginBtn">Bejelentkezés</li>
+            <li id="mobileRegisterBtn">Regisztráció</li>
           </ul>
         </div>
       </div>
@@ -201,9 +206,9 @@
       </div>
     </section>
 
-    <section id="searchSection" class="page-section mt-4 d-done">
-      <div class="container-fluid mt-4 px-4">
-        <div class="row g-3">
+    <section id="searchSection" class="page-section mt-4 d-none">
+      <div class="container-fluid mt-4 px-4 search-layout">
+        <div class="row g-3 search-row">
           <div class="col-lg-2 col-md-3 sidebar">
             <h4>Szűrők</h4>
 
@@ -230,6 +235,21 @@
                 <option>Nitro</option>
                 <option>Inspiron</option>
                 <option>Katana</option>
+              </select>
+            </div>
+
+            <div class="filter-box mt-3">
+              <button class="control-btn active-view" id="viewToggleBtn">
+                Lista Nézet
+              </button>
+            </div>
+
+            <div class="filter-box mt-3">
+              <label class="filter-label">Rendezés</label>
+              <select class="filter-input" id="sortSelect">
+                <option>Ár szerint növekvő</option>
+                <option>Ár szerint csökkenő</option>
+                <option>Név szerint</option>
               </select>
             </div>
 
@@ -297,63 +317,86 @@
               class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4"
             >
               <h4 class="m-0 content-title">Találatok</h4>
-
-              <div class="d-flex gap-2 flex-wrap">
-                <button class="control-btn active-view">Nézet</button>
-                <select class="sort-select" id="sortSelect">
-                  <option>Rendezés</option>
-                  <option>Ár szerint növekvő</option>
-                  <option>Ár szerint csökkenő</option>
-                  <option>Név szerint</option>
-                </select>
-              </div>
             </div>
 
-            <div class="row g-4">
-              <div class="col-xl-3 col-lg-4 col-sm-6">
+            <div class="row g-4" id="productsWrapper">
+              <div class="col-xl-3 col-lg-4 col-sm-6 product-item">
                 <div class="product-card">
                   <div class="product-image">Termék fotó</div>
                   <div class="product-name">ASUS TUF Gaming Laptop</div>
+                  <div class="product-description">Specifikációk</div>
                   <div class="product-price">329 990 Ft</div>
                 </div>
               </div>
 
-              <div class="col-xl-3 col-lg-4 col-sm-6">
+              <div class="col-xl-3 col-lg-4 col-sm-6 product-item">
                 <div class="product-card">
                   <div class="product-image">Termék fotó</div>
                   <div class="product-name">Lenovo IdeaPad 5</div>
+                  <div class="product-description">Specifikációk</div>
                   <div class="product-price">249 990 Ft</div>
                 </div>
               </div>
 
-              <div class="col-xl-3 col-lg-4 col-sm-6">
+              <div class="col-xl-3 col-lg-4 col-sm-6 product-item">
                 <div class="product-card">
                   <div class="product-image">Termék fotó</div>
                   <div class="product-name">HP Pavilion 15</div>
+                  <div class="product-description">Specifikációk</div>
                   <div class="product-price">289 990 Ft</div>
                 </div>
               </div>
 
-              <div class="col-xl-3 col-lg-4 col-sm-6">
+              <div class="col-xl-3 col-lg-4 col-sm-6 product-item">
                 <div class="product-card">
                   <div class="product-image">Termék fotó</div>
                   <div class="product-name">Acer Nitro 5</div>
+                  <div class="product-description">Specifikációk</div>
                   <div class="product-price">359 990 Ft</div>
                 </div>
               </div>
 
-              <div class="col-xl-3 col-lg-4 col-sm-6">
+              <div class="col-xl-3 col-lg-4 col-sm-6 product-item">
                 <div class="product-card">
                   <div class="product-image">Termék fotó</div>
                   <div class="product-name">Dell Inspiron 14</div>
+                  <div class="product-description">Specifikációk</div>
                   <div class="product-price">219 990 Ft</div>
                 </div>
               </div>
 
-              <div class="col-xl-3 col-lg-4 col-sm-6">
+              <div class="col-xl-3 col-lg-4 col-sm-6 product-item">
                 <div class="product-card">
                   <div class="product-image">Termék fotó</div>
                   <div class="product-name">MSI Katana GF66</div>
+                  <div class="product-description">Specifikációk</div>
+                  <div class="product-price">419 990 Ft</div>
+                </div>
+              </div>
+
+              <div class="col-xl-3 col-lg-4 col-sm-6 product-item">
+                <div class="product-card">
+                  <div class="product-image">Termék fotó</div>
+                  <div class="product-name">MSI Katana GF66</div>
+                  <div class="product-description">Specifikációk</div>
+                  <div class="product-price">419 990 Ft</div>
+                </div>
+              </div>
+
+              <div class="col-xl-3 col-lg-4 col-sm-6 product-item">
+                <div class="product-card">
+                  <div class="product-image">Termék fotó</div>
+                  <div class="product-name">MSI Katana GF66</div>
+                  <div class="product-description">Specifikációk</div>
+                  <div class="product-price">419 990 Ft</div>
+                </div>
+              </div>
+
+              <div class="col-xl-3 col-lg-4 col-sm-6 product-item">
+                <div class="product-card">
+                  <div class="product-image">Termék fotó</div>
+                  <div class="product-name">MSI Katana GF66</div>
+                  <div class="product-description">Specifikációk</div>
                   <div class="product-price">419 990 Ft</div>
                 </div>
               </div>
@@ -368,6 +411,71 @@
               <div class="ad">Új modellek</div>
             </div>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="registerSection" class="page-section register-section d-none">
+      <div class="register-box">
+        <div class="registration">
+          <div class="card p-4 shadow">
+            <h2>Regisztráció</h2>
+
+            <div class="mb-3">
+              <label class="form-label">E-mail</label>
+              <div class="input-group">
+                <input type="email" class="form-control" />
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Jelszó</label>
+              <div class="input-group">
+                <input type="password" class="form-control" />
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Lakcím</label>
+              <div class="input-group">
+                <input type="text" class="form-control" />
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Telefonszám</label>
+              <div class="input-group">
+                <span class="input-group-text">+36/30</span>
+                <input type="number" class="form-control" />
+              </div>
+            </div>
+
+            <button class="btn btn-primary w-100">Regisztrálok</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="loginSection" class="page-section login-section d-none">
+      <div class="login-box">
+        <div class="card p-4 shadow">
+          <h2>Belépés</h2>
+
+          <div class="mb-3">
+            <label class="form-label">E-mail</label>
+            <div class="input-group">
+              <input type="email" class="form-control" />
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Jelszó</label>
+            <div class="input-group">
+              <input type="password" class="form-control" />
+            </div>
+          </div>
+
+          <button class="btn btn-primary w-100">Belépek</button>
         </div>
       </div>
     </section>

@@ -33,7 +33,7 @@ function handleResponsiveMenu() {
     menu.style.display = "none";
   } else {
     desktopMenu.style.display = "none";
-    hamburger.style.display = "block";
+    hamburger.style.display = "flex";
   }
 }
 
@@ -56,58 +56,210 @@ function initSidebarButtons() {
   });
 }
 
-/* ================= PAGE SWITCH (HOME / SEARCH) ================= */
+/* ================= BODY SCROLL CONTROL ================= */
+
+function updateBodyScroll(sectionToShow) {
+  const searchSection = document.getElementById("searchSection");
+
+  if (sectionToShow === searchSection) {
+    document.body.style.overflow = "hidden";
+  } else {
+    document.body.style.overflow = "auto";
+  }
+}
+
+/* ================= SECTION HELPERS ================= */
+
+function getSections() {
+  return {
+    home: document.getElementById("homepage"),
+    search: document.getElementById("searchSection"),
+    register: document.getElementById("registerSection"),
+    login: document.getElementById("loginSection"),
+  };
+}
+
+function getSectionByName(name) {
+  const sections = getSections();
+  return sections[name] || sections.home;
+}
+
+function getSectionNameByElement(sectionElement) {
+  const sections = getSections();
+
+  for (const [name, element] of Object.entries(sections)) {
+    if (element === sectionElement) {
+      return name;
+    }
+  }
+
+  return "home";
+}
+
+/* ================= SECTION SWITCH ================= */
+
+function showSection(sectionToShow, pushToHistory = true) {
+  const sections = getSections();
+
+  Object.values(sections).forEach((section) => {
+    if (section) section.classList.add("d-none");
+  });
+
+  if (sectionToShow) {
+    sectionToShow.classList.remove("d-none");
+  }
+
+  updateBodyScroll(sectionToShow);
+
+  if (pushToHistory) {
+    const sectionName = getSectionNameByElement(sectionToShow);
+    history.pushState({ section: sectionName }, "", `#${sectionName}`);
+  }
+
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
+}
+
+function showSectionByName(sectionName, pushToHistory = true) {
+  const section = getSectionByName(sectionName);
+  showSection(section, pushToHistory);
+}
+
+/* ================= PAGE SWITCH ================= */
 
 function initPageSwitching() {
   const searchButton = document.getElementById("search_icon");
   const searchInput = document.getElementById("searchInput");
-  const searchSection = document.getElementById("searchSection");
-  const homeSection = document.getElementById("homepage");
+
+  const registerBtn = document.getElementById("registerBtn");
+  const mobileRegisterBtn = document.getElementById("mobileRegisterBtn");
+
+  const loginBtn = document.getElementById("loginBtn");
+  const mobileLoginBtn = document.getElementById("mobileLoginBtn");
+
   const homeLogo = document.getElementById("homeLogo");
 
-  if (
-    !searchButton ||
-    !searchInput ||
-    !searchSection ||
-    !homeSection ||
-    !homeLogo
-  )
-    return;
+  const profileMenu = document.getElementById("profileMenu");
+  const mobileMenu = document.getElementById("mobileMenu");
 
   function showSearchView() {
     const value = searchInput.value.trim();
 
     if (value !== "") {
-      homeSection.classList.add("d-none");
-      searchSection.classList.remove("d-none");
-
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
+      showSectionByName("search");
     }
   }
 
-  function showHomeView() {
-    searchSection.classList.add("d-none");
-    homeSection.classList.remove("d-none");
-    searchInput.value = "";
+  if (searchButton) {
+    searchButton.addEventListener("click", showSearchView);
+  }
 
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
+  if (searchInput) {
+    searchInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        showSearchView();
+      }
     });
   }
 
-  searchButton.addEventListener("click", showSearchView);
+  if (homeLogo) {
+    homeLogo.addEventListener("click", () => {
+      if (searchInput) searchInput.value = "";
+      showSectionByName("home");
+    });
+  }
 
-  searchInput.addEventListener("keydown", (event) => {
-    if (event.key === "Enter") {
-      showSearchView();
+  if (registerBtn) {
+    registerBtn.addEventListener("click", () => {
+      showSectionByName("register");
+      if (profileMenu) profileMenu.style.display = "none";
+    });
+  }
+
+  if (mobileRegisterBtn) {
+    mobileRegisterBtn.addEventListener("click", () => {
+      showSectionByName("register");
+      if (mobileMenu) mobileMenu.style.display = "none";
+    });
+  }
+
+  if (loginBtn) {
+    loginBtn.addEventListener("click", () => {
+      showSectionByName("login");
+      if (profileMenu) profileMenu.style.display = "none";
+    });
+  }
+
+  if (mobileLoginBtn) {
+    mobileLoginBtn.addEventListener("click", () => {
+      showSectionByName("login");
+      if (mobileMenu) mobileMenu.style.display = "none";
+    });
+  }
+}
+
+/* ================= VIEW TOGGLE ================= */
+
+function initViewToggle() {
+  const viewToggleBtn = document.getElementById("viewToggleBtn");
+  const productsWrapper = document.getElementById("productsWrapper");
+
+  if (!viewToggleBtn || !productsWrapper) return;
+
+  viewToggleBtn.addEventListener("click", () => {
+    productsWrapper.classList.toggle("list-view");
+
+    if (productsWrapper.classList.contains("list-view")) {
+      viewToggleBtn.textContent = "Rács nézet";
+    } else {
+      viewToggleBtn.textContent = "Lista nézet";
     }
   });
+}
 
-  homeLogo.addEventListener("click", showHomeView);
+/* ================= DARK MODE ================= */
+
+function initThemeButtons() {
+  const desktopThemeBtn = document.getElementById("themeBtn");
+  const mobileThemeBtn = document.getElementById("mobileThemeBtn");
+
+  function updateThemeButtons() {
+    if (document.body.classList.contains("dark-mode")) {
+      if (desktopThemeBtn) {
+        desktopThemeBtn.classList.remove("btn-light");
+        desktopThemeBtn.classList.add("btn-dark");
+      }
+    } else {
+      if (desktopThemeBtn) {
+        desktopThemeBtn.classList.remove("btn-dark");
+        desktopThemeBtn.classList.add("btn-light");
+      }
+    }
+  }
+
+  function toggleTheme() {
+    document.body.classList.toggle("dark-mode");
+    updateThemeButtons();
+  }
+
+  if (desktopThemeBtn) {
+    desktopThemeBtn.addEventListener("click", toggleTheme);
+  }
+
+  if (mobileThemeBtn) {
+    mobileThemeBtn.addEventListener("click", () => {
+      toggleTheme();
+
+      const mobileMenu = document.getElementById("mobileMenu");
+      if (mobileMenu) {
+        mobileMenu.style.display = "none";
+      }
+    });
+  }
+
+  updateThemeButtons();
 }
 
 /* ================= PRICE FILTER ================= */
@@ -269,24 +421,35 @@ document.addEventListener("click", (e) => {
   }
 });
 
+/* ================= BROWSER BACK / FORWARD ================= */
+
+window.addEventListener("popstate", (event) => {
+  const sectionName = event.state?.section || "home";
+  showSectionByName(sectionName, false);
+});
+
 /* ================= INIT ================= */
 
 window.addEventListener("resize", handleResponsiveMenu);
 
 document.addEventListener("DOMContentLoaded", () => {
-  const searchSection = document.getElementById("searchSection");
-  const homeSection = document.getElementById("homepage");
+  const sections = getSections();
 
-  if (searchSection) {
-    searchSection.classList.add("d-none");
-  }
+  Object.values(sections).forEach((section) => {
+    if (section) section.classList.add("d-none");
+  });
 
-  if (homeSection) {
-    homeSection.classList.remove("d-none");
-  }
+  const hash = window.location.hash.replace("#", "");
+  const validSections = ["home", "search", "register", "login"];
+  const initialSection = validSections.includes(hash) ? hash : "home";
+
+  showSectionByName(initialSection, false);
+  history.replaceState({ section: initialSection }, "", `#${initialSection}`);
 
   handleResponsiveMenu();
   initSidebarButtons();
   initPageSwitching();
+  initViewToggle();
+  initThemeButtons();
   initPriceFilters();
 });
