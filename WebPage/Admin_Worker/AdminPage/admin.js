@@ -5,6 +5,7 @@ const panels = document.querySelectorAll('.panel');
 
 let currentRole = null;
 
+/* Navigáció */
 navButtons.forEach(btn => {
     btn.addEventListener('click', () => {
         const target = btn.dataset.view;
@@ -56,6 +57,7 @@ async function apiFetch(url, options = {}) {
     return await response.text();
 }
 
+/* Auth ellenőrzés */
 async function checkAuth() {
     try {
         const me = await apiFetch(`${API_BASE}/Admins/me`, {
@@ -131,9 +133,8 @@ document.getElementById('register-form').addEventListener('submit', async e => {
     }
 });
 
-/* Dolgozó törlése */
+/* Dolgozó törlés modalhoz tartozó változók */
 const deleteModal = document.getElementById('delete-modal');
-const modalBox = deleteModal.querySelector('.modal-box');
 const modalMessage = document.getElementById('modal-message');
 const modalConfirmBtn = document.getElementById('modal-confirm');
 const modalCancelBtn = document.getElementById('modal-cancel');
@@ -391,6 +392,8 @@ async function loadAllWorkers() {
     }
 }
 
+/* TERMÉKEK – táblázat + keresések */
+
 /* Termékek táblázat */
 function renderItemsTable(items) {
     const container = document.getElementById('items-table-container');
@@ -411,6 +414,7 @@ function renderItemsTable(items) {
 
     items.forEach(item => {
         html += `
+        <tr data-item-id="${item.itemId}">
             <td class="cell-itemid">${item.itemId}</td>
             <td class="cell-categoryid">${item.categoryId}</td>
             <td class="cell-name">${item.itemName}</td>
@@ -441,7 +445,7 @@ function renderItemsTable(items) {
     });
 }
 
-/* Termék sor szerkesztés – név, mennyiség, leírás, ár */
+/* Termék sor szerkesztés */
 function onEditItemClick(e) {
     const btn = e.currentTarget;
     const row = btn.closest('tr');
@@ -477,7 +481,7 @@ function onEditItemClick(e) {
     }
 }
 
-/* Termék sor */
+/* Termék sor – vissza */
 function onCancelEditItemClick(e) {
     const btnCancel = e.currentTarget;
     const row = btnCancel.closest('tr');
@@ -549,14 +553,12 @@ async function saveItemRow(row, btn) {
         row.querySelector('.cell-quantity').textContent = quantity;
         row.querySelector('.cell-description').textContent = description;
         row.querySelector('.cell-price').textContent = price;
-
-        setLog('item-modify-log', `Termék sikeresen módosítva, id = ${id}.`);
     } catch (err) {
-        setLog('item-modify-log', `Hiba termék módosítása közben: ${err.message}`, true);
+        alert(`Hiba termék módosítása közben: ${err.message}`);
     }
 }
 
-/* Termék sor */
+/* Termék sor – törlés */
 async function onDeleteItemRowClick(e) {
     const btn = e.currentTarget;
     const row = btn.closest('tr');
@@ -573,12 +575,10 @@ async function onDeleteItemRowClick(e) {
         });
 
         row.remove();
-        setLog('item-modify-log', `Termék sikeresen törölve, id = ${id}.`);
     } catch (err) {
-        setLog('item-modify-log', `Hiba termék törlése közben: ${err.message}`, true);
+        alert(`Hiba termék törlése közben: ${err.message}`);
     }
 }
-
 
 /* Termékek automatikus betöltése */
 async function loadInitialItems() {
@@ -587,13 +587,12 @@ async function loadInitialItems() {
             method: 'GET'
         });
         renderItemsTable(items);
-        setLog('item-query-log', `AllItems automatikus betöltés. Találatok: ${items.length}.`);
     } catch (err) {
-        setLog('item-query-log', `Hiba AllItems automatikus betöltés közben: ${err.message}`, true);
+        alert(`Hiba AllItems automatikus betöltés közben: ${err.message}`);
     }
 }
 
-/* ItemById */
+/* ItemById keresés */
 document.getElementById('item-by-id-form').addEventListener('submit', async e => {
     e.preventDefault();
     const form = e.target;
@@ -603,7 +602,7 @@ document.getElementById('item-by-id-form').addEventListener('submit', async e =>
     const id = Number(data.itemId);
 
     if (!Number.isInteger(id) || id <= 0) {
-        setLog('item-query-log', 'Az Item ID csak pozitív egész szám lehet.', true);
+        alert('Az Item ID csak pozitív egész szám lehet.');
         return;
     }
 
@@ -626,125 +625,39 @@ document.getElementById('item-by-id-form').addEventListener('submit', async e =>
             });
         }
 
-        setLog('item-query-log', `ItemById sikeres, id = ${id}`);
         form.reset();
     } catch (err) {
-        setLog('item-query-log', `Hiba ItemById hívás közben: ${err.message}`, true);
+        alert(`Hiba ItemById hívás közben: ${err.message}`);
     }
 });
 
-/* Új termék */
-document.getElementById('add-item-form').addEventListener('submit', async e => {
+/* ItemNameByFragment – névrészlet keresés */
+document.getElementById('item-by-name-form').addEventListener('submit', async e => {
     e.preventDefault();
     const form = e.target;
     if (!validateForm(form)) return;
 
     const data = Object.fromEntries(new FormData(form));
+    const fragname = data.fragname.trim();
 
-    if (Number(data.quantity) <= 0) {
-        setLog('item-modify-log', 'A mennyiségnek pozitívnak kell lennie.', true);
-        return;
-    }
-    if (Number(data.price) <= 0) {
-        setLog('item-modify-log', 'Az árnak pozitívnak kell lennie.', true);
+    if (!fragname) {
+        alert('A név részlet nem lehet üres.');
         return;
     }
 
     try {
-        await apiFetch(`${API_BASE}/items`, {
-            method: 'POST',
-            body: JSON.stringify({
-                itemName: data.itemName,
-                categoryName: data.categoryName,
-                quantity: Number(data.quantity),
-                description: data.description,
-                price: Number(data.price)
-            })
-        });
+        const url = `${API_BASE}/items/itemnamebyfragment?fragname=${encodeURIComponent(fragname)}`;
+        const items = await apiFetch(url, { method: 'GET' });
 
-        setLog('item-modify-log', 'Új termék sikeresen hozzáadva.');
+        // Ha a DTO property nevei eltérnek, itt kell mapelni a megfelelő struktúrára
+        renderItemsTable(items);
         form.reset();
-        loadInitialItems();
     } catch (err) {
-        setLog('item-modify-log', `Hiba új termék hozzáadása közben: ${err.message}`, true);
+        alert(`Hiba ItemNameByFragment hívás közben: ${err.message}`);
     }
 });
 
-/* Termék módosítás*/
-document.getElementById('modify-item-form')?.addEventListener('submit', async e => {
-    e.preventDefault();
-    const form = e.target;
-    if (!validateForm(form)) return;
-
-    const data = Object.fromEntries(new FormData(form));
-    const id = Number(data.itemId);
-
-    if (!Number.isInteger(id) || id <= 0) {
-        setLog('item-modify-log', 'Az Item ID csak pozitív egész szám lehet.', true);
-        return;
-    }
-    if (Number(data.quantity) <= 0) {
-        setLog('item-modify-log', 'A mennyiségnek pozitívnak kell lennie.', true);
-        return;
-    }
-    if (Number(data.price) <= 0) {
-        setLog('item-modify-log', 'Az árnak pozitívnak kell lennie.', true);
-        return;
-    }
-
-    try {
-        await apiFetch(`${API_BASE}/items/${id}`, {
-            method: 'PUT',
-            body: JSON.stringify({
-                itemId: id,
-                itemName: data.itemName,
-                categoryName: data.categoryName,
-                quantity: Number(data.quantity),
-                description: data.description,
-                price: Number(data.price)
-            })
-        });
-
-        setLog('item-modify-log', `Termék sikeresen módosítva, id = ${id}.`);
-        form.reset();
-        loadInitialItems();
-    } catch (err) {
-        setLog('item-modify-log', `Hiba termék módosítása közben: ${err.message}`, true);
-    }
-});
-
-/* Termék törlés*/
-document.getElementById('delete-item-form')?.addEventListener('submit', async e => {
-    e.preventDefault();
-    const form = e.target;
-    if (!validateForm(form)) return;
-
-    const data = Object.fromEntries(new FormData(form));
-    const id = Number(data.itemId);
-
-    if (!Number.isInteger(id) || id <= 0) {
-        setLog('item-modify-log', 'Az Item ID csak pozitív egész szám lehet.', true);
-        return;
-    }
-
-    if (!confirm(`Biztosan törlöd az itemet? (id = ${id})`)) {
-        return;
-    }
-
-    try {
-        await apiFetch(`${API_BASE}/items/${id}`, {
-            method: 'DELETE'
-        });
-
-        setLog('item-modify-log', `Termék sikeresen törölve, id = ${id}.`);
-        form.reset();
-        loadInitialItems();
-    } catch (err) {
-        setLog('item-modify-log', `Hiba termék törlése közben: ${err.message}`, true);
-    }
-});
-
-
+/* Init */
 window.addEventListener('DOMContentLoaded', () => {
     checkAuth();
     loadInitialItems();
