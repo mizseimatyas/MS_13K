@@ -1,74 +1,6 @@
 let port = 7171;
 
-/* ================= MOBILE MENU ================= */
-
-function toggleMenu() {
-  const menu = document.getElementById("mobileMenu");
-  if (!menu) return;
-
-  menu.style.display = menu.style.display === "block" ? "none" : "block";
-}
-
-/* ================= PROFILE MENU ================= */
-
-function toggleProfileMenu() {
-  const menu = document.getElementById("profileMenu");
-  if (!menu) return;
-
-  menu.style.display = menu.style.display === "block" ? "none" : "block";
-}
-
-/* ================= RESPONSIVE ================= */
-
-function handleResponsiveMenu() {
-  const menu = document.getElementById("mobileMenu");
-  const desktopMenu = document.querySelector(".desktop-menu");
-  const hamburger = document.querySelector(".hamburger");
-
-  if (!menu || !desktopMenu || !hamburger) return;
-
-  if (window.innerWidth > 768) {
-    desktopMenu.style.display = "flex";
-    hamburger.style.display = "none";
-    menu.style.display = "none";
-  } else {
-    desktopMenu.style.display = "none";
-    hamburger.style.display = "flex";
-  }
-}
-
-/* ================= SIDEBAR ACTIVE ================= */
-
-function initSidebarButtons() {
-  const items = document.querySelectorAll(".sidebar .list-group-item");
-
-  items.forEach((item) => {
-    item.addEventListener("click", () => {
-      if (item.classList.contains("active")) {
-        item.classList.remove("active");
-        item.blur();
-        return;
-      }
-
-      items.forEach((i) => i.classList.remove("active"));
-      item.classList.add("active");
-    });
-  });
-}
-
-/* ================= BODY SCROLL CONTROL ================= */
-
-function updateBodyScroll(sectionToShow) {
-  const searchSection = document.getElementById("searchSection");
-
-  if (sectionToShow === searchSection) {
-    document.body.style.overflow = "hidden";
-  } else {
-    document.body.style.overflow = "auto";
-  }
-}
-
-/* ================= SECTION HELPERS ================= */
+/* ================= ALAP SEGÉDFÜGGVÉNYEK ================= */
 
 function getSections() {
   return {
@@ -96,6 +28,186 @@ function getSectionNameByElement(sectionElement) {
   return "home";
 }
 
+function closeMobileMenu() {
+  const mobileMenu = document.getElementById("mobileMenu");
+  if (mobileMenu) mobileMenu.style.display = "none";
+}
+
+function closeProfileMenu() {
+  const profileMenu = document.getElementById("profileMenu");
+  if (profileMenu) profileMenu.style.display = "none";
+}
+
+function closeAllMenus() {
+  closeMobileMenu();
+  closeProfileMenu();
+}
+
+/* ================= MOBILE MENU ================= */
+
+function toggleMenu() {
+  const menu = document.getElementById("mobileMenu");
+  if (!menu) return;
+
+  const isOpen = menu.style.display === "block";
+  closeAllMenus();
+
+  if (!isOpen) {
+    menu.style.display = "block";
+  }
+}
+
+/* ================= PROFILE MENU ================= */
+
+function toggleProfileMenu() {
+  const menu = document.getElementById("profileMenu");
+  if (!menu) return;
+
+  const isOpen = menu.style.display === "block";
+  closeAllMenus();
+
+  if (!isOpen) {
+    menu.style.display = "block";
+  }
+}
+
+/* ================= RESPONSIVE ================= */
+
+function handleResponsiveMenu() {
+  const menu = document.getElementById("mobileMenu");
+  const desktopMenu = document.querySelector(".desktop-menu");
+  const hamburger = document.querySelector(".hamburger");
+  const categoryList = document.getElementById("categoryList");
+  const categoryArrowIcon = document.getElementById("categoryArrowIcon");
+
+  if (!menu || !desktopMenu || !hamburger) return;
+
+  if (window.innerWidth > 768) {
+    desktopMenu.style.display = "flex";
+    hamburger.style.display = "none";
+    menu.style.display = "none";
+
+    if (categoryList) {
+      categoryList.classList.remove("show");
+      categoryList.style.display = "block";
+    }
+
+    if (categoryArrowIcon) {
+      categoryArrowIcon.src = "arrow-down.svg";
+    }
+  } else {
+    desktopMenu.style.display = "none";
+    hamburger.style.display = "flex";
+
+    if (categoryList) {
+      categoryList.style.display = "";
+    }
+  }
+}
+
+/* ================= SIDEBAR ACTIVE ================= */
+
+function initSidebarButtons() {
+  const items = document.querySelectorAll(".sidebar .list-group-item");
+
+  items.forEach((item) => {
+    item.addEventListener("click", () => {
+      if (item.classList.contains("active")) {
+        item.classList.remove("active");
+        item.blur();
+        return;
+      }
+
+      items.forEach((i) => i.classList.remove("active"));
+      item.classList.add("active");
+    });
+  });
+}
+
+/* ================= MOBILE CATEGORY TOGGLE ================= */
+
+function initCategoryToggle() {
+  const categoryToggleBtn = document.getElementById("categoryToggleBtn");
+  const categoryList = document.getElementById("categoryList");
+  const categoryArrowIcon = document.getElementById("categoryArrowIcon");
+
+  if (!categoryToggleBtn || !categoryList || !categoryArrowIcon) return;
+
+  categoryToggleBtn.addEventListener("click", () => {
+    if (window.innerWidth > 768) return;
+
+    categoryList.classList.toggle("show");
+    categoryArrowIcon.src = categoryList.classList.contains("show")
+      ? "arrow-up.svg"
+      : "arrow-down.svg";
+  });
+}
+
+/* ================= BODY SCROLL CONTROL ================= */
+
+function updateBodyScroll(sectionToShow) {
+  const searchSection = document.getElementById("searchSection");
+
+  if (sectionToShow === searchSection) {
+    document.body.style.overflow = "hidden";
+  } else {
+    document.body.style.overflow = "auto";
+  }
+}
+
+/* ================= PRICE SLIDER UI REFRESH ================= */
+
+function refreshPriceSliderUI() {
+  const minRange = document.getElementById("minRange");
+  const maxRange = document.getElementById("maxRange");
+  const minInput = document.getElementById("minPriceInput");
+  const maxInput = document.getElementById("maxPriceInput");
+  const sliderFill = document.getElementById("sliderFill");
+
+  const MAX_LIMIT = 2000000;
+  const MIN_LIMIT = 0;
+  const MIN_GAP = 1000;
+
+  if (!minRange || !maxRange || !minInput || !maxInput || !sliderFill) return;
+
+  function parsePrice(value) {
+    const cleaned = String(value).replace(/[^\d]/g, "");
+    return cleaned ? parseInt(cleaned, 10) : 0;
+  }
+
+  function formatPrice(value) {
+    return Number(value).toLocaleString("hu-HU");
+  }
+
+  let min = parsePrice(minInput.value);
+  let max = parsePrice(maxInput.value);
+
+  if (isNaN(min)) min = MIN_LIMIT;
+  if (isNaN(max)) max = MAX_LIMIT;
+
+  min = Math.max(MIN_LIMIT, Math.min(min, MAX_LIMIT - MIN_GAP));
+  max = Math.max(MIN_LIMIT + MIN_GAP, Math.min(max, MAX_LIMIT));
+
+  if (min >= max) {
+    min = max - MIN_GAP;
+    if (min < MIN_LIMIT) {
+      min = MIN_LIMIT;
+      max = MIN_LIMIT + MIN_GAP;
+    }
+  }
+
+  minRange.value = min;
+  maxRange.value = max;
+  minInput.value = formatPrice(min);
+  maxInput.value = formatPrice(max);
+
+  const minPercent = (min / MAX_LIMIT) * 100;
+  const maxPercent = (max / MAX_LIMIT) * 100;
+
+  sliderFill.style.left = `${minPercent}%`;
+  sliderFill.style.width = `${maxPercent - minPercent}%`;
+}
+
 /* ================= SECTION SWITCH ================= */
 
 function showSection(sectionToShow, pushToHistory = true) {
@@ -110,10 +222,17 @@ function showSection(sectionToShow, pushToHistory = true) {
   }
 
   updateBodyScroll(sectionToShow);
+  closeAllMenus();
 
   if (pushToHistory) {
     const sectionName = getSectionNameByElement(sectionToShow);
     history.pushState({ section: sectionName }, "", `#${sectionName}`);
+  }
+
+  if (sectionToShow && sectionToShow.id === "searchSection") {
+    requestAnimationFrame(() => {
+      refreshPriceSliderUI();
+    });
   }
 
   window.scrollTo({
@@ -141,12 +260,10 @@ function initPageSwitching() {
 
   const homeLogo = document.getElementById("homeLogo");
 
-  const profileMenu = document.getElementById("profileMenu");
-  const mobileMenu = document.getElementById("mobileMenu");
-
   function showSearchView() {
-    const value = searchInput.value.trim();
+    if (!searchInput) return;
 
+    const value = searchInput.value.trim();
     if (value !== "") {
       showSectionByName("search");
     }
@@ -174,28 +291,24 @@ function initPageSwitching() {
   if (registerBtn) {
     registerBtn.addEventListener("click", () => {
       showSectionByName("register");
-      if (profileMenu) profileMenu.style.display = "none";
     });
   }
 
   if (mobileRegisterBtn) {
     mobileRegisterBtn.addEventListener("click", () => {
       showSectionByName("register");
-      if (mobileMenu) mobileMenu.style.display = "none";
     });
   }
 
   if (loginBtn) {
     loginBtn.addEventListener("click", () => {
       showSectionByName("login");
-      if (profileMenu) profileMenu.style.display = "none";
     });
   }
 
   if (mobileLoginBtn) {
     mobileLoginBtn.addEventListener("click", () => {
       showSectionByName("login");
-      if (mobileMenu) mobileMenu.style.display = "none";
     });
   }
 }
@@ -210,12 +323,9 @@ function initViewToggle() {
 
   viewToggleBtn.addEventListener("click", () => {
     productsWrapper.classList.toggle("list-view");
-
-    if (productsWrapper.classList.contains("list-view")) {
-      viewToggleBtn.textContent = "Rács nézet";
-    } else {
-      viewToggleBtn.textContent = "Lista nézet";
-    }
+    viewToggleBtn.textContent = productsWrapper.classList.contains("list-view")
+      ? "Rács nézet"
+      : "Lista nézet";
   });
 }
 
@@ -251,11 +361,7 @@ function initThemeButtons() {
   if (mobileThemeBtn) {
     mobileThemeBtn.addEventListener("click", () => {
       toggleTheme();
-
-      const mobileMenu = document.getElementById("mobileMenu");
-      if (mobileMenu) {
-        mobileMenu.style.display = "none";
-      }
+      closeMobileMenu();
     });
   }
 
@@ -284,13 +390,14 @@ function initPriceFilters() {
   if (!minRange || !maxRange || !minInput || !maxInput || !sliderFill) return;
 
   function clamp(value, min, max) {
-    const num = Number(value);
+    const num = parseInt(value, 10);
     if (isNaN(num)) return min;
     return Math.min(Math.max(num, min), max);
   }
 
   function parsePrice(value) {
-    return Number(String(value).replace(/\s/g, "").replace(/[^\d]/g, ""));
+    const cleaned = String(value).replace(/[^\d]/g, "");
+    return cleaned ? parseInt(cleaned, 10) : 0;
   }
 
   function formatPrice(value) {
@@ -298,8 +405,8 @@ function initPriceFilters() {
   }
 
   function updateSliderFill() {
-    const min = Number(minRange.value);
-    const max = Number(maxRange.value);
+    const min = parseInt(minRange.value, 10);
+    const max = parseInt(maxRange.value, 10);
 
     const minPercent = (min / MAX_LIMIT) * 100;
     const maxPercent = (max / MAX_LIMIT) * 100;
@@ -316,46 +423,40 @@ function initPriceFilters() {
     updateSliderFill();
   }
 
-  function syncFromRanges(changed) {
-    let min = clamp(minRange.value, MIN_LIMIT, MAX_LIMIT);
-    let max = clamp(maxRange.value, MIN_LIMIT, MAX_LIMIT);
-
-    if (changed === "min" && min >= max) {
-      max = min + MIN_GAP;
-    }
-
-    if (changed === "max" && max <= min) {
-      min = max - MIN_GAP;
-    }
-
-    min = clamp(min, MIN_LIMIT, MAX_LIMIT - MIN_GAP);
-    max = clamp(max, MIN_LIMIT + MIN_GAP, MAX_LIMIT);
-
-    updateUI(min, max);
-  }
-
-  function syncFromInputs(changed) {
-    let min =
-      minInput.value.trim() === "" ? MIN_LIMIT : parsePrice(minInput.value);
-
-    let max =
-      maxInput.value.trim() === "" ? MAX_LIMIT : parsePrice(maxInput.value);
-
+  function normalizeValues(min, max, changed) {
     min = clamp(min, MIN_LIMIT, MAX_LIMIT);
     max = clamp(max, MIN_LIMIT, MAX_LIMIT);
 
     if (changed === "min" && min >= max) {
-      max = min + MIN_GAP;
+      min = max - MIN_GAP;
     }
 
     if (changed === "max" && max <= min) {
-      min = max - MIN_GAP;
+      max = min + MIN_GAP;
     }
 
     min = clamp(min, MIN_LIMIT, MAX_LIMIT - MIN_GAP);
     max = clamp(max, MIN_LIMIT + MIN_GAP, MAX_LIMIT);
 
-    updateUI(min, max);
+    return { min, max };
+  }
+
+  function syncFromRanges(changed) {
+    const min = minRange.value;
+    const max = maxRange.value;
+    const normalized = normalizeValues(min, max, changed);
+    updateUI(normalized.min, normalized.max);
+  }
+
+  function syncFromInputs(changed) {
+    const min =
+      minInput.value.trim() === "" ? MIN_LIMIT : parsePrice(minInput.value);
+
+    const max =
+      maxInput.value.trim() === "" ? MAX_LIMIT : parsePrice(maxInput.value);
+
+    const normalized = normalizeValues(min, max, changed);
+    updateUI(normalized.min, normalized.max);
   }
 
   function handleTyping(input) {
@@ -371,23 +472,6 @@ function initPriceFilters() {
     updateUI(MIN_LIMIT, MAX_LIMIT);
   }
 
-  minRange.addEventListener("input", () => syncFromRanges("min"));
-  maxRange.addEventListener("input", () => syncFromRanges("max"));
-
-  minInput.addEventListener("input", () => {
-    handleTyping(minInput);
-    syncFromInputs("min");
-  });
-
-  maxInput.addEventListener("input", () => {
-    handleTyping(maxInput);
-    syncFromInputs("max");
-  });
-
-  if (resetFiltersBtn) {
-    resetFiltersBtn.addEventListener("click", resetFilters);
-  }
-
   minRange.min = MIN_LIMIT;
   minRange.max = MAX_LIMIT;
   minRange.step = STEP;
@@ -396,37 +480,217 @@ function initPriceFilters() {
   maxRange.max = MAX_LIMIT;
   maxRange.step = STEP;
 
+  minRange.addEventListener("input", () => syncFromRanges("min"));
+  maxRange.addEventListener("input", () => syncFromRanges("max"));
+
+  minInput.addEventListener("input", () => handleTyping(minInput));
+  maxInput.addEventListener("input", () => handleTyping(maxInput));
+
+  minInput.addEventListener("blur", () => syncFromInputs("min"));
+  maxInput.addEventListener("blur", () => syncFromInputs("max"));
+
+  minInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") syncFromInputs("min");
+  });
+
+  maxInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") syncFromInputs("max");
+  });
+
+  if (resetFiltersBtn) {
+    resetFiltersBtn.addEventListener("click", resetFilters);
+  }
+
   updateUI(MIN_LIMIT, MAX_LIMIT);
+
+  requestAnimationFrame(() => {
+    updateSliderFill();
+  });
+}
+
+/* ================= PHONE INPUT ================= */
+
+function initPhoneInput() {
+  const phoneInput = document.getElementById("phoneInput");
+  if (!phoneInput) return;
+
+  const PREFIX = "+36 ";
+  const PREFIX_LENGTH = PREFIX.length;
+
+  function getDigits(value) {
+    let digits = value.replace(/\D/g, "");
+
+    if (digits.startsWith("36")) {
+      digits = digits.slice(2);
+    }
+
+    return digits.slice(0, 9);
+  }
+
+  function formatPhone(value) {
+    const digits = getDigits(value);
+    let formatted = PREFIX;
+
+    if (digits.length > 0) {
+      formatted += digits.slice(0, 2);
+    }
+    if (digits.length > 2) {
+      formatted += " " + digits.slice(2, 5);
+    }
+    if (digits.length > 5) {
+      formatted += " " + digits.slice(5, 9);
+    }
+
+    return formatted;
+  }
+
+  function moveCaretToEnd() {
+    requestAnimationFrame(() => {
+      const end = phoneInput.value.length;
+      phoneInput.setSelectionRange(end, end);
+    });
+  }
+
+  function clampSelection() {
+    requestAnimationFrame(() => {
+      let start = phoneInput.selectionStart ?? PREFIX_LENGTH;
+      let end = phoneInput.selectionEnd ?? PREFIX_LENGTH;
+
+      if (start < PREFIX_LENGTH) start = PREFIX_LENGTH;
+      if (end < PREFIX_LENGTH) end = PREFIX_LENGTH;
+
+      phoneInput.setSelectionRange(start, end);
+    });
+  }
+
+  function selectEditableOnly() {
+    requestAnimationFrame(() => {
+      phoneInput.setSelectionRange(PREFIX_LENGTH, phoneInput.value.length);
+    });
+  }
+
+  if (!phoneInput.value.trim()) {
+    phoneInput.value = PREFIX;
+  } else {
+    phoneInput.value = formatPhone(phoneInput.value);
+  }
+
+  phoneInput.addEventListener("focus", () => {
+    if (!phoneInput.value.startsWith(PREFIX)) {
+      phoneInput.value = PREFIX;
+    }
+    moveCaretToEnd();
+  });
+
+  phoneInput.addEventListener("click", clampSelection);
+  phoneInput.addEventListener("mouseup", clampSelection);
+  phoneInput.addEventListener("select", clampSelection);
+
+  phoneInput.addEventListener("dblclick", (e) => {
+    e.preventDefault();
+    selectEditableOnly();
+  });
+
+  phoneInput.addEventListener("keydown", (e) => {
+    const allowedControlKeys = [
+      "Tab",
+      "ArrowLeft",
+      "ArrowRight",
+      "ArrowUp",
+      "ArrowDown",
+      "Home",
+      "End",
+    ];
+
+    if (e.ctrlKey || e.metaKey) return;
+
+    if (allowedControlKeys.includes(e.key)) {
+      requestAnimationFrame(() => {
+        if ((phoneInput.selectionStart ?? 0) < PREFIX_LENGTH) {
+          phoneInput.setSelectionRange(PREFIX_LENGTH, PREFIX_LENGTH);
+        }
+      });
+      return;
+    }
+
+    if (e.key === "Backspace") {
+      if ((phoneInput.selectionStart ?? 0) <= PREFIX_LENGTH) {
+        e.preventDefault();
+      }
+      return;
+    }
+
+    if (e.key === "Delete") {
+      if ((phoneInput.selectionStart ?? 0) < PREFIX_LENGTH) {
+        e.preventDefault();
+      }
+      return;
+    }
+
+    if (!/^\d$/.test(e.key)) {
+      e.preventDefault();
+    }
+  });
+
+  phoneInput.addEventListener("input", () => {
+    phoneInput.value = formatPhone(phoneInput.value);
+    moveCaretToEnd();
+  });
+
+  phoneInput.addEventListener("paste", (e) => {
+    e.preventDefault();
+    const pastedText = (e.clipboardData || window.clipboardData).getData(
+      "text"
+    );
+    phoneInput.value = formatPhone(pastedText);
+    moveCaretToEnd();
+  });
+
+  phoneInput.addEventListener("dragstart", (e) => {
+    const start = phoneInput.selectionStart ?? 0;
+    if (start < PREFIX_LENGTH) {
+      e.preventDefault();
+    }
+  });
 }
 
 /* ================= CLICK OUTSIDE MENUS ================= */
 
-document.addEventListener("click", (e) => {
-  const mobileMenu = document.getElementById("mobileMenu");
-  const hamburger = document.querySelector(".hamburger");
-  const profileMenu = document.getElementById("profileMenu");
-  const profileWrapper = document.querySelector(".profile-dropdown-wrapper");
+function initOutsideClickHandlers() {
+  document.addEventListener("click", (e) => {
+    const mobileMenu = document.getElementById("mobileMenu");
+    const hamburger = document.querySelector(".hamburger");
+    const profileMenu = document.getElementById("profileMenu");
+    const profileWrapper = document.querySelector(".profile-dropdown-wrapper");
 
-  if (
-    hamburger &&
-    mobileMenu &&
-    !hamburger.contains(e.target) &&
-    !mobileMenu.contains(e.target)
-  ) {
-    mobileMenu.style.display = "none";
-  }
+    if (
+      hamburger &&
+      mobileMenu &&
+      !hamburger.contains(e.target) &&
+      !mobileMenu.contains(e.target)
+    ) {
+      mobileMenu.style.display = "none";
+    }
 
-  if (profileWrapper && profileMenu && !profileWrapper.contains(e.target)) {
-    profileMenu.style.display = "none";
-  }
-});
+    if (
+      profileWrapper &&
+      profileMenu &&
+      !profileWrapper.contains(e.target) &&
+      !profileMenu.contains(e.target)
+    ) {
+      profileMenu.style.display = "none";
+    }
+  });
+}
 
 /* ================= BROWSER BACK / FORWARD ================= */
 
-window.addEventListener("popstate", (event) => {
-  const sectionName = event.state?.section || "home";
-  showSectionByName(sectionName, false);
-});
+function initHistoryHandling() {
+  window.addEventListener("popstate", (event) => {
+    const sectionName = event.state?.section || "home";
+    showSectionByName(sectionName, false);
+  });
+}
 
 /* ================= INIT ================= */
 
@@ -448,8 +712,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   handleResponsiveMenu();
   initSidebarButtons();
+  initCategoryToggle();
   initPageSwitching();
   initViewToggle();
   initThemeButtons();
   initPriceFilters();
+  initPhoneInput();
+  initOutsideClickHandlers();
+  initHistoryHandling();
+
+  requestAnimationFrame(() => {
+    if (initialSection === "search") {
+      refreshPriceSliderUI();
+    }
+  });
 });

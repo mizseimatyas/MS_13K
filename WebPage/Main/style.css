@@ -198,9 +198,7 @@ h4 {
 }
 
 .product {
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .product:hover {
@@ -367,9 +365,7 @@ h4 {
   text-align: center;
   color: black;
   background: linear-gradient(#dfe7ea, #c8d4d8);
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .product-card:hover {
@@ -408,7 +404,7 @@ h4 {
   background: linear-gradient(#5d5dff, #3b3bd9);
 }
 
-/* =============== 8. SEARCH VIEW SCROLL ================= */
+/* =============== 8.1 SEARCH VIEW SCROLL ================= */
 .search-layout {
   height: calc(100vh - 76px - 32px);
 }
@@ -427,10 +423,37 @@ h4 {
 #searchSection .rightbar {
   position: sticky;
   top: 0;
-  overflow: hidden;
+  overflow: visible;
 }
 
 #searchSection .content {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* =============== 8.2 HOMEPAGE SCROLL ================= */
+.home-layout {
+  height: calc(100vh - 76px - 32px);
+}
+
+.home-row {
+  height: 100%;
+}
+
+#homepage .sidebar,
+#homepage .content,
+#homepage .rightbar {
+  height: 100%;
+}
+
+#homepage .sidebar,
+#homepage .rightbar {
+  position: sticky;
+  top: 0;
+  overflow: hidden;
+}
+
+#homepage .content {
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -634,6 +657,36 @@ h4 {
   margin-top: 0;
 }
 
+.category-header-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.category-header-row h4 {
+  flex: 1;
+  margin: 0;
+}
+
+.category-toggle-btn {
+  width: 50px;
+  height: 50px;
+  padding: 7px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background-color: black;
+  border: 1px solid black;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.category-toggle-btn img {
+  width: 24px;
+  height: 24px;
+}
+
 /* =============== 12. RESPONSIVE ================= */
 @media screen and (max-width: 769px) {
   .desktop-menu {
@@ -691,5 +744,42 @@ h4 {
     grid-column: 1;
     grid-row: 4;
     justify-self: center;
+  }
+
+  .category-toggle-btn {
+    display: flex;
+    flex-shrink: 0;
+  }
+
+  #categoryList {
+    display: none;
+  }
+
+  #categoryList.show {
+    display: block;
+  }
+
+  .home-layout {
+    height: auto;
+  }
+
+  .home-row {
+    height: auto;
+  }
+
+  #homepage .sidebar,
+  #homepage .content,
+  #homepage .rightbar {
+    height: auto;
+  }
+
+  #homepage .sidebar,
+  #homepage .rightbar {
+    position: static;
+    overflow: visible;
+  }
+
+  #homepage .content {
+    overflow: visible;
   }
 }
