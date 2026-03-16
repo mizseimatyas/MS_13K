@@ -8,6 +8,7 @@ function getSections() {
     search: document.getElementById("searchSection"),
     register: document.getElementById("registerSection"),
     login: document.getElementById("loginSection"),
+    productDetail: document.getElementById("productDetailSection"),
   };
 }
 
@@ -147,8 +148,9 @@ function initCategoryToggle() {
 
 function updateBodyScroll(sectionToShow) {
   const searchSection = document.getElementById("searchSection");
+  const isMobile = window.innerWidth <= 768;
 
-  if (sectionToShow === searchSection) {
+  if (sectionToShow === searchSection && !isMobile) {
     document.body.style.overflow = "hidden";
   } else {
     document.body.style.overflow = "auto";
@@ -311,6 +313,33 @@ function initPageSwitching() {
       showSectionByName("login");
     });
   }
+}
+
+/* ================= PRODUCT DETAIL OPENING ================= */
+
+function initProductDetailOpening() {
+  const detailTitle = document.getElementById("detailProductTitle");
+  const detailPrice = document.getElementById("detailProductPrice");
+
+  document.addEventListener("click", (event) => {
+    const trigger = event.target.closest(".open-product-detail");
+    if (!trigger) return;
+
+    const productName =
+      trigger.dataset.name ||
+      trigger.querySelector(".product-name")?.textContent?.trim() ||
+      "Termék neve";
+
+    const productPrice =
+      trigger.dataset.price ||
+      trigger.querySelector(".product-price")?.textContent?.trim() ||
+      "Nincs ár";
+
+    if (detailTitle) detailTitle.textContent = productName;
+    if (detailPrice) detailPrice.textContent = productPrice;
+
+    showSectionByName("productDetail");
+  });
 }
 
 /* ================= VIEW TOGGLE ================= */
@@ -640,7 +669,7 @@ function initPhoneInput() {
   phoneInput.addEventListener("paste", (e) => {
     e.preventDefault();
     const pastedText = (e.clipboardData || window.clipboardData).getData(
-      "text"
+      "text",
     );
     phoneInput.value = formatPhone(pastedText);
     moveCaretToEnd();
@@ -694,7 +723,12 @@ function initHistoryHandling() {
 
 /* ================= INIT ================= */
 
-window.addEventListener("resize", handleResponsiveMenu);
+window.addEventListener("resize", () => {
+  handleResponsiveMenu();
+
+  const visibleSection = document.querySelector(".page-section:not(.d-none)");
+  updateBodyScroll(visibleSection);
+});
 
 document.addEventListener("DOMContentLoaded", () => {
   const sections = getSections();
@@ -704,7 +738,13 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   const hash = window.location.hash.replace("#", "");
-  const validSections = ["home", "search", "register", "login"];
+  const validSections = [
+    "home",
+    "search",
+    "register",
+    "login",
+    "productDetail",
+  ];
   const initialSection = validSections.includes(hash) ? hash : "home";
 
   showSectionByName(initialSection, false);
@@ -714,6 +754,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initSidebarButtons();
   initCategoryToggle();
   initPageSwitching();
+  initProductDetailOpening();
   initViewToggle();
   initThemeButtons();
   initPriceFilters();
