@@ -408,7 +408,7 @@ h4 {
   background: linear-gradient(#5d5dff, #3b3bd9);
 }
 
-/* =============== 8. SEARCH VIEW SCROLL ================= */
+/* =============== 8.1 SEARCH VIEW SCROLL ================= */
 .search-layout {
   height: calc(100vh - 76px - 32px);
 }
@@ -427,10 +427,37 @@ h4 {
 #searchSection .rightbar {
   position: sticky;
   top: 0;
-  overflow: hidden;
+  overflow: visible;
 }
 
 #searchSection .content {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* =============== 8.2 HOMEPAGE SCROLL ================= */
+.home-layout {
+  height: calc(100vh - 76px - 32px);
+}
+
+.home-row {
+  height: 100%;
+}
+
+#homepage .sidebar,
+#homepage .content,
+#homepage .rightbar {
+  height: 100%;
+}
+
+#homepage .sidebar,
+#homepage .rightbar {
+  position: sticky;
+  top: 0;
+  overflow: hidden;
+}
+
+#homepage .content {
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -481,7 +508,6 @@ h4 {
   background: linear-gradient(to right, rgb(3, 60, 75), black);
 }
 
-/* fő blokkok kicsit világosabbak */
 .dark-mode .header,
 .dark-mode .sidebar,
 .dark-mode .rightbar,
@@ -497,7 +523,6 @@ h4 {
   background-color: rgb(3, 60, 75);
 }
 
-/* címek sötétebbek */
 .dark-mode .logo,
 .dark-mode h4,
 .dark-mode .filter-label {
@@ -505,13 +530,11 @@ h4 {
   background-color: rgb(28, 28, 28);
 }
 
-/* menü hover */
 .dark-mode .profile-list li:hover,
 .dark-mode .mobile-list li:hover {
   background-color: rgb(39, 39, 39);
 }
 
-/* kategória gombok világosabbak a címeknél */
 .dark-mode .sidebar .list-group-item {
   color: white;
   background-color: rgb(60, 60, 60);
@@ -522,7 +545,6 @@ h4 {
   color: black !important;
 }
 
-/* termékek / adok */
 .dark-mode .product,
 .dark-mode .ad,
 .dark-mode .product-card {
@@ -530,7 +552,6 @@ h4 {
   background: rgb(60, 60, 60);
 }
 
-/* inputok / filterek világosabbak a labelnél */
 .dark-mode .search-input,
 .dark-mode .filter-input,
 .dark-mode .sort-select,
@@ -545,7 +566,6 @@ h4 {
   color: white;
 }
 
-/* slider világosabb kék */
 .dark-mode .slider-fill {
   background: #4fa3ff;
 }
@@ -555,14 +575,12 @@ h4 {
   border-color: #4fa3ff;
 }
 
-/* product rész kékje maradhat, csak sötét módhoz igazítva */
 .dark-mode .product-image,
 .dark-mode .product-price {
   color: white;
   background: linear-gradient(rgb(80, 150, 220), rgb(35, 80, 150));
 }
 
-/* login / register belső card */
 .dark-mode .register-section,
 .dark-mode .login-section {
   background: linear-gradient(to right, rgb(3, 60, 75), black);
@@ -581,7 +599,6 @@ h4 {
 }
 
 /* =============== 11. LIST VIEW ================= */
-
 .product-description {
   display: none;
 }
@@ -623,6 +640,7 @@ h4 {
   grid-row: 2;
   font-size: 18px;
   font-weight: bold;
+  text-align: left;
 }
 
 #productsWrapper.list-view .product-price {
@@ -634,7 +652,309 @@ h4 {
   margin-top: 0;
 }
 
-/* =============== 12. RESPONSIVE ================= */
+#productsWrapper.list-view .product-name,
+#productsWrapper.list-view .product-description {
+  word-break: break-word;
+}
+
+.category-header-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.category-header-row h4 {
+  flex: 1;
+  margin: 0;
+}
+
+.category-toggle-btn {
+  width: 50px;
+  height: 50px;
+  padding: 7px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background-color: black;
+  border: 1px solid black;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.category-toggle-btn img {
+  width: 24px;
+  height: 24px;
+}
+
+/* köztes lista nézet, mielőtt mobil lenne */
+@media screen and (max-width: 1200px) {
+  #productsWrapper.list-view .product-card {
+    grid-template-columns: 170px 1fr;
+    gap: 12px 14px;
+    padding: 12px;
+  }
+
+  #productsWrapper.list-view .product-image {
+    height: 170px;
+  }
+
+  #productsWrapper.list-view .product-name {
+    font-size: 16px;
+  }
+
+  #productsWrapper.list-view .product-description {
+    font-size: 15px;
+  }
+
+  #productsWrapper.list-view .product-price {
+    min-width: 110px;
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+}
+
+/* =============== 12. PRODUCT DETAIL SECTION ================= */
+.product-detail-layout {
+  min-height: calc(100vh - 76px);
+  padding: 24px 0;
+  box-sizing: border-box;
+}
+
+.product-detail-wrapper {
+  max-width: 1380px;
+  margin: 0 auto;
+  padding: 24px;
+  background-color: rgb(62, 160, 160);
+  box-sizing: border-box;
+}
+
+.product-detail-main {
+  padding: 0;
+}
+
+.product-gallery-box {
+  position: relative;
+  min-height: 320px;
+  padding: 14px;
+  border-radius: 12px;
+  background-color: #0d6efd;
+}
+
+.product-gallery-image {
+  min-height: 320px;
+  border: 3px solid black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 30px;
+  font-weight: bold;
+  color: #24324a;
+  background-color: #c7c7f2;
+}
+
+.gallery-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  font-size: 34px;
+  font-weight: bold;
+  color: black;
+  background: transparent;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.left-arrow {
+  left: 20px;
+}
+
+.right-arrow {
+  right: 20px;
+}
+
+.gallery-dots {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.gallery-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  display: inline-block;
+  background-color: #9cb5f3;
+}
+
+.gallery-dot.active {
+  background-color: #84a2ef;
+}
+
+.product-info-panel {
+  padding-top: 0;
+}
+
+.detail-product-title {
+  margin: 0 0 12px 0;
+  padding: 10px 16px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #2b3b52;
+  background-color: #f1f1f1;
+}
+
+.stock-box {
+  background: transparent;
+  border: none;
+}
+
+.stock-title {
+  margin-bottom: 10px;
+  padding: 10px 14px;
+  font-size: 22px;
+  font-weight: bold;
+  color: white;
+  background-color: #0d6efd;
+}
+
+.stock-item {
+  margin-bottom: 8px;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 8px;
+  font-size: 20px;
+  font-weight: bold;
+  color: white;
+  background-color: #2e2c7a;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.stock-item:last-child {
+  margin-bottom: 0;
+}
+
+.detail-bottom-row {
+  margin-top: 20px !important;
+}
+
+.detail-price-box {
+  min-width: 160px;
+  padding: 12px 16px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+  background-color: #2e2c7a;
+  border-radius: 7px;
+}
+
+.detail-cart-btn {
+  min-width: 160px;
+  padding: 12px 16px;
+  border: none;
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+  background-color: black;
+  cursor: pointer;
+  border-radius: 7px;
+}
+
+.detail-text-box {
+  height: 100%;
+  min-height: 185px;
+  padding: 12px 16px;
+  border: 3px solid black;
+  background-color: #bdbdbd;
+  color: white;
+}
+
+.detail-text-box h3 {
+  margin-bottom: 12px;
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  color: white;
+}
+
+.detail-text-box p {
+  margin-bottom: 12px;
+  font-size: 17px;
+  line-height: 1.45;
+  color: #111;
+}
+
+.open-product-detail {
+  cursor: pointer;
+}
+
+.open-product-detail:hover {
+  opacity: 0.96;
+}
+
+/* =============== 13. PRODUCT DETAIL DARK MODE ================= */
+.dark-mode .product-detail-wrapper {
+  background-color: rgb(3, 60, 75);
+}
+
+.dark-mode .product-gallery-box {
+  background-color: rgb(35, 80, 150);
+}
+
+.dark-mode .product-gallery-image {
+  color: white;
+  border-color: rgb(28, 28, 28);
+  background-color: rgb(60, 60, 60);
+}
+
+.dark-mode .gallery-arrow {
+  color: white;
+}
+
+.dark-mode .gallery-dot {
+  background-color: rgb(75, 75, 75);
+}
+
+.dark-mode .gallery-dot.active {
+  background-color: #4fa3ff;
+}
+
+.dark-mode .detail-product-title {
+  color: white;
+  background-color: rgb(39, 39, 39);
+}
+
+.dark-mode .stock-title {
+  background-color: rgb(35, 80, 150);
+}
+
+.dark-mode .stock-item {
+  background-color: rgb(39, 39, 39);
+}
+
+.dark-mode .detail-price-box {
+  background-color: rgb(39, 39, 39);
+}
+
+.dark-mode .detail-cart-btn {
+  background-color: black;
+}
+
+.dark-mode .detail-text-box {
+  border-color: rgb(28, 28, 28);
+  background-color: rgb(39, 39, 39);
+}
+
+.dark-mode .detail-text-box h3,
+.dark-mode .detail-text-box p {
+  color: white;
+}
+
+/* =============== 14. RESPONSIVE ================= */
 @media screen and (max-width: 769px) {
   .desktop-menu {
     display: none !important;
@@ -662,34 +982,216 @@ h4 {
     padding-top: 15px;
   }
 
+  /* lista nézet mobilon is maradjon lista, csak kisebben */
   #productsWrapper.list-view .product-card {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto auto auto auto;
-    text-align: center;
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    grid-template-rows: auto auto auto;
+    gap: 10px 12px;
+    align-items: start;
+    text-align: left;
+    padding: 12px;
   }
 
   #productsWrapper.list-view .product-image {
     grid-column: 1;
-    grid-row: 1;
-    height: 180px;
+    grid-row: 1 / 4;
+    height: 120px;
+    margin-bottom: 0;
   }
 
   #productsWrapper.list-view .product-name {
-    grid-column: 1;
-    grid-row: 2;
-    justify-content: center;
-    text-align: center;
+    grid-column: 2;
+    grid-row: 1;
+    min-height: auto;
+    display: block;
+    text-align: left;
+    font-size: 14px;
+    line-height: 1.35;
   }
 
   #productsWrapper.list-view .product-description {
-    grid-column: 1;
-    grid-row: 3;
-    text-align: center;
+    display: block;
+    grid-column: 2;
+    grid-row: 2;
+    text-align: left;
+    font-size: 13px;
+    font-weight: bold;
   }
 
   #productsWrapper.list-view .product-price {
-    grid-column: 1;
-    grid-row: 4;
-    justify-self: center;
+    grid-column: 2;
+    grid-row: 3;
+    justify-self: start;
+    width: auto;
+    min-width: 100px;
+    margin-top: 0;
+    padding: 8px 12px;
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .category-toggle-btn {
+    display: flex;
+    flex-shrink: 0;
+  }
+
+  #categoryList {
+    display: none;
+  }
+
+  #categoryList.show {
+    display: block;
+  }
+
+  .home-layout {
+    height: auto;
+  }
+
+  .home-row {
+    height: auto;
+  }
+
+  #homepage .sidebar,
+  #homepage .content,
+  #homepage .rightbar {
+    height: auto;
+  }
+
+  #homepage .sidebar,
+  #homepage .rightbar {
+    position: static;
+    overflow: visible;
+  }
+
+  #homepage .content {
+    overflow: visible;
+  }
+
+  .search-layout {
+    height: auto;
+  }
+
+  .search-row {
+    height: auto;
+  }
+
+  #searchSection .sidebar,
+  #searchSection .content,
+  #searchSection .rightbar {
+    height: auto;
+  }
+
+  #searchSection .sidebar,
+  #searchSection .rightbar {
+    position: static;
+    overflow: visible;
+  }
+
+  #searchSection .content {
+    overflow: visible;
+  }
+
+  /* rács mobilon 1 elem / sor */
+  #productsWrapper:not(.list-view) .product-item {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  /* product detail mobil */
+  .product-detail-wrapper {
+    max-width: none;
+    margin: 0;
+    padding: 10px 18px 24px 18px;
+  }
+
+  .product-gallery-box {
+    min-height: auto;
+    padding: 14px;
+  }
+
+  .product-gallery-image {
+    min-height: 240px;
+    font-size: 26px;
+  }
+
+  .gallery-arrow {
+    font-size: 30px;
+  }
+
+  .left-arrow {
+    left: 18px;
+  }
+
+  .right-arrow {
+    right: 18px;
+  }
+
+  .gallery-dots {
+    gap: 12px;
+    margin-top: 14px;
+  }
+
+  .gallery-dot {
+    width: 18px;
+    height: 18px;
+  }
+
+  .detail-product-title {
+    font-size: 22px;
+  }
+
+  .stock-title,
+  .stock-item {
+    font-size: 20px;
+  }
+
+  .detail-bottom-row {
+    margin-top: 24px !important;
+  }
+
+  .detail-price-box,
+  .detail-cart-btn {
+    width: 100%;
+    min-width: unset;
+    font-size: 20px;
+  }
+
+  .detail-text-box {
+    padding: 16px;
+  }
+
+  .detail-text-box h3 {
+    font-size: 22px;
+  }
+
+  .detail-text-box p {
+    font-size: 16px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  #productsWrapper.list-view .product-card {
+    grid-template-columns: 100px 1fr;
+    gap: 8px 10px;
+    padding: 10px;
+  }
+
+  #productsWrapper.list-view .product-image {
+    height: 100px;
+  }
+
+  #productsWrapper.list-view .product-name {
+    font-size: 13px;
+  }
+
+  #productsWrapper.list-view .product-description {
+    font-size: 12px;
+  }
+
+  #productsWrapper.list-view .product-price {
+    min-width: 90px;
+    padding: 7px 10px;
+    font-size: 13px;
   }
 }
