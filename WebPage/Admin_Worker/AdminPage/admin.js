@@ -93,6 +93,7 @@ function applyRoleUi() {
     }
 }
 
+//#region Dolgozok
 /* Regisztráció (worker / admin) */
 document.getElementById('register-form').addEventListener('submit', async e => {
     e.preventDefault();
@@ -391,6 +392,8 @@ async function loadAllWorkers() {
     }
 }
 
+//#endregion
+
 /* Termékek táblázat */
 function renderItemsTable(items) {
     const container = document.getElementById('items-table-container');
@@ -410,7 +413,7 @@ function renderItemsTable(items) {
     html += '<th></th></tr></thead><tbody>';
 
     items.forEach(item => {
-        html += `
+        html += `<tr data-item-id="${item.itemId}">
             <td class="cell-itemid">${item.itemId}</td>
             <td class="cell-categoryid">${item.categoryId}</td>
             <td class="cell-name">${item.itemName}</td>
@@ -621,8 +624,8 @@ document.getElementById('item-by-id-form').addEventListener('submit', async e =>
                 tr.classList.remove('item-highlight');
                 const rowItemId = Number(tr.getAttribute('data-item-id'));
                 if (rowItemId === item.itemId) {
-                    tr.classList.add('item-highlight');
-                }
+                tr.classList.add('item-highlight');
+            }
             });
         }
 

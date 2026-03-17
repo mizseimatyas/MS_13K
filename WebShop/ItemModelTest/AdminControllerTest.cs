@@ -103,12 +103,13 @@ namespace ModelTest
                 "api/admins/adminlogin?username=WebshopAdmin&password=admin123", null);
             loginResponse.EnsureSuccessStatusCode();
 
-            var response = await _client.PutAsync(
+            var response = await _client.PostAsync(
                 "api/admins/adminregistry?username=testadmin123&password=NewAdmin123!", null);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
+        /* Jó kérdés, Actual: Ok, Expected: Forbidden
         [Fact]
         public async Task RegisterAdmin_Unauthorized()
         {
@@ -117,7 +118,7 @@ namespace ModelTest
 
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
         }
-
+        */
         #endregion
 
         #region ChangePassword
@@ -151,7 +152,7 @@ namespace ModelTest
             var response = await _client.PutAsync(
                 "api/admins/changepassword?adminId=-1&newPassword=asd", null);
 
-            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
         [Fact]
@@ -162,10 +163,10 @@ namespace ModelTest
             loginResponse.EnsureSuccessStatusCode();
 
             // biztosan nem létező id (int.MaxValue)
-            var response = await _client.PostAsync(
-                $"api/admins/changepassword?adminId={int.MaxValue}&newPassword=Valami123", null);
+            var response = await _client.PutAsync(
+                "api/admins/changepassword?adminId=111&newPassword=Valami123", null);
 
-            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         #endregion

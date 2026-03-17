@@ -38,7 +38,7 @@ namespace WebShop.Controllers
 
         #region ItemById
         [HttpGet("itembyid")]
-        public async Task<ActionResult<ItemDto>> ItemById([FromQuery] int id)
+        public async Task<ActionResult<AllItemDto>> ItemById([FromQuery] int id)
         {
             try
             {
@@ -280,46 +280,6 @@ namespace WebShop.Controllers
         }
         #endregion
 
-        #region ItemsInCategoryNameAsc
-        [HttpGet("categoryitemsnameasc")]
-        public async Task<ActionResult<IEnumerable<SearchItemsByDto>>> ItemsInCategoryNameAsc([FromQuery] string category)
-        {
-            try
-            {
-                var response = await _model.ItemsByCategoryNameAsc(category);
-                return Ok(response);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
-        }
-        #endregion
-
-        #region ItemsInCategoryNameDesc
-        [HttpGet("categoryitemsnamedesc")]
-        public async Task<ActionResult<IEnumerable<SearchItemsByDto>>> ItemsInCategoryNameDesc([FromQuery] string category)
-        {
-            try
-            {
-                var response = await _model.ItemsByCategoryNameDesc(category);
-                return Ok(response);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
-        }
-        #endregion
-
         #region ItemsInCategory
         [HttpGet("itemsincategory")]
         public async Task<ActionResult<IEnumerable<SearchItemsByDto>>> ItemsInCategory([FromQuery] string category)
@@ -400,44 +360,6 @@ namespace WebShop.Controllers
         }
         #endregion
 
-        #region ItemsInCategoryPriceAsc
-        [HttpGet("itemsincategorypriceasc")]
-        public async Task<ActionResult<IEnumerable<SearchItemsByDto>>> ItemsIncategoryPriceAsc([FromQuery] string category)
-        {
-            try
-            {
-                var response = await _model.ItemsByCategoryPriceAsc(category);
-                return Ok(response);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
-        }
-        #endregion
 
-        #region ItemsInCategoryPriceDesc
-        [HttpGet("itemsincategorypricedesc")]
-        public async Task<ActionResult<IEnumerable<SearchItemsByDto>>> ItemsIncategoryPriceDesc([FromQuery] string category)
-        {
-            try
-            {
-                var response = await _model.ItemsByCategoryPriceDesc(category);
-                return Ok(response);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
-        }
-        #endregion
     }
 }
