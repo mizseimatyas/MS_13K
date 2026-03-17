@@ -592,7 +592,7 @@ async function loadInitialItems() {
     }
 }
 
-/* ItemById keresés */
+//#region itembyid
 document.getElementById('item-by-id-form').addEventListener('submit', async e => {
     e.preventDefault();
     const form = e.target;
@@ -630,9 +630,23 @@ document.getElementById('item-by-id-form').addEventListener('submit', async e =>
         alert(`Hiba ItemById hívás közben: ${err.message}`);
     }
 });
+//#endregion
 
-/* ItemNameByFragment – névrészlet keresés */
-document.getElementById('item-by-name-form').addEventListener('submit', async e => {
+//#region allcategories
+//#endregion
+
+//#region itembynamefragment
+//#endregion
+
+//#region itemsquantity
+//#endregion
+
+
+
+
+
+//#region Új termék 
+document.getElementById('add-item-form').addEventListener('submit', async e => {
     e.preventDefault();
     const form = e.target;
     if (!validateForm(form)) return;
@@ -649,15 +663,91 @@ document.getElementById('item-by-name-form').addEventListener('submit', async e 
         const url = `${API_BASE}/items/itemnamebyfragment?fragname=${encodeURIComponent(fragname)}`;
         const items = await apiFetch(url, { method: 'GET' });
 
-        // Ha a DTO property nevei eltérnek, itt kell mapelni a megfelelő struktúrára
         renderItemsTable(items);
         form.reset();
     } catch (err) {
-        alert(`Hiba ItemNameByFragment hívás közben: ${err.message}`);
+        setLog('item-modify-log', `Hiba új termék hozzáadása közben: ${err.message}`, true);
+    }
+});
+//#endregion
+
+//#region Termék módosítás
+document.getElementById('modify-item-form')?.addEventListener('submit', async e => {
+    e.preventDefault();
+    const form = e.target;
+    if (!validateForm(form)) return;
+
+    const data = Object.fromEntries(new FormData(form));
+    const id = Number(data.itemId);
+
+    if (!Number.isInteger(id) || id <= 0) {
+        setLog('item-modify-log', 'Az Item ID csak pozitív egész szám lehet.', true);
+        return;
+    }
+    if (Number(data.quantity) <= 0) {
+        setLog('item-modify-log', 'A mennyiségnek pozitívnak kell lennie.', true);
+        return;
+    }
+    if (Number(data.price) <= 0) {
+        setLog('item-modify-log', 'Az árnak pozitívnak kell lennie.', true);
+        return;
+    }
+
+    try {
+        await apiFetch(`${API_BASE}/items/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                itemId: id,
+                itemName: data.itemName,
+                categoryName: data.categoryName,
+                quantity: Number(data.quantity),
+                description: data.description,
+                price: Number(data.price)
+            })
+        });
+
+        setLog('item-modify-log', `Termék sikeresen módosítva, id = ${id}.`);
+        form.reset();
+        loadInitialItems();
+    } catch (err) {
+        setLog('item-modify-log', `Hiba termék módosítása közben: ${err.message}`, true);
     }
 });
 
-/* Init */
+//#endregion
+
+//#region Termék törlés
+document.getElementById('delete-item-form')?.addEventListener('submit', async e => {
+    e.preventDefault();
+    const form = e.target;
+    if (!validateForm(form)) return;
+
+    const data = Object.fromEntries(new FormData(form));
+    const id = Number(data.itemId);
+
+    if (!Number.isInteger(id) || id <= 0) {
+        setLog('item-modify-log', 'Az Item ID csak pozitív egész szám lehet.', true);
+        return;
+    }
+
+    if (!confirm(`Biztosan törlöd az itemet? (id = ${id})`)) {
+        return;
+    }
+
+    try {
+        await apiFetch(`${API_BASE}/items/${id}`, {
+            method: 'DELETE'
+        });
+
+        setLog('item-modify-log', `Termék sikeresen törölve, id = ${id}.`);
+        form.reset();
+        loadInitialItems();
+    } catch (err) {
+        setLog('item-modify-log', `Hiba termék törlése közben: ${err.message}`, true);
+    }
+});
+//#endregion
+
 window.addEventListener('DOMContentLoaded', () => {
     checkAuth();
     loadInitialItems();
