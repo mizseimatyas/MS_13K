@@ -18,7 +18,7 @@ namespace WebShop.Controllers
 
         #region AllItems
         [HttpGet("allitems")]
-        public async Task<ActionResult<IEnumerable<AllItemDto>>> AllItems()
+        public async Task<ActionResult<IEnumerable<AdminItemDto>>> AllItems()
         {
             try
             {
@@ -200,7 +200,6 @@ namespace WebShop.Controllers
         #endregion
 
         #region ModifyItem
-        [Authorize(Roles = "Worker")]
         [HttpPut("modifyitem")]
         public async Task<ActionResult> ModifyItem([FromBody] ModifyItemDto dto)
         {
@@ -237,7 +236,7 @@ namespace WebShop.Controllers
         #endregion
 
         #region DeleteItem
-        [Authorize(Roles = "Worker,Admin")]
+        [Authorize(Roles = "Worker")]
         [HttpDelete("deleteitem")]
         public async Task<ActionResult> DeleteItem([FromQuery] int id)
         {

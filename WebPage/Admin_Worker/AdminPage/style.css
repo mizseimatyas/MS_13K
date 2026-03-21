@@ -321,3 +321,28 @@ textarea {
 .item-highlight {
     background-color: #fef3c7 !important;
 }
+
+th.sortable {
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+}
+
+th.sortable:hover {
+  background-color: #f3f4f6;
+}
+
+th.sortable::after {
+  content: '⇅';
+  font-size: 0.75rem;
+  margin-left: 4px;
+  color: #9ca3af;
+}
+
+th.sortable.active-asc::after {
+  content: '▲';
+}
+
+th.sortable.active-desc::after {
+  content: '▼';
+}

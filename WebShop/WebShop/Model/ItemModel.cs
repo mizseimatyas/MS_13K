@@ -14,13 +14,13 @@ namespace WebShop.Model
 
         //For workers
         #region AllItems
-        public async Task<IEnumerable<AllItemDto>> AllItems()
+        public async Task<IEnumerable<AdminItemDto>> AllItems()
         {
             var items = await _context.Items
                 .Include(x => x.Category)
-                .Select(x => new AllItemDto
+                .Select(x => new AdminItemDto
                 {
-                    categoryId = x.Category.CategoryId,
+                    categoryName = x.Category.CategoryName,
                     itemId = x.ItemId,
                     itemName = x.ItemName,
                     quantity = x.Quantity,
@@ -37,14 +37,14 @@ namespace WebShop.Model
         #endregion
 
         #region ItemById
-        public async Task<AllItemDto> ItemById(int id)
+        public async Task<AdminItemDto> ItemById(int id)
         {
             var item = await _context.Items
                 .Include(x => x.Category)
                 .Where(x => x.ItemId == id)
-                .Select(x => new AllItemDto
+                .Select(x => new AdminItemDto
                 {
-                    categoryId = x.Category.CategoryId,
+                    categoryName = x.Category.CategoryName,
                     itemId = x.ItemId,
                     itemName = x.ItemName,
                     quantity = x.Quantity,
@@ -61,14 +61,14 @@ namespace WebShop.Model
         #endregion
 
         #region AdmItemByName
-        public async Task<IEnumerable<AllItemDto>> AdmItemByName(string iname)
+        public async Task<IEnumerable<AdminItemDto>> AdmItemByName(string iname)
         {
             var item = await _context.Items
                 .Include(x => x.Category)
                 .Where(x => x.ItemName.ToLower().Contains(iname.ToLower()))
-                .Select(x => new AllItemDto
+                .Select(x => new AdminItemDto
                 {
-                    categoryId = x.Category.CategoryId,
+                    categoryName = x.Category.CategoryName,
                     itemId = x.ItemId,
                     itemName = x.ItemName,
                     quantity = x.Quantity,
@@ -85,14 +85,14 @@ namespace WebShop.Model
         #endregion
 
         #region ItemsWithQuantity0
-        public async Task<IEnumerable<AllItemDto>> ItemsWithQunatity0()
+        public async Task<IEnumerable<AdminItemDto>> ItemsWithQunatity0()
         {
             var items = await _context.Items
                 .Include(x => x.Category)
                 .Where(x => x.Quantity == 0)
-                .Select(x => new AllItemDto
+                .Select(x => new AdminItemDto
                 {
-                    categoryId = x.Category.CategoryId,
+                    categoryName = x.Category.CategoryName,
                     itemId = x.ItemId,
                     itemName = x.ItemName,
                     quantity = x.Quantity,
@@ -109,14 +109,14 @@ namespace WebShop.Model
         #endregion
 
         #region Items Quantity Order By Lowest First
-        public async Task<IEnumerable<AllItemDto>> ItemsWithQuantityOrderByAsc()
+        public async Task<IEnumerable<AdminItemDto>> ItemsWithQuantityOrderByAsc()
         {
             return await _context.Items
                 .Include(x => x.Category)
                 .OrderBy(x => x.Quantity)
-                .Select(x => new AllItemDto
+                .Select(x => new AdminItemDto
                 {
-                    categoryId = x.Category.CategoryId,
+                    categoryName = x.Category.CategoryName,
                     itemId = x.ItemId,
                     itemName = x.ItemName,
                     quantity = x.Quantity,
@@ -128,14 +128,14 @@ namespace WebShop.Model
         #endregion
 
         #region Items Quantity Order By Highest First
-        public async Task<IEnumerable<AllItemDto>> ItemsWithQuantityOrderByDesc()
+        public async Task<IEnumerable<AdminItemDto>> ItemsWithQuantityOrderByDesc()
         {
             return await _context.Items
                 .Include(x => x.Category)
                 .OrderByDescending(x => x.Quantity)
-                .Select(x => new AllItemDto
+                .Select(x => new AdminItemDto
                 {
-                    categoryId = x.Category.CategoryId,
+                    categoryName = x.Category.CategoryName,
                     itemId = x.ItemId,
                     itemName = x.ItemName,
                     quantity = x.Quantity,
@@ -147,15 +147,15 @@ namespace WebShop.Model
         #endregion
 
         #region Items Quantity By Category Lowest First
-        public async Task<IEnumerable<AllItemDto>> CategoryItemsQuantityOrderByAsc(string category)
+        public async Task<IEnumerable<AdminItemDto>> CategoryItemsQuantityOrderByAsc(string category)
         {
             return await _context.Items
                 .Include(x => x.Category)
                 .Where(x => x.Category.CategoryName.ToLower() == category.ToLower())
                 .OrderBy(x => x.Quantity)
-                .Select(x => new AllItemDto
+                .Select(x => new AdminItemDto
                 {
-                    categoryId = x.Category.CategoryId,
+                    categoryName = x.Category.CategoryName,
                     itemId = x.ItemId,
                     itemName = x.ItemName,
                     quantity = x.Quantity,
@@ -167,15 +167,15 @@ namespace WebShop.Model
         #endregion
 
         #region Items Quantity By Category Highest First
-        public async Task<IEnumerable<AllItemDto>> CategoryItemsQuantityOrderByDesc(string category)
+        public async Task<IEnumerable<AdminItemDto>> CategoryItemsQuantityOrderByDesc(string category)
         {
             return await _context.Items
                 .Include(x => x.Category)
                 .Where(x => x.Category.CategoryName.ToLower() == category.ToLower())
                 .OrderByDescending(x => x.Quantity)
-                .Select(x => new AllItemDto
+                .Select(x => new AdminItemDto
                 {
-                    categoryId = x.Category.CategoryId,
+                    categoryName = x.Category.CategoryName,
                     itemId = x.ItemId,
                     itemName = x.ItemName,
                     quantity = x.Quantity,
