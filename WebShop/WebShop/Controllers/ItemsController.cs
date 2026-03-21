@@ -167,7 +167,7 @@ namespace WebShop.Controllers
         #endregion
 
         #region AddNewItem
-        [Authorize(Roles = "Worker")]
+        [Authorize(Roles = "Worker,Admin")]
         [HttpPost("addnewitem")]
         public async Task<ActionResult> AddNewItem([FromBody] AddNewItemDto dto)
         {
@@ -201,7 +201,7 @@ namespace WebShop.Controllers
 
         #region ModifyItem
         [Authorize(Roles = "Worker")]
-        [HttpPost("modifyitem")]
+        [HttpPut("modifyitem")]
         public async Task<ActionResult> ModifyItem([FromBody] ModifyItemDto dto)
         {
             try
@@ -237,8 +237,8 @@ namespace WebShop.Controllers
         #endregion
 
         #region DeleteItem
-        [Authorize(Roles = "Worker")]
-        [HttpPost("deleteitem")]
+        [Authorize(Roles = "Worker,Admin")]
+        [HttpDelete("deleteitem")]
         public async Task<ActionResult> DeleteItem([FromQuery] int id)
         {
             try

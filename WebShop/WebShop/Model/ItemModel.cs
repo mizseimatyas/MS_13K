@@ -61,11 +61,11 @@ namespace WebShop.Model
         #endregion
 
         #region AdmItemByName
-        public async Task<AllItemDto> AdmItemByName(string iname)
+        public async Task<IEnumerable<AllItemDto>> AdmItemByName(string iname)
         {
             var item = await _context.Items
                 .Include(x => x.Category)
-                .Where(x => x.ItemName.ToLower() == iname.ToLower())
+                .Where(x => x.ItemName.ToLower().Contains(iname.ToLower()))
                 .Select(x => new AllItemDto
                 {
                     categoryId = x.Category.CategoryId,
@@ -74,8 +74,7 @@ namespace WebShop.Model
                     quantity = x.Quantity,
                     description = x.Description,
                     price = x.Price
-                })
-                .FirstOrDefaultAsync();
+                }).ToListAsync();
 
             if (item is null)
                 throw new KeyNotFoundException($"Nincs termék erre a keresésre: {iname}");

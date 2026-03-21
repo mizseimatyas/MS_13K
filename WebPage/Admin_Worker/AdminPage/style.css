@@ -304,3 +304,20 @@ textarea {
         order: 1;
     }
 }
+
+
+.search-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: flex-start;
+    margin-top: 0.5rem;
+}
+
+.search-form label {
+    flex: 1;
+}
+
+.item-highlight {
+    background-color: #fef3c7 !important;
+}
