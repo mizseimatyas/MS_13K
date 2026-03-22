@@ -1,0 +1,96 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:WorkerApp.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="WorkerApp.Views.SelectionView"
+             x:DataType="vm:SelectionViewModel"
+             Background="#f5f8ff">
+
+    <UserControl.Styles>
+        <Style Selector="Button.primary">
+            <Setter Property="Background" Value="#1f6fe0" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="Height" Value="72" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="FontSize" Value="20" />
+        </Style>
+
+        <Style Selector="Button.primary:pointerover">
+            <Setter Property="Background" Value="#1958b8" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Felső sáv -->
+        <Border Grid.Row="0"
+        Background="Red"
+        BorderBrush="Black"
+        BorderThickness="2"
+        Padding="12"
+        BoxShadow="0 2 6 #20000000">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />  <!-- Kijelentkezés -->
+                    <ColumnDefinition Width="*" />    <!-- Cím -->
+                    <ColumnDefinition Width="Auto" />  <!-- Kilépés -->
+                </Grid.ColumnDefinitions>
+
+                <!-- Kijelentkezés: SelectionViewModel.LogoutCommand -->
+                <Button Grid.Column="0"
+                        Classes="danger"
+                        Content="Kijelentkezés"
+                        Command="{Binding LogoutCommand}"
+                        Width="110"
+                        Margin="0,0,12,0" />
+
+                <TextBlock Grid.Column="1"
+                           Text="{Binding HeaderText}"
+                           FontSize="22"
+                           FontWeight="Bold"
+                           Foreground="#1f4b99"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center" />
+
+                <!-- Kilépés: MainViewModel.ExitCommand a Window DataContext-jéről -->
+                <Button Grid.Column="2"
+                        Classes="danger"
+                        Content="Kilépés"
+                        Command="{Binding $parent[Window].((vm:MainViewModel)DataContext).ExitCommand}"
+                        Width="90"
+                        Margin="12,0,0,0" />
+            </Grid>
+        </Border>
+
+        <!-- Középre igazított, nagy gombok (1-3-1 arány) -->
+        <Grid Grid.Row="1" Margin="24,16">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="3*" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="1"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Center"
+                        Spacing="24">
+                <Button Classes="primary"
+                        HorizontalAlignment="Stretch"
+                        Content="Raktár / Készlet"
+                        Command="{Binding OpenItemsCommand}" />
+
+                <Button Classes="primary"
+                        HorizontalAlignment="Stretch"
+                        Content="Megrendelések"
+                        Command="{Binding OpenOrdersCommand}" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>
