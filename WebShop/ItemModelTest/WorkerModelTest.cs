@@ -28,10 +28,11 @@ namespace ModelTest
         {
             var username = "tesztworker";
             var password = "jelszo123";
+            var phone = 302223344;
 
             var before = await _context.Workers.CountAsync();
 
-            await _model.WorkerRegistration(username, password);
+            await _model.WorkerRegistration(username, password, phone);
 
             var after = await _context.Workers.CountAsync();
             Assert.Equal(before + 1, after);
@@ -54,11 +55,12 @@ namespace ModelTest
             {
                 WorkerName = username,
                 Password = "ja",
+                Phone = 302223344,
                 Role = "Worker"
             });
             await _context.SaveChangesAsync();
 
-            var exc = await Assert.ThrowsAsync<InvalidOperationException>(() => _model.WorkerRegistration(username, "valami"));
+            var exc = await Assert.ThrowsAsync<InvalidOperationException>(() => _model.WorkerRegistration(username, "valami", 302223344));
 
             Assert.Contains("Már", exc.Message);
         }

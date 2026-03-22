@@ -339,28 +339,5 @@ namespace ModelTest
         }
         #endregion
 
-        #region ItemsByCategoryPriceDesc
-        [Fact]
-        public async Task ItemsByCategoryPriceDesc_Correct()
-        {
-            var catexist = _context.Categories.First().CategoryName;
-            var result = await _model.ItemsByCategoryPriceDesc(catexist);
-
-            Assert.NotNull(result);
-            Assert.NotEmpty(result);
-            Assert.True(result.Zip(result.Skip(1), (first, second) => first.pricE >= second.pricE).All(x => x));
-        }
-
-        [Fact]
-        public async Task ItemsByCategoryPriceDesc_Empty()
-        {
-            using var emptydb = DbContextFactory.CreateEmpty();
-            var emptymodel = new ItemModel(emptydb);
-
-            var exc = await Assert.ThrowsAsync<KeyNotFoundException>(() => emptymodel.ItemsByCategoryPriceDesc("Kutyakaja"));
-
-            Assert.Contains("Nincs termék", exc.Message);
-        }
-        #endregion
     }
 }

@@ -18,7 +18,7 @@ namespace WebShop.Controllers
 
         #region AllItems
         [HttpGet("allitems")]
-        public async Task<ActionResult<IEnumerable<AllItemDto>>> AllItems()
+        public async Task<ActionResult<IEnumerable<AdminItemDto>>> AllItems()
         {
             try
             {
@@ -38,7 +38,7 @@ namespace WebShop.Controllers
 
         #region ItemById
         [HttpGet("itembyid")]
-        public async Task<ActionResult<ItemDto>> ItemById([FromQuery] int id)
+        public async Task<ActionResult<AllItemDto>> ItemById([FromQuery] int id)
         {
             try
             {
@@ -56,10 +56,31 @@ namespace WebShop.Controllers
         }
         #endregion
 
+        #region AdmItemByName
+
+        [HttpGet("admitembyname")]
+        public async Task<ActionResult<AllItemDto>> AdmItemByName([FromQuery]string iname)
+        {
+            try
+            {
+                var response = await _model.AdmItemByName(iname);
+                return Ok(response);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+        #endregion
+
         #region ItemsWithQuantity0
         [Authorize(Roles = "Worker")]
         [HttpGet("itemswithquantity0")]
-        public async Task<ActionResult<IEnumerable<SearchItemsByQuantityDto>>> ItemsQuantityZero()
+        public async Task<ActionResult<IEnumerable<AllItemDto>>> ItemsQuantityZero()
         {
             try
             {
@@ -80,7 +101,7 @@ namespace WebShop.Controllers
         #region ItemsQuantityOrderByLowestFirst
         [Authorize(Roles = "Worker")]
         [HttpGet("itemsquantityasc")]
-        public async Task<ActionResult<IEnumerable<SearchItemsByQuantityDto>>> ItemsByQuantityAsc()
+        public async Task<ActionResult<IEnumerable<AllItemDto>>> ItemsByQuantityAsc()
         {
             try
             {
@@ -97,7 +118,7 @@ namespace WebShop.Controllers
         #region ItemsQuantityOrderByHighestFirst
         [Authorize(Roles = "Worker")]
         [HttpGet("itemsquantitydesc")]
-        public async Task<ActionResult<IEnumerable<SearchItemsByQuantityDto>>> ItemsByQuantityDesc()
+        public async Task<ActionResult<IEnumerable<AllItemDto>>> ItemsByQuantityDesc()
         {
             try
             {
@@ -114,7 +135,7 @@ namespace WebShop.Controllers
         #region ItemsQuantityInCategoryOrderByLowestFirst
         [Authorize(Roles = "Worker")]
         [HttpGet("itemsquantityincategoryasc")]
-        public async Task<ActionResult<IEnumerable<SearchItemsByQuantityDto>>> CategoryItemsQuantityAsc([FromQuery] string category)
+        public async Task<ActionResult<IEnumerable<AllItemDto>>> CategoryItemsQuantityAsc([FromQuery] string category)
         {
             try
             {
@@ -131,7 +152,7 @@ namespace WebShop.Controllers
         #region ItemsQuantityInCategoryOrderByHighestFirst
         [Authorize(Roles = "Worker")]
         [HttpGet("itemsquantityincategorydesc")]
-        public async Task<ActionResult<IEnumerable<SearchItemsByQuantityDto>>> CategoryItemsQuantityDesc([FromQuery] string category)
+        public async Task<ActionResult<IEnumerable<AllItemDto>>> CategoryItemsQuantityDesc([FromQuery] string category)
         {
             try
             {
@@ -146,7 +167,7 @@ namespace WebShop.Controllers
         #endregion
 
         #region AddNewItem
-        [Authorize(Roles = "Worker")]
+        [Authorize(Roles = "Worker,Admin")]
         [HttpPost("addnewitem")]
         public async Task<ActionResult> AddNewItem([FromBody] AddNewItemDto dto)
         {
@@ -179,8 +200,7 @@ namespace WebShop.Controllers
         #endregion
 
         #region ModifyItem
-        [Authorize(Roles = "Worker")]
-        [HttpPost("modifyitem")]
+        [HttpPut("modifyitem")]
         public async Task<ActionResult> ModifyItem([FromBody] ModifyItemDto dto)
         {
             try
@@ -217,7 +237,7 @@ namespace WebShop.Controllers
 
         #region DeleteItem
         [Authorize(Roles = "Worker")]
-        [HttpPost("deleteitem")]
+        [HttpDelete("deleteitem")]
         public async Task<ActionResult> DeleteItem([FromQuery] int id)
         {
             try
@@ -267,46 +287,6 @@ namespace WebShop.Controllers
             try
             {
                 var response = await _model.ItemsByNameSnipet(fragname);
-                return Ok(response);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
-        }
-        #endregion
-
-        #region ItemsInCategoryNameAsc
-        [HttpGet("categoryitemsnameasc")]
-        public async Task<ActionResult<IEnumerable<SearchItemsByDto>>> ItemsInCategoryNameAsc([FromQuery] string category)
-        {
-            try
-            {
-                var response = await _model.ItemsByCategoryNameAsc(category);
-                return Ok(response);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
-        }
-        #endregion
-
-        #region ItemsInCategoryNameDesc
-        [HttpGet("categoryitemsnamedesc")]
-        public async Task<ActionResult<IEnumerable<SearchItemsByDto>>> ItemsInCategoryNameDesc([FromQuery] string category)
-        {
-            try
-            {
-                var response = await _model.ItemsByCategoryNameDesc(category);
                 return Ok(response);
             }
             catch (KeyNotFoundException)
@@ -400,44 +380,6 @@ namespace WebShop.Controllers
         }
         #endregion
 
-        #region ItemsInCategoryPriceAsc
-        [HttpGet("itemsincategorypriceasc")]
-        public async Task<ActionResult<IEnumerable<SearchItemsByDto>>> ItemsIncategoryPriceAsc([FromQuery] string category)
-        {
-            try
-            {
-                var response = await _model.ItemsByCategoryPriceAsc(category);
-                return Ok(response);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
-        }
-        #endregion
 
-        #region ItemsInCategoryPriceDesc
-        [HttpGet("itemsincategorypricedesc")]
-        public async Task<ActionResult<IEnumerable<SearchItemsByDto>>> ItemsIncategoryPriceDesc([FromQuery] string category)
-        {
-            try
-            {
-                var response = await _model.ItemsByCategoryPriceDesc(category);
-                return Ok(response);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
-        }
-        #endregion
     }
 }

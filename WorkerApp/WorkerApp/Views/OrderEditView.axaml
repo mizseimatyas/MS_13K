@@ -1,0 +1,98 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:WorkerApp.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="WorkerApp.Views.OrderEditView"
+             x:DataType="vm:OrderEditViewModel"
+             Background="#e0f4ff">
+
+    <UserControl.Styles>
+        <Style Selector="Button.primary">
+            <Setter Property="Background" Value="#0078d4" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="CornerRadius" Value="6" />
+            <Setter Property="Height" Value="40" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Padding" Value="16,0" />
+        </Style>
+
+        <Style Selector="Button.primary:pointerover">
+            <Setter Property="Background" Value="#005a9e" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- Fejléc -->
+        <Border Grid.Row="0"
+                Background="White"
+                CornerRadius="8"
+                Padding="10"
+                BoxShadow="0 2 6 #20000000">
+            <TextBlock Text="Rendelés státusz módosítása"
+                       FontSize="20"
+                       FontWeight="Bold"
+                       Foreground="#004071"
+                       HorizontalAlignment="Center" />
+        </Border>
+
+        <!-- Tartalom -->
+        <Border Grid.Row="1"
+                Margin="0,12,0,12"
+                Background="#f5fbff"
+                CornerRadius="8"
+                Padding="12"
+                BoxShadow="0 2 6 #15000000">
+            <StackPanel Spacing="10">
+
+                <!-- Alap rendelés infók (csak olvasásra) -->
+                <TextBlock Text="Rendelés adatai"
+                           FontWeight="SemiBold"
+                           Foreground="#00324e" />
+
+                <TextBlock Text="{Binding Order.OrderId, StringFormat='Rendelés azonosító: {0}'}"
+                           Foreground="#00324e" />
+
+                <Separator Margin="0,8,0,4" />
+
+                <!-- Státusz választó -->
+                <TextBlock Text="Új státusz"
+                           FontWeight="SemiBold"
+                           Foreground="#00324e" />
+                <ComboBox ItemsSource="{Binding Statuses}"
+                          SelectedItem="{Binding SelectedStatus}"
+                          Background="White"
+                          Foreground="Black"
+                          BorderBrush="#0078d4" />
+                
+                <!-- Visszajelző üzenet -->
+                <TextBlock Text="{Binding Message}"
+                           Foreground="#c00000"
+                           Margin="0,4,0,0" />
+            </StackPanel>
+        </Border>
+
+        <StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="8">
+            <Button Content="Mégse"
+                    Background="#ffffff"
+                    Foreground="#00324e"
+                    BorderBrush="#0078d4"
+                    BorderThickness="1"
+                    Padding="12,0"
+                    Command="{Binding CancelEditCommand}" />
+            <Button Content="Mentés"
+                    Classes="primary"
+                    Command="{Binding SaveStatusCommand}" />
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -124,8 +124,8 @@ namespace ModelTest
         [Fact]
         public async Task UserLogout_WithoutLogin_Unauthorized()
         {
-            var response = await _client.PostAsync("api/users/logout", null);
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            var logoutResponse = await _client.PostAsync("api/users/logout", null);
+            Assert.Equal(HttpStatusCode.Unauthorized, logoutResponse.StatusCode);
         }
 
         #endregion

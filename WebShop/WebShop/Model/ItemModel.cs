@@ -14,13 +14,14 @@ namespace WebShop.Model
 
         //For workers
         #region AllItems
-        public async Task<IEnumerable<AllItemDto>> AllItems()
+        public async Task<IEnumerable<AdminItemDto>> AllItems()
         {
             var items = await _context.Items
                 .Include(x => x.Category)
-                .Select(x => new AllItemDto
+                .OrderBy(x=> x.ItemId)
+                .Select(x => new AdminItemDto
                 {
-                    categoryId = x.Category.CategoryId,
+                    categoryName = x.Category.CategoryName,
                     itemId = x.ItemId,
                     itemName = x.ItemName,
                     quantity = x.Quantity,
@@ -37,14 +38,15 @@ namespace WebShop.Model
         #endregion
 
         #region ItemById
-        public async Task<ItemDto> ItemById(int id)
+        public async Task<AdminItemDto> ItemById(int id)
         {
             var item = await _context.Items
                 .Include(x => x.Category)
                 .Where(x => x.ItemId == id)
-                .Select(x => new ItemDto
+                .Select(x => new AdminItemDto
                 {
-                    categoryId = x.Category.CategoryId,
+                    categoryName = x.Category.CategoryName,
+                    itemId = x.ItemId,
                     itemName = x.ItemName,
                     quantity = x.Quantity,
                     description = x.Description,
@@ -59,18 +61,44 @@ namespace WebShop.Model
         }
         #endregion
 
+        #region AdmItemByName
+        public async Task<IEnumerable<AdminItemDto>> AdmItemByName(string iname)
+        {
+            var item = await _context.Items
+                .Include(x => x.Category)
+                .Where(x => x.ItemName.ToLower().Contains(iname.ToLower()))
+                .Select(x => new AdminItemDto
+                {
+                    categoryName = x.Category.CategoryName,
+                    itemId = x.ItemId,
+                    itemName = x.ItemName,
+                    quantity = x.Quantity,
+                    description = x.Description,
+                    price = x.Price
+                }).ToListAsync();
+
+            if (item is null)
+                throw new KeyNotFoundException($"Nincs termék erre a keresésre: {iname}");
+
+            return item;
+        }
+
+        #endregion
+
         #region ItemsWithQuantity0
-        public async Task<IEnumerable<SearchItemsByQuantityDto>> ItemsWithQunatity0()
+        public async Task<IEnumerable<AdminItemDto>> ItemsWithQunatity0()
         {
             var items = await _context.Items
                 .Include(x => x.Category)
                 .Where(x => x.Quantity == 0)
-                .Select(x => new SearchItemsByQuantityDto
+                .Select(x => new AdminItemDto
                 {
-                    id = x.ItemId,
+                    categoryName = x.Category.CategoryName,
+                    itemId = x.ItemId,
                     itemName = x.ItemName,
                     quantity = x.Quantity,
-                    categoryName = x.Category.CategoryName
+                    description = x.Description,
+                    price = x.Price
                 })
                 .ToListAsync();
 
@@ -82,70 +110,78 @@ namespace WebShop.Model
         #endregion
 
         #region Items Quantity Order By Lowest First
-        public async Task<IEnumerable<SearchItemsByQuantityDto>> ItemsWithQuantityOrderByAsc()
+        public async Task<IEnumerable<AdminItemDto>> ItemsWithQuantityOrderByAsc()
         {
             return await _context.Items
                 .Include(x => x.Category)
                 .OrderBy(x => x.Quantity)
-                .Select(x => new SearchItemsByQuantityDto
+                .Select(x => new AdminItemDto
                 {
-                    id = x.ItemId,
+                    categoryName = x.Category.CategoryName,
+                    itemId = x.ItemId,
                     itemName = x.ItemName,
                     quantity = x.Quantity,
-                    categoryName = x.Category.CategoryName
+                    description = x.Description,
+                    price = x.Price
                 })
                 .ToListAsync();
         }
         #endregion
 
         #region Items Quantity Order By Highest First
-        public async Task<IEnumerable<SearchItemsByQuantityDto>> ItemsWithQuantityOrderByDesc()
+        public async Task<IEnumerable<AdminItemDto>> ItemsWithQuantityOrderByDesc()
         {
             return await _context.Items
                 .Include(x => x.Category)
                 .OrderByDescending(x => x.Quantity)
-                .Select(x => new SearchItemsByQuantityDto
+                .Select(x => new AdminItemDto
                 {
-                    id = x.ItemId,
+                    categoryName = x.Category.CategoryName,
+                    itemId = x.ItemId,
                     itemName = x.ItemName,
                     quantity = x.Quantity,
-                    categoryName = x.Category.CategoryName
+                    description = x.Description,
+                    price = x.Price
                 })
                 .ToListAsync();
         }
         #endregion
 
         #region Items Quantity By Category Lowest First
-        public async Task<IEnumerable<SearchItemsByQuantityDto>> CategoryItemsQuantityOrderByAsc(string category)
+        public async Task<IEnumerable<AdminItemDto>> CategoryItemsQuantityOrderByAsc(string category)
         {
             return await _context.Items
                 .Include(x => x.Category)
                 .Where(x => x.Category.CategoryName.ToLower() == category.ToLower())
                 .OrderBy(x => x.Quantity)
-                .Select(x => new SearchItemsByQuantityDto
+                .Select(x => new AdminItemDto
                 {
-                    id = x.ItemId,
+                    categoryName = x.Category.CategoryName,
+                    itemId = x.ItemId,
                     itemName = x.ItemName,
                     quantity = x.Quantity,
-                    categoryName = x.Category.CategoryName
+                    description = x.Description,
+                    price = x.Price
                 })
                 .ToListAsync();
         }
         #endregion
 
         #region Items Quantity By Category Highest First
-        public async Task<IEnumerable<SearchItemsByQuantityDto>> CategoryItemsQuantityOrderByDesc(string category)
+        public async Task<IEnumerable<AdminItemDto>> CategoryItemsQuantityOrderByDesc(string category)
         {
             return await _context.Items
                 .Include(x => x.Category)
                 .Where(x => x.Category.CategoryName.ToLower() == category.ToLower())
                 .OrderByDescending(x => x.Quantity)
-                .Select(x => new SearchItemsByQuantityDto
+                .Select(x => new AdminItemDto
                 {
-                    id = x.ItemId,
+                    categoryName = x.Category.CategoryName,
+                    itemId = x.ItemId,
                     itemName = x.ItemName,
                     quantity = x.Quantity,
-                    categoryName = x.Category.CategoryName
+                    description = x.Description,
+                    price = x.Price
                 })
                 .ToListAsync();
         }
@@ -274,14 +310,15 @@ namespace WebShop.Model
         //For users:
 
         #region ItemByName
-        public async Task<ItemDto> ItemByName(string iname)
+        public async Task<AllItemDto> ItemByName(string iname)
         {
             var item = await _context.Items
                 .Include(x => x.Category)
                 .Where(x => x.ItemName.ToLower() == iname.ToLower())
-                .Select(x => new ItemDto
+                .Select(x => new AllItemDto
                 {
                     categoryId = x.Category.CategoryId,
+                    itemId = x.ItemId,
                     itemName = x.ItemName,
                     quantity = x.Quantity,
                     description = x.Description,
@@ -297,65 +334,24 @@ namespace WebShop.Model
         #endregion
 
         #region SearchItemByNameSnipet
-        public async Task<IEnumerable<SearchItemsByDto>> ItemsByNameSnipet(string sname)
+        public async Task<IEnumerable<AllItemDto>> ItemsByNameSnipet(string sname)
         {
             var items = await _context.Items
                 .Include(x => x.Category)
                 .Where(x => x.ItemName.ToLower().Contains(sname.ToLower()))
-                .Select(x => new SearchItemsByDto
+                .Select(x => new AllItemDto
                 {
-                    categoryNamE = x.Category.CategoryName,
-                    itemNamE = x.ItemName,
-                    pricE = x.Price
+                    categoryId = x.Category.CategoryId,
+                    itemId = x.ItemId,
+                    itemName = x.ItemName,
+                    quantity = x.Quantity,
+                    description = x.Description,
+                    price = x.Price
                 })
                 .ToListAsync();
 
             if (items.Count == 0)
                 throw new KeyNotFoundException($"Nincs termék erre a keresésre: {sname}");
-
-            return items;
-        }
-        #endregion
-
-        #region ItemsByCategoryNameAsc
-        public async Task<IEnumerable<SearchItemsByDto>> ItemsByCategoryNameAsc(string category)
-        {
-            var items = await _context.Items
-                .Include(x => x.Category)
-                .Where(x => x.Category.CategoryName.ToLower() == category.ToLower())
-                .OrderBy(x => x.ItemName)
-                .Select(x => new SearchItemsByDto
-                {
-                    categoryNamE = x.Category.CategoryName,
-                    itemNamE = x.ItemName,
-                    pricE = x.Price
-                })
-                .ToListAsync();
-
-            if (items.Count == 0)
-                throw new KeyNotFoundException($"Nincs termék '{category}' kategóriában");
-
-            return items;
-        }
-        #endregion
-
-        #region ItemsByCategoryNameDesc
-        public async Task<IEnumerable<SearchItemsByDto>> ItemsByCategoryNameDesc(string category)
-        {
-            var items = await _context.Items
-                .Include(x => x.Category)
-                .Where(x => x.Category.CategoryName.ToLower() == category.ToLower())
-                .OrderByDescending(x => x.ItemName)
-                .Select(x => new SearchItemsByDto
-                {
-                    categoryNamE = x.Category.CategoryName,
-                    itemNamE = x.ItemName,
-                    pricE = x.Price
-                })
-                .ToListAsync();
-
-            if (items.Count == 0)
-                throw new KeyNotFoundException($"Nincs termék '{category}' kategóriában");
 
             return items;
         }
@@ -439,57 +435,5 @@ namespace WebShop.Model
         }
         #endregion
 
-        #region ItemsByCategoryPriceAsc
-        public async Task<IEnumerable<SearchItemsByDto>> ItemsByCategoryPriceAsc(string category)
-        {
-            var items = await _context.Items
-                .Include(x => x.Category)
-                .Where(x => x.Category.CategoryName.ToLower() == category.ToLower())
-                .OrderBy(x => x.Price)
-                .Select(x => new SearchItemsByDto
-                {
-                    categoryNamE = x.Category.CategoryName,
-                    itemNamE = x.ItemName,
-                    pricE = x.Price
-                })
-                .ToListAsync();
-
-            if (items.Count == 0)
-                throw new KeyNotFoundException($"Nincs termék '{category}' kategóriában");
-
-            return items;
-        }
-        #endregion
-
-        #region ItemsByCategoryPriceDesc
-        public async Task<IEnumerable<SearchItemsByDto>> ItemsByCategoryPriceDesc(string category)
-        {
-            var items = await _context.Items
-                .Include(x => x.Category)
-                .Where(x => x.Category.CategoryName.ToLower() == category.ToLower())
-                .OrderByDescending(x => x.Price)
-                .Select(x => new SearchItemsByDto
-                {
-                    categoryNamE = x.Category.CategoryName,
-                    itemNamE = x.ItemName,
-                    pricE = x.Price
-                })
-                .ToListAsync();
-
-            if (items.Count == 0)
-                throw new KeyNotFoundException($"Nincs termék '{category}' kategóriában");
-
-            return items;
-        }
-        #endregion
-
-        #region SearchItemByNameExact(WIP)
-        #endregion
-
-        #region SearchByParameter(WIP)
-        #endregion
-
-        #region CompareItems(WIP)
-        #endregion
     }
 }

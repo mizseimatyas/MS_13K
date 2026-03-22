@@ -81,7 +81,7 @@ namespace WebShop.Model
         }
         #endregion
 
-        #region GetAllUsers
+        #region GetAllWorkers
         public async Task<IEnumerable<WorkerDto>> AllWorkers()
         {
             var workers = await _context.Workers.Select(x => new WorkerDto
