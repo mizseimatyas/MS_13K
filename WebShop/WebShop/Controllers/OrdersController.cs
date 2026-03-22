@@ -97,7 +97,6 @@ namespace WebShop.Controllers
         #endregion
 
         #region AllOrders
-        [Authorize(Roles = "Worker")]
         [HttpGet("allorders")]
         public async Task<ActionResult<List<OrderAllDto>>> AllOrders()
         {
@@ -118,7 +117,6 @@ namespace WebShop.Controllers
         #endregion
 
         #region UpdateOrderStatus
-        [Authorize(Roles = "Worker")]
         [HttpPut("updateorderstatus")]
         public async Task<ActionResult> UpdateOrderStatus([FromBody] UpdateOrderStatusDto dto)
         {
@@ -147,7 +145,6 @@ namespace WebShop.Controllers
         #endregion
 
         #region CompleteOrder
-        [Authorize(Roles = "Worker")]
         [HttpPut("completeorder")]
         public async Task<ActionResult> CompleteOrder([FromQuery] int orderid)
         {

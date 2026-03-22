@@ -18,6 +18,7 @@ namespace WebShop.Model
         {
             var items = await _context.Items
                 .Include(x => x.Category)
+                .OrderBy(x=> x.ItemId)
                 .Select(x => new AdminItemDto
                 {
                     categoryName = x.Category.CategoryName,
