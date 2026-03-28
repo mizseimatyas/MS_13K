@@ -1,0 +1,38 @@
+body {
+  color: white;
+  background: linear-gradient(to right, teal, rgb(3, 60, 75));
+}
+
+.page-section {
+  width: 100%;
+}
+
+#homeLogo {
+  cursor: pointer;
+}
+
+h4 {
+  width: 100%;
+  box-sizing: border-box;
+  display: inline-block;
+  padding: 7px;
+  border-radius: 5px;
+  text-align: center;
+  cursor: default;
+  background-color: darkgrey;
+}
+
+.logo {
+  padding: 7px;
+  border-radius: 5px;
+  font-weight: bold;
+  background-color: darkgrey;
+}
+
+.open-product-detail {
+  cursor: pointer;
+}
+
+.open-product-detail:hover {
+  opacity: 0.96;
+}
