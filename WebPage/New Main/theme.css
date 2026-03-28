@@ -1,0 +1,127 @@
+.dark-mode {
+  background: linear-gradient(to right, rgb(3, 60, 75), black);
+}
+
+.dark-mode .header,
+.dark-mode .sidebar,
+.dark-mode .rightbar,
+.dark-mode .content,
+.dark-mode .register-box,
+.dark-mode .login-box,
+.dark-mode .mobile-menu,
+.dark-mode .profile-menu,
+.dark-mode .mobile-list,
+.dark-mode .profile-list,
+.dark-mode .mobile-list li,
+.dark-mode .profile-list li,
+.dark-mode .product-detail-wrapper {
+  background-color: rgb(3, 60, 75);
+}
+
+.dark-mode .logo,
+.dark-mode h4,
+.dark-mode .filter-label {
+  color: white;
+  background-color: rgb(28, 28, 28);
+}
+
+.dark-mode .profile-list li:hover,
+.dark-mode .mobile-list li:hover {
+  background-color: rgb(39, 39, 39);
+}
+
+.dark-mode .sidebar .list-group-item {
+  color: white;
+  background-color: rgb(60, 60, 60);
+}
+
+.dark-mode .sidebar .list-group-item.active {
+  background-color: white !important;
+  color: black !important;
+}
+
+.dark-mode .product,
+.dark-mode .ad,
+.dark-mode .product-card,
+.dark-mode .register-box .card,
+.dark-mode .login-box .card,
+.dark-mode .detail-text-box,
+.dark-mode .detail-product-title,
+.dark-mode .stock-item,
+.dark-mode .detail-price-box {
+  color: white;
+  background: rgb(60, 60, 60);
+}
+
+.dark-mode .search-input,
+.dark-mode .filter-input,
+.dark-mode .price-input,
+.dark-mode .reset-filters-btn,
+.dark-mode .search-suggestions {
+  color: white;
+  background-color: rgb(39, 39, 39);
+}
+
+.dark-mode .search-suggestion-item {
+  border-bottom: 1px solid rgb(75, 75, 75);
+}
+
+.dark-mode .search-suggestion-item:hover,
+.dark-mode .search-suggestion-item.active {
+  background-color: rgb(60, 60, 60);
+}
+
+.dark-mode .search-suggestion-type {
+  color: #a9a9a9;
+}
+
+.dark-mode .control-btn {
+  background-color: rgb(28, 28, 28);
+  color: white;
+}
+
+.dark-mode .slider-fill {
+  background: #4fa3ff;
+}
+
+.dark-mode .slider::-webkit-slider-thumb,
+.dark-mode .slider::-moz-range-thumb {
+  border-color: #4fa3ff;
+}
+
+.dark-mode .product-image,
+.dark-mode .product-price,
+.dark-mode .stock-title,
+.dark-mode .product-gallery-box {
+  color: white;
+  background: linear-gradient(rgb(80, 150, 220), rgb(35, 80, 150));
+}
+
+.dark-mode .register-section,
+.dark-mode .login-section {
+  background: linear-gradient(to right, rgb(3, 60, 75), black);
+}
+
+.dark-mode .register-box label,
+.dark-mode .login-box label,
+.dark-mode .register-box h2,
+.dark-mode .login-box h2,
+.dark-mode .detail-text-box h3,
+.dark-mode .detail-text-box p,
+.dark-mode .gallery-arrow,
+.dark-mode .product-gallery-image {
+  color: white;
+}
+
+.dark-mode .product-gallery-image {
+  border-color: rgb(28, 28, 28);
+  background-color: rgb(60, 60, 60);
+}
+
+.dark-mode .gallery-dot {
+  background-color: rgb(75, 75, 75);
+}
+
+.dark-mode .gallery-dot.active {
+  background-color: #4fa3ff;
+}
