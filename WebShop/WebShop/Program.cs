@@ -5,6 +5,8 @@ using WebShop.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var isDev = builder.Environment.IsDevelopment();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("DevCors", policy =>
@@ -17,7 +19,6 @@ builder.Services.AddCors(options =>
     });
 });
 
-// Add services to the container.
 builder.Services.AddDbContextPool<DataDbContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("connect")));
 builder.Services.AddTransient<ItemModel>();
 builder.Services.AddTransient<CategoryModel>();
@@ -28,7 +29,6 @@ builder.Services.AddTransient<AdminModel>();
 builder.Services.AddTransient<UserModel>();
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -37,8 +37,8 @@ builder.Services
     .AddCookie(options =>
     {
         options.Cookie.Name = "webshop_auth";
-        options.Cookie.SameSite = SameSiteMode.None;
-        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.Cookie.SameSite = isDev ? SameSiteMode.Lax : SameSiteMode.None;
+        options.Cookie.SecurePolicy = isDev ? CookieSecurePolicy.SameAsRequest : CookieSecurePolicy.Always;
         options.SlidingExpiration = true;
         options.Events = new CookieAuthenticationEvents
         {
@@ -63,8 +63,6 @@ using (var scope = app.Services.CreateScope())
     db.Database.EnsureCreated();
 }
 
-
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -72,12 +70,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseCors("DevCors");
-
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();

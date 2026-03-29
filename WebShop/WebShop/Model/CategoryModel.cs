@@ -93,7 +93,9 @@ namespace WebShop.Model
             var categories = await _context.Categories
                 .Select(x => new CategoryDto
                 {
+                    categoryId = x.CategoryId,
                     categoryName = x.CategoryName,
+                    itemCount = x.Items.Count
                 })
                 .ToListAsync();
 
