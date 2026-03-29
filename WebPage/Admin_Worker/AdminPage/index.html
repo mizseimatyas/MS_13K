@@ -12,17 +12,21 @@
             <nav>
                 <button class="nav-btn" data-view="user-panel">Felhasználók</button>
                 <button class="nav-btn" data-view="item-panel">Termékek</button>
+                <button class="nav-btn" data-view="order-panel">Megrendelések</button>
             </nav>
         </aside>
+
 
         <main class="main">
             <header class="topbar">
                 <h1>Admin felület</h1>
             </header>
 
-            <!-- FELHASZNÁLÓK PANEL (változatlan) -->
+
+            <!-- FELHASZNÁLÓK PANEL -->
             <section id="user-panel" class="panel active">
                 <h2>Felhasználókezelés</h2>
+
 
                 <div class="user-layout">
                     <div class="card">
@@ -53,6 +57,7 @@
                         <div class="log" id="register-log"></div>
                     </div>
 
+
                     <div class="card">
                         <h3>Dolgozók</h3>
                         <div class="log" id="worker-query-log"></div>
@@ -61,9 +66,11 @@
                 </div>
             </section>
 
-            <!-- TERMÉKEK PANEL – csak táblázat -->
+
+            <!-- TERMÉKEK PANEL -->
             <section id="item-panel" class="panel">
                 <h2>Termékek kezelése</h2>
+
 
                 <div class="card">
                 <h3>Keresés</h3>
@@ -88,8 +95,30 @@
                 <div id="items-table-container"></div>
             </div>
         </section>
+
+        <!-- MEGRENDELÉSEK PANEL -->
+            <section id="order-panel" class="panel">
+                <h2>Megrendelések kezelése</h2>
+
+                <div class="card">
+                    <h3>Megrendelések műveletek</h3>
+                    <div class="order-actions">
+                        <!-- CSAK ez marad felül -->
+                        <button type="button" id="load-all-orders-btn" class="secondary-btn">
+                            Összes megrendelés betöltése
+                        </button>
+                    </div>
+                    <div class="log" id="orders-log"></div>
+                </div>
+
+                <div class="card">
+                    <h3>Megrendelések táblázat</h3>
+                    <div id="orders-table-container"></div>
+                </div>
+            </section>
         </main>
     </div>
+
 
     <!-- Dolgozó törlés megerősítő modal (változatlan) -->
     <div id="delete-modal" class="modal-overlay" style="display:none;">
@@ -100,6 +129,41 @@
                 <button id="modal-confirm" class="danger-btn">Törlés</button>
                 <button id="modal-cancel" class="secondary-btn">Mégse</button>
             </div>
+        </div>
+    </div>
+
+    <div id="order-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-box">
+            <button id="order-modal-close-x" class="secondary-btn" style="position:absolute; top:0.5rem; right:0.7rem;">×</button>
+            <h3>Rendelés részletei</h3>
+
+            <div id="order-modal-details"></div>
+                <div id="order-modal-items"></div>
+
+                <div class="order-modal-actions">
+                    <form id="order-modal-update-status-form" class="order-status-row">
+                        <label>
+                            Új státusz
+                            <select name="orderStatus" id="order-modal-status-select" required>
+                                <option value="">Válassz...</option>
+                                <option value="Pending">Pending</option>
+                                <option value="PaymentSuccess">PaymentSuccess</option>
+                                <option value="Delivering">Delivering</option>
+                                <option value="Cancelled">Cancelled</option>
+                                <option value="OrderCompleted">OrderCompleted</option>
+                            </select>
+                        </label>
+                        <button type="submit" class="secondary-btn">
+                            Státusz frissítése
+                        </button>
+                    </form>
+
+                    <button type="button" id="order-modal-complete-btn" class="danger-btn" disabled>
+                        Rendelés lezárása
+                    </button>
+                </div>
+
+                <div class="log" id="order-modal-log"></div>
         </div>
     </div>
 

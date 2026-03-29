@@ -104,8 +104,7 @@ namespace WebShop.Model
         }
         #endregion
 
-        #region ModifyCategorySpecifics(WIP)
-        #endregion
+
 
     }
 }

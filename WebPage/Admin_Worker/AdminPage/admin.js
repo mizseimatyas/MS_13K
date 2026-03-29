@@ -1,9 +1,12 @@
 const API_BASE = 'https://localhost:7149/api';
+const ORDERS_BASE = `${API_BASE}/Orders`;
 
 const navButtons = document.querySelectorAll('.nav-btn');
 const panels = document.querySelectorAll('.panel');
 
+
 let currentRole = null;
+
 
 navButtons.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -16,6 +19,7 @@ navButtons.forEach(btn => {
     });
 });
 
+
 function setLog(id, message, isError = false) {
     const el = document.getElementById(id);
     if (el) {
@@ -25,6 +29,7 @@ function setLog(id, message, isError = false) {
     }
 }
 
+
 function validateForm(form) {
     if (!form.checkValidity()) {
         form.reportValidity();
@@ -32,6 +37,7 @@ function validateForm(form) {
     }
     return true;
 }
+
 
 async function apiFetch(url, options = {}) {
     const response = await fetch(url, {
@@ -43,11 +49,13 @@ async function apiFetch(url, options = {}) {
         ...options
     });
 
+
     if (!response.ok) {
         const text = await response.text();
         const msg = text || `HTTP hiba: ${response.status}`;
         throw new Error(msg);
     }
+
 
     const contentType = response.headers.get('Content-Type') || '';
     if (contentType.includes('application/json')) {
@@ -55,6 +63,7 @@ async function apiFetch(url, options = {}) {
     }
     return await response.text();
 }
+
 
 async function checkAuth() {
     try {
@@ -72,16 +81,23 @@ async function checkAuth() {
     }
 }
 
+
 function applyRoleUi() {
     const userTabBtn = document.querySelector('.nav-btn[data-view="user-panel"]');
     const userPanel = document.getElementById('user-panel');
     const itemPanel = document.getElementById('item-panel');
+    const orderTabBtn = document.querySelector('.nav-btn[data-view="order-panel"]');
+    const orderPanel = document.getElementById('order-panel');
 
     if (!currentRole) return;
+
 
     if (currentRole === 'Worker') {
         if (userTabBtn) userTabBtn.style.display = 'none';
         if (userPanel) userPanel.style.display = 'none';
+
+        if (orderTabBtn) orderTabBtn.style.display = '';
+        if (orderPanel) orderPanel.style.display = '';
 
         if (itemPanel) {
             panels.forEach(p => p.classList.remove('active'));
@@ -90,8 +106,10 @@ function applyRoleUi() {
     } else if (currentRole === 'Admin') {
         if (userTabBtn) userTabBtn.style.display = '';
         if (userPanel) userPanel.style.display = '';
+        if (orderPanel) orderPanel.style.display = '';
     }
 }
+
 
 //#region Admin rész
 /* Regisztráció (worker / admin) */
@@ -100,14 +118,18 @@ document.getElementById('register-form')
         e.preventDefault();
         const form = e.target;
 
+
         if (!validateForm(form)) return;
 
+
         const data = Object.fromEntries(new FormData(form));
+
 
         if (data.phone.length < 8) {
             setLog('register-log', 'A telefonszámnak legalább 8 karakter hosszúnak kell lennie.', true);
             return;
         }
+
 
         try {
             if (data.role === 'admin') {
@@ -122,8 +144,10 @@ document.getElementById('register-form')
                 );
             }
 
+
             setLog('register-log', 'Sikeres regisztráció.');
             form.reset();
+
 
             if (currentRole === 'Admin') {
                 loadAllWorkers();
@@ -133,6 +157,7 @@ document.getElementById('register-form')
         }
     });
 
+
 /* Dolgozó törlése */
 const deleteModal = document.getElementById('delete-modal');
 const modalBox = deleteModal?.querySelector('.modal-box');
@@ -141,14 +166,17 @@ const modalConfirmBtn = document.getElementById('modal-confirm');
 const modalCancelBtn = document.getElementById('modal-cancel');
 const modalCloseX = document.getElementById('modal-close-x');
 
+
 function showDeleteModal(message) {
     if (!deleteModal || !modalMessage || !modalConfirmBtn || !modalCancelBtn || !modalCloseX) {
         return Promise.resolve(false);
     }
 
+
     return new Promise(resolve => {
         modalMessage.textContent = message;
         deleteModal.style.display = 'flex';
+
 
         const cleanup = () => {
             deleteModal.style.display = 'none';
@@ -157,13 +185,16 @@ function showDeleteModal(message) {
             modalCloseX.removeEventListener('click', onCancel);
         };
 
+
         const onResolve = value => {
             cleanup();
             resolve(value);
         };
 
+
         const onConfirm = () => onResolve(true);
         const onCancel = () => onResolve(false);
+
 
         modalConfirmBtn.addEventListener('click', onConfirm);
         modalCancelBtn.addEventListener('click', onCancel);
@@ -171,15 +202,18 @@ function showDeleteModal(message) {
     });
 }
 
+
 /* Dolgozók táblázat */
 function renderWorkersTable(workers) {
     const container = document.getElementById('worker-table-container');
     if (!container) return;
 
+
     if (!workers || workers.length === 0) {
         container.innerHTML = '<p>Nincsenek dolgozók.</p>';
         return;
     }
+
 
     let html = '<table class="data-table"><thead><tr>';
     html += '<th>WorkerId</th>';
@@ -189,6 +223,7 @@ function renderWorkersTable(workers) {
     html += '<th>Password</th>';
     html += '<th></th>';
     html += '</tr></thead><tbody>';
+
 
     workers.forEach(work => {
         const phoneValue = work.phone ?? '';
@@ -206,21 +241,26 @@ function renderWorkersTable(workers) {
         </tr>`;
     });
 
+
     html += '</tbody></table>';
     container.innerHTML = html;
+
 
     container.querySelectorAll('.btn-edit-worker').forEach(btn => {
         btn.addEventListener('click', onEditWorkerClick);
     });
 
+
     container.querySelectorAll('.btn-cancel-edit').forEach(btn => {
         btn.addEventListener('click', onCancelEditClick);
     });
+
 
     container.querySelectorAll('.btn-delete-worker').forEach(btn => {
         btn.addEventListener('click', onDeleteWorkerClick);
     });
 }
+
 
 /* Dolgozó - sor szerkesztés  */
 function onEditWorkerClick(e) {
@@ -229,23 +269,29 @@ function onEditWorkerClick(e) {
     const isEditing = row.dataset.editing === 'true';
     const cancelBtn = row.querySelector('.btn-cancel-edit');
 
+
     if (!isEditing) {
         row.dataset.editing = 'true';
         btn.textContent = 'Mentés';
         cancelBtn.style.display = 'inline-block';
 
+
         const nameCell = row.querySelector('.cell-name');
         const phoneCell = row.querySelector('.cell-phone');
         const passwordCell = row.querySelector('.cell-password');
 
+
         const originalName = nameCell.textContent.trim();
         const originalPhone = phoneCell.textContent.trim();
+
 
         row.dataset.originalName = originalName;
         row.dataset.originalPhone = originalPhone;
 
+
         nameCell.innerHTML = `<input type="text" class="input-name" value="${originalName}">`;
         phoneCell.innerHTML = `<input type="number" class="input-phone" value="${originalPhone}">`;
+
 
         passwordCell.innerHTML = `
             <div class="password-edit">
@@ -257,14 +303,17 @@ function onEditWorkerClick(e) {
                 <button type="button" class="secondary-btn btn-toggle-password-confirm">👁</button>
             </div>`;
 
+
         const pwdInput = passwordCell.querySelector('.input-password');
         const pwdConfirmInput = passwordCell.querySelector('.input-password-confirm');
         const togglePwdBtn = passwordCell.querySelector('.btn-toggle-password');
         const togglePwdConfirmBtn = passwordCell.querySelector('.btn-toggle-password-confirm');
 
+
         togglePwdBtn.addEventListener('click', () => {
             pwdInput.type = pwdInput.type === 'password' ? 'text' : 'password';
         });
+
 
         togglePwdConfirmBtn.addEventListener('click', () => {
             pwdConfirmInput.type = pwdConfirmInput.type === 'password' ? 'text' : 'password';
@@ -274,30 +323,37 @@ function onEditWorkerClick(e) {
     }
 }
 
+
 /* Vissza – dolgozó sor */
 function onCancelEditClick(e) {
     const btnCancel = e.currentTarget;
     const row = btnCancel.closest('tr');
     const editBtn = row.querySelector('.btn-edit-worker');
 
+
     const originalName = row.dataset.originalName ?? row.querySelector('.cell-name').textContent.trim();
     const originalPhone = row.dataset.originalPhone ?? row.querySelector('.cell-phone').textContent.trim();
+
 
     const nameCell = row.querySelector('.cell-name');
     const phoneCell = row.querySelector('.cell-phone');
     const passwordCell = row.querySelector('.cell-password');
 
+
     nameCell.textContent = originalName;
     phoneCell.textContent = originalPhone;
     passwordCell.textContent = '********';
+
 
     row.dataset.editing = 'false';
     delete row.dataset.originalName;
     delete row.dataset.originalPhone;
 
+
     editBtn.textContent = 'Módosítás';
     btnCancel.style.display = 'none';
 }
+
 
 /* Mentés – dolgozó sor */
 async function saveWorkerRow(row, btn) {
@@ -308,10 +364,12 @@ async function saveWorkerRow(row, btn) {
     const newPassword = row.querySelector('.input-password')?.value || '';
     const newPasswordConfirm = row.querySelector('.input-password-confirm')?.value || '';
 
+
     if (!workerName) {
         alert('A név nem lehet üres.');
         return;
     }
+
 
     if (newPassword || newPasswordConfirm) {
         if (newPassword.length < 6) {
@@ -324,8 +382,10 @@ async function saveWorkerRow(row, btn) {
         }
     }
 
+
     const currentRoleCell = row.querySelector('.cell-role');
     const currentRole = currentRoleCell ? currentRoleCell.textContent.trim() : 'Worker';
+
 
     try {
         if (newPassword) {
@@ -333,6 +393,7 @@ async function saveWorkerRow(row, btn) {
                 method: 'PUT'
             });
         }
+
 
         await apiFetch(`${API_BASE}/Workers/changedata/${id}`, {
             method: 'PUT',
@@ -343,6 +404,7 @@ async function saveWorkerRow(row, btn) {
             })
         });
 
+
         row.dataset.editing = 'false';
         btn.textContent = 'Módosítás';
         const cancelBtn = row.querySelector('.btn-cancel-edit');
@@ -350,15 +412,18 @@ async function saveWorkerRow(row, btn) {
         delete row.dataset.originalName;
         delete row.dataset.originalPhone;
 
+
         row.querySelector('.cell-name').textContent = workerName;
         row.querySelector('.cell-phone').textContent = phone ?? '';
         row.querySelector('.cell-password').textContent = '********';
+
 
         setLog('worker-query-log', `Dolgozó módosítva (id = ${id})${newPassword ? ' (jelszó frissítve)' : ''}.`);
     } catch (err) {
         setLog('worker-query-log', `Hiba dolgozó módosítás közben: ${err.message}`, true);
     }
 }
+
 
 /* Dolgozó törlés */
 async function onDeleteWorkerClick(e) {
@@ -367,13 +432,16 @@ async function onDeleteWorkerClick(e) {
     const id = Number(row.dataset.id);
     const name = row.querySelector('.cell-name').textContent.trim();
 
+
     const confirmed = await showDeleteModal(`Biztosan törlöd ezt a dolgozót? ${name} (id: ${id})`);
     if (!confirmed) return;
+
 
     try {
         await apiFetch(`${API_BASE}/Workers/${id}`, {
             method: 'DELETE'
         });
+
 
         row.remove();
         setLog('worker-query-log', `Dolgozó törölve (id = ${id}).`);
@@ -382,9 +450,11 @@ async function onDeleteWorkerClick(e) {
     }
 }
 
+
 /* Dolgozók betöltése */
 async function loadAllWorkers() {
     if (currentRole !== 'Admin') return;
+
 
     try {
         const workers = await apiFetch(`${API_BASE}/Admins/allworkers`, {
@@ -398,21 +468,23 @@ async function loadAllWorkers() {
 }
 //#endregion
 
-
-
+//#region Termékek
 /* Termékek táblázat */
 let currentSort = { key: 'itemId', dir: 'asc' }; // alap: ItemId, növekvő
 let currentItems = []; // itt tartjuk az utoljára betöltött listát
+
 
 function renderItemsTable(items) {
     currentItems = items.slice(); // másolat
     const container = document.getElementById('items-table-container');
     if (!container) return;
 
+
     if (!items || items.length === 0) {
         container.innerHTML = '<p>Nincs egyetlen termék sem.</p>';
         return;
     }
+
 
     const headers = [
         { label: 'ItemId',     key: 'itemId' },
@@ -422,6 +494,7 @@ function renderItemsTable(items) {
         { label: 'Leírás',     key: null },            // nem rendezhető erre paraméter
         { label: 'Ár',         key: 'price' }
     ];
+
 
     let html = '<table class="data-table"><thead><tr>';
     headers.forEach(h => {
@@ -435,6 +508,7 @@ function renderItemsTable(items) {
         }
     });
     html += '<th></th></tr></thead><tbody>';
+
 
     items.forEach(item => {
         html += `
@@ -453,14 +527,15 @@ function renderItemsTable(items) {
             </tr>`;
     });
 
+
     html += '</tbody></table>';
     container.innerHTML = html;
+
 
     // header kattintás – rendezés
     container.querySelectorAll('th.sortable').forEach(th => {
         th.addEventListener('click', () => {
             const key = th.getAttribute('data-sort-key');
-            // irány váltás / új oszlop
             if (currentSort.key === key) {
                 currentSort.dir = currentSort.dir === 'asc' ? 'desc' : 'asc';
             } else {
@@ -471,6 +546,7 @@ function renderItemsTable(items) {
             renderItemsTable(sorted);
         });
     });
+
 
     container.querySelectorAll('.btn-edit-item').forEach(btn => {
         btn.addEventListener('click', onEditItemClick);
@@ -483,21 +559,23 @@ function renderItemsTable(items) {
     });
 }
 
+
 function compareByKey(a, b, key, dir) {
     const va = a[key];
     const vb = b[key];
 
+
     let res;
-    // számos mezők
     if (typeof va === 'number' && typeof vb === 'number') {
         res = va - vb;
     } else {
-        // szöveges összehasonlítás
         res = String(va ?? '').localeCompare(String(vb ?? ''), 'hu');
     }
 
+
     return dir === 'asc' ? res : -res;
 }
+
 
 
 /* Termék sor szerkesztés – név, mennyiség, leírás, ár */
@@ -507,10 +585,12 @@ function onEditItemClick(e) {
     const isEditing = row.dataset.editing === 'true';
     const cancelBtn = row.querySelector('.btn-cancel-edit-item');
 
+
     if (!isEditing) {
         row.dataset.editing = 'true';
         btn.textContent = 'Mentés';
         cancelBtn.style.display = 'inline-block';
+
 
         const nameCell = row.querySelector('.cell-name');
         const categoryCell = row.querySelector('.cell-categoryname');
@@ -518,17 +598,20 @@ function onEditItemClick(e) {
         const descriptionCell = row.querySelector('.cell-description');
         const priceCell = row.querySelector('.cell-price');
 
+
         const originalName = nameCell.textContent.trim();
         const originalCategory = categoryCell.textContent.trim();
         const originalQuantity = quantityCell.textContent.trim();
         const originalDescription = descriptionCell.textContent.trim();
         const originalPrice = priceCell.textContent.trim();
 
+
         row.dataset.originalName = originalName;
         row.dataset.originalCategory = originalCategory;
         row.dataset.originalQuantity = originalQuantity;
         row.dataset.originalDescription = originalDescription;
         row.dataset.originalPrice = originalPrice;
+
 
         nameCell.innerHTML = `<input type="text" class="input-item-name" value="${originalName}">`;
         categoryCell.innerHTML = `<input type="text" class="input-item-category" value="${originalCategory}">`;
@@ -540,11 +623,13 @@ function onEditItemClick(e) {
     }
 }
 
+
 /* Termék sor */
 function onCancelEditItemClick(e) {
     const btnCancel = e.currentTarget;
     const row = btnCancel.closest('tr');
     const editBtn = row.querySelector('.btn-edit-item');
+
 
     const nameCell = row.querySelector('.cell-name');
     const categoryCell = row.querySelector('.cell-categoryname');
@@ -552,11 +637,13 @@ function onCancelEditItemClick(e) {
     const descriptionCell = row.querySelector('.cell-description');
     const priceCell = row.querySelector('.cell-price');
 
+
     nameCell.textContent = row.dataset.originalName ?? nameCell.textContent.trim();
     categoryCell.textContent = row.dataset.originalCategory ?? categoryCell.textContent.trim();
     quantityCell.textContent = row.dataset.originalQuantity ?? quantityCell.textContent.trim();
     descriptionCell.textContent = row.dataset.originalDescription ?? descriptionCell.textContent.trim();
     priceCell.textContent = row.dataset.originalPrice ?? priceCell.textContent.trim();
+
 
     row.dataset.editing = 'false';
     delete row.dataset.originalName;
@@ -565,9 +652,11 @@ function onCancelEditItemClick(e) {
     delete row.dataset.originalDescription;
     delete row.dataset.originalPrice;
 
+
     editBtn.textContent = 'Módosítás';
     btnCancel.style.display = 'none';
 }
+
 
 /* Termék sor – Mentés */
 async function saveItemRow(row, btn) {
@@ -578,8 +667,10 @@ async function saveItemRow(row, btn) {
     const description = row.querySelector('.input-item-description').value.trim();
     const priceVal = row.querySelector('.input-item-price').value;
 
+
     const quantity = Number(quantityVal);
     const price = Number(priceVal);
+
 
     if (!name) {
         alert('A név nem lehet üres.');
@@ -594,6 +685,7 @@ async function saveItemRow(row, btn) {
         return;
     }
 
+
     const payload = {
         itemId: id,
         categoryName: category,
@@ -604,6 +696,7 @@ async function saveItemRow(row, btn) {
     };
     console.log('Modify payload:', payload);
 
+
     try {
         await apiFetch(`${API_BASE}/items/modifyitem`, {
             method: 'PUT',
@@ -611,10 +704,12 @@ async function saveItemRow(row, btn) {
         });
 
 
+
         row.dataset.editing = 'false';
         btn.textContent = 'Módosítás';
         const cancelBtn = row.querySelector('.btn-cancel-edit-item');
         if (cancelBtn) cancelBtn.style.display = 'none';
+
 
         row.querySelector('.cell-name').textContent = name;
         row.querySelector('.cell-categoryname').textContent = category;
@@ -622,11 +717,13 @@ async function saveItemRow(row, btn) {
         row.querySelector('.cell-description').textContent = description;
         row.querySelector('.cell-price').textContent = price;
 
+
         setLog('item-modify-log', `Termék sikeresen módosítva, id = ${id}.`);
     } catch (err) {
         setLog('item-modify-log', `Hiba termék módosítása közben: ${err.message}`, true);
     }
 }
+
 
 /* Termék törlése */
 async function onDeleteItemRowClick(e) {
@@ -635,14 +732,17 @@ async function onDeleteItemRowClick(e) {
     const id = Number(row.getAttribute('data-item-id'));
     const name = row.querySelector('.cell-name').textContent.trim();
 
+
     if (!confirm(`Biztosan törlöd ezt a terméket? ${name} (id: ${id})`)) {
         return;
     }
+
 
     try {
         await apiFetch(`${API_BASE}/items/deleteitem?id=${encodeURIComponent(id)}`, {
             method: 'DELETE'
         });
+
 
         row.remove();
         setLog('item-modify-log', `Termék sikeresen törölve, id = ${id}.`);
@@ -650,6 +750,7 @@ async function onDeleteItemRowClick(e) {
         setLog('item-modify-log', `Hiba termék törlése közben: ${err.message}`, true);
     }
 }
+
 
 /* Termékek automatikus betöltése */
 async function loadInitialItems() {
@@ -664,6 +765,7 @@ async function loadInitialItems() {
     }
 }
 
+
 /* ItemById */
 document.getElementById('item-by-id-form')
   ?.addEventListener('submit', async e => {
@@ -671,19 +773,23 @@ document.getElementById('item-by-id-form')
     const form = e.target;
     if (!validateForm(form)) return;
 
+
     const data = Object.fromEntries(new FormData(form));
     const id = Number(data.itemId);
+
 
     if (!Number.isInteger(id) || id <= 0) {
       setLog('item-query-log', 'Az Item ID csak pozitív egész szám lehet.', true);
       return;
     }
 
+
     try {
       const url = `${API_BASE}/items/itembyid?id=${encodeURIComponent(id)}`;
       const item = await apiFetch(url, { method: 'GET' });
       const itemsContainer = document.getElementById('items-table-container');
       const table = itemsContainer.querySelector('table');
+
 
            if (!table) {
         renderItemsTable([item]);
@@ -697,6 +803,7 @@ document.getElementById('item-by-id-form')
         });
       }
 
+
       setLog('item-query-log', `ItemById sikeres, id = ${id}`);
       form.reset();
     } catch (err) {
@@ -704,23 +811,28 @@ document.getElementById('item-by-id-form')
     }
   });
 
+
 document.getElementById('item-by-name-form')
   ?.addEventListener('submit', async e => {
     e.preventDefault();
     const form = e.target;
     if (!validateForm(form)) return;
 
+
     const data = Object.fromEntries(new FormData(form));
     const frag = (data.fragname || '').trim();
+
 
     if (!frag) {
       setLog('item-query-log', 'A névrészlet nem lehet üres.', true);
       return;
     }
 
+
     try {
       const url = `${API_BASE}/items/admitembyname?iname=${encodeURIComponent(frag)}`;
       const items = await apiFetch(url, { method: 'GET' });
+
 
       renderItemsTable(items);
       setLog('item-query-log', `AdmItemByName sikeres, találatok: ${items.length}.`);
@@ -730,11 +842,13 @@ document.getElementById('item-by-name-form')
     }
   });
 
+
 document.getElementById('reset-items-btn')
   ?.addEventListener('click', async () => {
     await loadInitialItems();
     setLog('item-query-log', 'Táblázat visszaállítva teljes listára.');
   });
+
 
 /* Új termék */
 document.getElementById('add-item-form')
@@ -743,7 +857,9 @@ document.getElementById('add-item-form')
         const form = e.target;
         if (!validateForm(form)) return;
 
+
         const data = Object.fromEntries(new FormData(form));
+
 
         if (Number(data.quantity) <= 0) {
             setLog('item-modify-log', 'A mennyiségnek pozitívnak kell lennie.', true);
@@ -753,6 +869,7 @@ document.getElementById('add-item-form')
             setLog('item-modify-log', 'Az árnak pozitívnak kell lennie.', true);
             return;
         }
+
 
         try {
             await apiFetch(`${API_BASE}/items`, {
@@ -766,6 +883,7 @@ document.getElementById('add-item-form')
                 })
             });
 
+
             setLog('item-modify-log', 'Új termék sikeresen hozzáadva.');
             form.reset();
             loadInitialItems();
@@ -773,8 +891,257 @@ document.getElementById('add-item-form')
             setLog('item-modify-log', `Hiba új termék hozzáadása közben: ${err.message}`, true);
         }
     });
+    //#endregion
+
+//#region Orders
+
+// Modal elemek
+const orderModal = document.getElementById('order-modal');
+const orderModalCloseX = document.getElementById('order-modal-close-x');
+
+function openOrderModal() {
+    if (!orderModal) return;
+    orderModal.style.display = 'flex';
+}
+
+function closeOrderModal() {
+    if (!orderModal) return;
+    orderModal.style.display = 'none';
+    const log = document.getElementById('order-modal-log');
+    if (log) log.textContent = '';
+}
+
+orderModalCloseX
+    ?.addEventListener('click', () => closeOrderModal());
+
+orderModal
+    ?.addEventListener('click', e => {
+        if (e.target === orderModal) {
+            closeOrderModal();
+        }
+    });
+
+/* Megrendelések – táblázat renderelése */
+function renderOrdersTable(orders) {
+    const container = document.getElementById('orders-table-container');
+    if (!container) return;
+
+    if (!orders || orders.length === 0) {
+        container.innerHTML = '<p>Nincs egyetlen megrendelés sem.</p>';
+        return;
+    }
+
+    let html = `
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>OrderId</th>
+                    <th>Dátum</th>
+                    <th>Státusz</th>
+                    <th>Végösszeg</th>
+                    <th>Cím</th>
+                    <th>Műveletek</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    orders.forEach(o => {
+        html += `
+            <tr data-order-id="${o.orderId}">
+                <td>${o.orderId}</td>
+                <td>${o.date}</td>
+                <td>${o.status}</td>
+                <td>${o.totalPrice}</td>
+                <td>${o.targetAddress}</td>
+                <td>
+                    <button class="secondary-btn btn-order-details">Részletek</button>
+                </td>
+            </tr>
+        `;
+    });
+
+    html += '</tbody></table>';
+    container.innerHTML = html;
+
+    container.querySelectorAll('.btn-order-details').forEach(btn => {
+        btn.addEventListener('click', onOrderDetailsClick);
+    });
+}
+
+/* /api/Orders/allorders */
+async function loadAllOrders() {
+    try {
+        const orders = await apiFetch(`${ORDERS_BASE}/allorders`, {
+            method: 'GET'
+        });
+        renderOrdersTable(orders);
+        setLog('orders-log', `Összes megrendelés betöltve. Darabszám: ${orders.length}.`);
+    } catch (err) {
+        setLog('orders-log', `Hiba AllOrders hívás közben: ${err.message}`, true);
+    }
+}
+
+/* Egy rendelés részletei gomb */
+async function onOrderDetailsClick(e) {
+    const row = e.currentTarget.closest('tr');
+    const orderId = Number(row.dataset.orderId);
+    if (!orderId) return;
+    await loadOrderDetailsToModal(orderId);
+}
+
+/* /api/Orders/orderDetailsByOrderId?orderId= */
+async function loadOrderDetailsToModal(orderId) {
+    const parsedId = Number(orderId);
+    if (!Number.isInteger(parsedId) || parsedId <= 0) {
+        setLog('orders-log', 'Érvénytelen rendelés ID.', true);
+        return;
+    }
+
+    try {
+        const url = `${ORDERS_BASE}/orderDetailsByOrderId?orderId=${encodeURIComponent(parsedId)}`;
+        const order = await apiFetch(url, { method: 'GET' });
+
+        const detailsContainer = document.getElementById('order-modal-details');
+        const itemsContainer = document.getElementById('order-modal-items');
+        const hiddenId = document.getElementById('order-modal-order-id');
+        const statusSelect = document.getElementById('order-modal-status-select');
+        const completeBtn = document.getElementById('order-modal-complete-btn');
+
+        if (hiddenId) hiddenId.value = order.orderId;
+        if (statusSelect) statusSelect.value = order.status || '';
+        if (completeBtn) {
+            completeBtn.disabled = false;
+            completeBtn.dataset.orderId = order.orderId;
+        }
+
+        if (detailsContainer) {
+            detailsContainer.innerHTML = `
+                <div class="order-summary">
+                    <p><strong>Rendelés ID:</strong> ${order.orderId}</p>
+                    <p><strong>Dátum:</strong> ${order.date}</p>
+                    <p><strong>Státusz:</strong> ${order.status}</p>
+                    <p><strong>Célcím:</strong> ${order.targetAddress}</p>
+                    <p><strong>Végösszeg:</strong> ${order.totalPrice}</p>
+                </div>
+            `;
+        }
+
+        if (itemsContainer) {
+            if (!order.items || order.items.length === 0) {
+                itemsContainer.innerHTML = '<p>Nincsenek tételek ehhez a rendeléshez.</p>';
+            } else {
+                let html = `
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ItemId</th>
+                                <th>Név</th>
+                                <th>Mennyiség</th>
+                                <th>Egységár</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                order.items.forEach(it => {
+                    html += `
+                        <tr>
+                            <td>${it.itemId}</td>
+                            <td>${it.itemName}</td>
+                            <td>${it.quantity}</td>
+                            <td>${it.price}</td>
+                        </tr>
+                    `;
+                });
+                html += '</tbody></table>';
+                itemsContainer.innerHTML = html;
+            }
+        }
+
+        openOrderModal();
+    } catch (err) {
+        setLog('orders-log', `Hiba rendelés részleteinek lekérése közben: ${err.message}`, true);
+    }
+}
+
+/* Összes megrendelés gomb */
+document.getElementById('load-all-orders-btn')
+    ?.addEventListener('click', async () => {
+        await loadAllOrders();
+    });
+
+/* /api/Orders/updateorderstatus */
+document.getElementById('order-modal-update-status-form')
+    ?.addEventListener('submit', async e => {
+        e.preventDefault();
+        const form = e.target;
+        if (!validateForm(form)) return;
+
+        const hiddenId = document.getElementById('order-modal-order-id');
+        const statusSelect = document.getElementById('order-modal-status-select');
+        const orderId = Number(hiddenId?.value || 0);
+        const newStatus = statusSelect?.value;
+        const logEl = document.getElementById('order-modal-log');
+
+        if (!orderId || !Number.isInteger(orderId) || orderId <= 0) {
+            if (logEl) logEl.textContent = 'Érvénytelen rendelés ID státusz frissítéshez.';
+            return;
+        }
+        if (!newStatus) {
+            if (logEl) logEl.textContent = 'Válassz új státuszt.';
+            return;
+        }
+
+        try {
+            await apiFetch(`${ORDERS_BASE}/updateorderstatus`, {
+                method: 'PUT',
+                body: JSON.stringify({
+                    orderId: orderId,
+                    orderStatus: newStatus
+                })
+            });
+
+            if (logEl) logEl.textContent = `Státusz frissítve (id = ${orderId}, új: ${newStatus}).`;
+            await loadOrderDetailsToModal(orderId);
+            await loadAllOrders();
+        } catch (err) {
+            if (logEl) logEl.textContent = `Hiba státusz frissítése közben: ${err.message}`;
+        }
+    });
+
+/* /api/Orders/completeorder?orderId= */
+document.getElementById('order-modal-complete-btn')
+    ?.addEventListener('click', async e => {
+        const btn = e.currentTarget;
+        const idAttr = btn.dataset.orderId;
+        const orderId = Number(idAttr || 0);
+        const logEl = document.getElementById('order-modal-log');
+
+        if (!orderId || !Number.isInteger(orderId) || orderId <= 0) {
+            if (logEl) logEl.textContent = 'Érvénytelen rendelés ID lezáráshoz.';
+            return;
+        }
+
+        if (!confirm(`Biztosan lezárod ezt a rendelést? (id: ${orderId})`)) {
+            return;
+        }
+
+        try {
+            const url = `${ORDERS_BASE}/completeorder?orderId=${encodeURIComponent(orderId)}`;
+            await apiFetch(url, { method: 'PUT' });
+
+            if (logEl) logEl.textContent = `Rendelés lezárva (id = ${orderId}).`;
+            await loadOrderDetailsToModal(orderId);
+            await loadAllOrders();
+        } catch (err) {
+            if (logEl) logEl.textContent = `Hiba rendelés lezárása közben: ${err.message}`;
+        }
+    });
+
+//#endregion
 
 window.addEventListener('DOMContentLoaded', () => {
     checkAuth();
     loadInitialItems();
+    loadAllOrders();
 });

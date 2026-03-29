@@ -32,7 +32,7 @@ namespace WebShop.Controllers
 
 
         #region Admin Registration
-        [Authorize]
+
         [HttpPost("adminregistry")]
         public async Task<ActionResult> RegisterAdmin(
             [FromQuery] string username,

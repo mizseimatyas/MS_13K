@@ -96,6 +96,31 @@ namespace WebShop.Controllers
         }
         #endregion
 
+        #region OrderDetailsByOrderId
+        [HttpGet("orderDetailsByOrderId")]
+        public async Task<ActionResult<OrderDetailsDto>> OrderDetailsByOrderId(
+            [FromQuery] int orderId)
+        {
+            try
+            {
+                var response = await _model.OrderDetailsByOrderId(orderId);
+                return Ok(response);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return BadRequest();
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+        #endregion
+
         #region AllOrders
         [HttpGet("allorders")]
         public async Task<ActionResult<List<OrderAllDto>>> AllOrders()

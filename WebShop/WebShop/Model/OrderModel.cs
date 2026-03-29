@@ -96,10 +96,6 @@ namespace WebShop.Model
         }
         #endregion
 
-        //validate data
-        #region ConfirmData(WIP)
-        #endregion
-
         //For workers
 
         #region AllOrdersNewestFirst
@@ -151,6 +147,38 @@ namespace WebShop.Model
         }
 
         #endregion
+
+
+        #region OrderDetailsById
+        public async Task<OrderDetailsDto> OrderDetailsByOrderId(int orderId)
+        {
+            if (orderId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(orderId), "Rendelés azonosító csak pozitív lehet");
+
+            var order = await _context.Orders.Include(x => x.OrderItems).FirstOrDefaultAsync(x => x.OrderId == orderId);
+
+            if (order == null)
+                throw new KeyNotFoundException($"Nem található rendelés #{orderId} azonosítóval");
+
+            return new OrderDetailsDto
+            {
+                orderId = order.OrderId,
+                targetAddress = order.TargetAddress,
+                date = order.Date,
+                status = order.Status.ToString(),
+                totalPrice = order.TotalPrice,
+                items = order.OrderItems.Select(y => new OrderItemDto
+                {
+                    itemId = y.ItemId,
+                    itemName = y.ItemName,
+                    quantity = y.Quantity,
+                    price = y.Price
+                }).ToList()
+            };
+        }
+
+        #endregion
+
 
         #region CompleteOrder
         public async Task CompleteOrder(int orderId)
