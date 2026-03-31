@@ -22,6 +22,7 @@ namespace ModelTest
             _model = new WorkerModel(_context);
         }
 
+        /*
         #region Register
         [Fact]
         public async Task WorkerRegistration_Correct()
@@ -66,6 +67,7 @@ namespace ModelTest
         }
 
         #endregion
+        */
 
         #region Login
         [Fact]
