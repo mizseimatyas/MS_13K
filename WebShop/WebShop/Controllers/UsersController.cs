@@ -3,7 +3,10 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
+using System.Numerics;
 using System.Security.Claims;
+using WebShop.Dto;
 using WebShop.Model;
 
 namespace WebShop.Controllers
@@ -18,14 +21,47 @@ namespace WebShop.Controllers
             _model = model;
         }
 
-        [HttpPost("userregistry")]
-        public async Task<ActionResult> Registration(
-            [FromQuery] string email,
-            [FromQuery] string password)
+        [Authorize]
+        [HttpGet("me")]
+        public async Task<ActionResult<UserDto>> GetMe()
         {
             try
             {
-                await _model.Registration(email, password);
+                var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                if (string.IsNullOrWhiteSpace(userIdClaim))
+                    return Unauthorized();
+
+                if (!int.TryParse(userIdClaim, out int userId))
+                    return Unauthorized();
+
+                var response = await _model.GetMe(userId);
+                return Ok(response);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return BadRequest();
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpPost("userregistry")]
+        public async Task<ActionResult> Registration(
+            [FromQuery] string email,
+            [FromQuery] string password,
+            [FromQuery] string? address,
+            [FromQuery] string? phone)
+        {
+            try
+            {
+                await _model.Registration(email, password, address, phone);
                 return Ok();
             }
             catch (InvalidOperationException e)

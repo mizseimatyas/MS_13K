@@ -75,9 +75,9 @@ namespace WebShop.Persistence
             // Users
             var users = new List<User>
 {
-    new User { Email = "gamer@example.com", Password = PasswordHasher.Hash("pass123"), Address = "Budapest, PC utca 1.", Phone = 201234567, Role = "User" },
-    new User { Email = "tesztfelhasznalo@example.com", Password = PasswordHasher.Hash("pass123"), Address = "Debrecen, Alkatrész u. 2.", Phone = 302345678, Role = "User" },
-    new User { Email = "monitoros@example.com", Password = PasswordHasher.Hash("pass123"), Address = "Budapest, Monitor utca 7.", Phone = 303334445, Role = "User" }
+    new User { Email = "gamer@example.com", Password = PasswordHasher.Hash("pass123"), Address = "Budapest, PC utca 1.", Phone = "201234567", Role = "User" },
+    new User { Email = "tesztfelhasznalo@example.com", Password = PasswordHasher.Hash("pass123"), Address = "Debrecen, Alkatrész u. 2.", Phone = "302345678", Role = "User" },
+    new User { Email = "monitoros@example.com", Password = PasswordHasher.Hash("pass123"), Address = "Budapest, Monitor utca 7.", Phone = "303334445", Role = "User" }
 };
 
             db.Users.AddRange(users);

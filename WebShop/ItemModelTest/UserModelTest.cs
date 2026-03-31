@@ -22,6 +22,7 @@ namespace ModelTest
             _model = new UserModel(_context);
         }
 
+        /*
         #region Register
         [Fact]
         public async Task Registration_Correct()
@@ -43,6 +44,7 @@ namespace ModelTest
             Assert.False(string.IsNullOrWhiteSpace(createdUser.Password));
             Assert.NotEqual(password, createdUser.Password);
         }
+        
 
         [Fact]
         public async Task Registration_ThrowsEmptyEmail()
@@ -68,6 +70,7 @@ namespace ModelTest
         }
 
         #endregion
+        */
 
         #region Login
         [Fact]

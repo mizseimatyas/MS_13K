@@ -4,6 +4,7 @@ function getSections() {
     search: document.getElementById("searchSection"),
     register: document.getElementById("registerSection"),
     login: document.getElementById("loginSection"),
+    profile: document.getElementById("profileSection"),
     productDetail: document.getElementById("productDetailSection"),
   };
 }

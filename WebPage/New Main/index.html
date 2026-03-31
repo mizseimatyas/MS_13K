@@ -74,6 +74,7 @@
             <li>Kosár</li>
             <li id="mobileLoginBtn">Bejelentkezés</li>
             <li id="mobileRegisterBtn">Regisztráció</li>
+            <li id="mobileProfileBtn" class="d-none">Profil</li>
           </ul>
         </div>
       </div>
@@ -285,19 +286,19 @@
             <div class="mb-3">
               <label class="form-label">E-mail</label>
               <div class="input-group">
-                <input type="email" class="form-control" required />
+                <input type="email" class="form-control" id="registerEmail" required />
               </div>
             </div>
             <div class="mb-3">
               <label class="form-label">Jelszó</label>
               <div class="input-group">
-                <input type="password" class="form-control" required />
+                <input type="password" class="form-control" id="registerPassword" required />
               </div>
             </div>
             <div class="mb-3">
               <label class="form-label">Lakcím</label>
               <div class="input-group">
-                <input type="text" class="form-control" required />
+                <input type="text" class="form-control" id="registerAddress" required />
               </div>
             </div>
             <div class="mb-3">
@@ -315,7 +316,7 @@
                 />
               </div>
             </div>
-            <button class="btn btn-primary w-100" type="button">
+            <button class="btn btn-primary w-100" id="submitRegisterBtn" type="button">
               Regisztrálok
             </button>
           </div>
@@ -330,16 +331,45 @@
           <div class="mb-3">
             <label class="form-label">E-mail</label>
             <div class="input-group">
-              <input type="email" class="form-control" />
+              <input type="email" class="form-control" id="loginEmail"/>
             </div>
           </div>
           <div class="mb-3">
             <label class="form-label">Jelszó</label>
             <div class="input-group">
-              <input type="password" class="form-control" />
+              <input type="password" class="form-control" id="loginPassword"/>
             </div>
           </div>
-          <button class="btn btn-primary w-100" type="button">Belépek</button>
+          <button class="btn btn-primary w-100" id="submitLoginBtn" type="button">Belépek</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="profileSection" class="page-section d-none">
+      <div class="profile-page">
+        <div class="profile-box">
+          <div class="card p-4 shadow">
+            <h2>Profilom</h2>
+    
+            <div class="profile-info-row">
+              <strong>E-mail:</strong>
+              <span id="profileEmail">-</span>
+            </div>
+    
+            <div class="profile-info-row">
+              <strong>Cím:</strong>
+              <span id="profileAddress">-</span>
+            </div>
+    
+            <div class="profile-info-row">
+              <strong>Telefonszám:</strong>
+              <span id="profilePhone">-</span>
+            </div>
+    
+            <button class="btn btn-danger w-100 mt-4" id="logoutBtn" type="button">
+              Kijelentkezés
+            </button>
+          </div>
         </div>
       </div>
     </section>
@@ -422,6 +452,7 @@
     <script src="ui.js"></script>
     <script src="products.js"></script>
     <script src="search.js"></script>
+    <script src="auth.js"></script>
     <script src="main.js"></script>
   </body>
 </html>
