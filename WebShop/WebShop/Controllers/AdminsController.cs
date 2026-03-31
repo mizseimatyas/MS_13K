@@ -18,7 +18,7 @@ namespace WebShop.Controllers
             _model = model;
         }
 
-        [Authorize]
+
         [HttpGet("me")]
         public ActionResult GetMe()
         {
@@ -55,7 +55,7 @@ namespace WebShop.Controllers
             catch { return BadRequest(); }
         }
 
-        [Authorize(Roles = "Admin")]
+
         [HttpPost("adminregistry")]
         public async Task<ActionResult> RegisterAdmin(
             [FromQuery] string username,
@@ -71,7 +71,7 @@ namespace WebShop.Controllers
             catch { return BadRequest(); }
         }
 
-        [Authorize(Roles = "Admin")]
+
         [HttpPut("changepassword")]
         public async Task<ActionResult> ChangePassword(
             [FromQuery] int adminId,
@@ -88,7 +88,6 @@ namespace WebShop.Controllers
             catch { return BadRequest(); }
         }
 
-        [Authorize(Roles = "Admin")]
         [HttpGet("allworkers")]
         public async Task<ActionResult<IEnumerable<WorkerDto>>> AllWorkers()
         {
@@ -101,7 +100,7 @@ namespace WebShop.Controllers
             catch { return BadRequest(); }
         }
 
-        [Authorize]
+
         [HttpPost("logout")]
         public async Task<ActionResult> LogOut()
         {

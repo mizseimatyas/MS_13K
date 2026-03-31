@@ -16,7 +16,7 @@ namespace WebShop.Controllers
         }
 
         #region AllItems
-        [Authorize(Roles = "Worker,Admin")]
+
         [HttpGet("allitems")]
         public async Task<ActionResult<IEnumerable<AdminItemDto>>> AllItems()
         {
@@ -31,7 +31,7 @@ namespace WebShop.Controllers
         #endregion
 
         #region ItemById
-        [Authorize(Roles = "Worker,Admin")]
+
         [HttpGet("itembyid")]
         public async Task<ActionResult<AllItemDto>> ItemById([FromQuery] int id)
         {
@@ -46,7 +46,7 @@ namespace WebShop.Controllers
         #endregion
 
         #region AdmItemByName
-        [Authorize(Roles = "Worker,Admin")]
+
         [HttpGet("admitembyname")]
         public async Task<ActionResult<AllItemDto>> AdmItemByName([FromQuery] string iname)
         {
@@ -61,7 +61,6 @@ namespace WebShop.Controllers
         #endregion
 
         #region ItemsWithQuantity0
-        [Authorize(Roles = "Worker,Admin")]
         [HttpGet("itemswithquantity0")]
         public async Task<ActionResult<IEnumerable<AllItemDto>>> ItemsQuantityZero()
         {
@@ -76,7 +75,6 @@ namespace WebShop.Controllers
         #endregion
 
         #region ItemsQuantityOrderByLowestFirst
-        [Authorize(Roles = "Worker,Admin")]
         [HttpGet("itemsquantityasc")]
         public async Task<ActionResult<IEnumerable<AllItemDto>>> ItemsByQuantityAsc()
         {
@@ -90,7 +88,6 @@ namespace WebShop.Controllers
         #endregion
 
         #region ItemsQuantityOrderByHighestFirst
-        [Authorize(Roles = "Worker,Admin")]
         [HttpGet("itemsquantitydesc")]
         public async Task<ActionResult<IEnumerable<AllItemDto>>> ItemsByQuantityDesc()
         {
@@ -104,7 +101,7 @@ namespace WebShop.Controllers
         #endregion
 
         #region ItemsQuantityInCategoryOrderByLowestFirst
-        [Authorize(Roles = "Worker,Admin")]
+
         [HttpGet("itemsquantityincategoryasc")]
         public async Task<ActionResult<IEnumerable<AllItemDto>>> CategoryItemsQuantityAsc([FromQuery] string category)
         {
@@ -118,7 +115,6 @@ namespace WebShop.Controllers
         #endregion
 
         #region ItemsQuantityInCategoryOrderByHighestFirst
-        [Authorize(Roles = "Worker,Admin")]
         [HttpGet("itemsquantityincategorydesc")]
         public async Task<ActionResult<IEnumerable<AllItemDto>>> CategoryItemsQuantityDesc([FromQuery] string category)
         {
@@ -132,7 +128,7 @@ namespace WebShop.Controllers
         #endregion
 
         #region AddNewItem
-        [Authorize(Roles = "Worker,Admin")]
+
         [HttpPost("addnewitem")]
         public async Task<ActionResult> AddNewItem([FromBody] AddNewItemDto dto)
         {
@@ -150,7 +146,6 @@ namespace WebShop.Controllers
         #endregion
 
         #region ModifyItem
-        [Authorize(Roles = "Worker,Admin")]
         [HttpPut("modifyitem")]
         public async Task<ActionResult> ModifyItem([FromBody] ModifyItemDto dto)
         {
@@ -169,7 +164,6 @@ namespace WebShop.Controllers
         #endregion
 
         #region DeleteItem
-        [Authorize(Roles = "Worker,Admin")]
         [HttpDelete("deleteitem")]
         public async Task<ActionResult> DeleteItem([FromQuery] int id)
         {

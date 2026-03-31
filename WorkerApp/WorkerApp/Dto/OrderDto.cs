@@ -8,11 +8,11 @@ namespace WorkerApp.Dto
 {
     public class OrderDto
     {
-        public int OrderId { get; set; }
         public int UserId { get; set; }
         public string TargetAddress { get; set; }
         public DateTime Date { get; set; }
         public string Status { get; set; }
         public int TotalPrice { get; set; }
+        public List<OrderItemDto> items { get; set; }
     }
 }
