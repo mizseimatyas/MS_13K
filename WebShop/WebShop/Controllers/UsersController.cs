@@ -68,13 +68,13 @@ namespace WebShop.Controllers
             {
                 return BadRequest(e.Message);
             }
-            catch (ArgumentException)
+            catch (ArgumentException e)
             {
-                return BadRequest();
+                return BadRequest(e.Message);
             }
-            catch
+            catch (Exception ex)
             {
-                return BadRequest();
+                return BadRequest(ex.Message);
             }
         }
 
@@ -109,6 +109,46 @@ namespace WebShop.Controllers
             catch
             {
                 return BadRequest();
+            }
+        }
+
+        [Authorize]
+        [HttpPut("updateprofile")]
+        public async Task<ActionResult> UpdateProfile([FromBody] UpdateProfileDto dto)
+        {
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (string.IsNullOrWhiteSpace(userIdClaim))
+                    return Unauthorized("Hiányzó felhasználói azonosító.");
+
+                if (!int.TryParse(userIdClaim, out int userId))
+                    return Unauthorized("Érvénytelen felhasználói azonosító.");
+
+                await _model.UpdateProfile(
+                    userId,
+                    dto.email,
+                    dto.name,
+                    dto.city,
+                    dto.zipCode,
+                    dto.address,
+                    dto.phone
+                );
+
+                return Ok();
+            }
+            catch (InvalidOperationException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Váratlan hiba történt.");
             }
         }
 

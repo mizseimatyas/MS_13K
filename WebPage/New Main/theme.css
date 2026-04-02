@@ -125,3 +125,44 @@
 .dark-mode .gallery-dot.active {
   background-color: #4fa3ff;
 }
+
+.dark-mode .profile-section {
+  background: linear-gradient(to right, rgb(3, 60, 75), black);
+}
+
+.dark-mode .profile-card {
+  background-color: rgb(60, 60, 60);
+  color: white;
+}
+
+.dark-mode .profile-panel {
+  background-color: rgb(39, 39, 39);
+}
+
+.dark-mode .profile-title,
+.dark-mode .profile-panel-title {
+  color: white;
+}
+
+.dark-mode .profile-card .form-label {
+  color: white;
+}
+
+.dark-mode .profile-card .form-control {
+  background-color: rgb(39, 39, 39);
+  color: white;
+  border: 1px solid rgb(75, 75, 75);
+}
+
+.dark-mode .profile-card .form-control:disabled {
+  background-color: rgb(60, 60, 60);
+  color: white;
+  opacity: 1;
+}
+
+.dark-mode .profile-card .form-control:focus {
+  background-color: rgb(39, 39, 39);
+  color: white;
+  border-color: #4fa3ff;
+  box-shadow: none;
+}
