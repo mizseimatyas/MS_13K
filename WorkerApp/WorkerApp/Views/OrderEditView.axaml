@@ -1,6 +1,7 @@
 ﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:WorkerApp.ViewModels"
+             xmlns:dto="using:WorkerApp.Dto"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
@@ -8,91 +9,140 @@
              x:DataType="vm:OrderEditViewModel"
              Background="#e0f4ff">
 
-    <UserControl.Styles>
-        <Style Selector="Button.primary">
-            <Setter Property="Background" Value="#0078d4" />
-            <Setter Property="Foreground" Value="White" />
-            <Setter Property="CornerRadius" Value="6" />
-            <Setter Property="Height" Value="40" />
-            <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="Padding" Value="16,0" />
-        </Style>
+	<UserControl.Styles>
+		<Style Selector="Button.primary">
+			<Setter Property="Background" Value="#0078d4" />
+			<Setter Property="Foreground" Value="White" />
+			<Setter Property="CornerRadius" Value="6" />
+			<Setter Property="Height" Value="40" />
+			<Setter Property="FontWeight" Value="SemiBold" />
+			<Setter Property="Padding" Value="16,0" />
+		</Style>
+		<Style Selector="Button.primary:pointerover">
+			<Setter Property="Background" Value="#005a9e" />
+		</Style>
+	</UserControl.Styles>
 
-        <Style Selector="Button.primary:pointerover">
-            <Setter Property="Background" Value="#005a9e" />
-        </Style>
-    </UserControl.Styles>
+	<Grid Margin="16">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+			<RowDefinition Height="Auto" />
+		</Grid.RowDefinitions>
 
-    <Grid Margin="16">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-
-        <!-- Fejléc -->
-        <Border Grid.Row="0"
+		<!-- Fejléc -->
+		<Border Grid.Row="0"
                 Background="White"
                 CornerRadius="8"
                 Padding="10"
                 BoxShadow="0 2 6 #20000000">
-            <TextBlock Text="Rendelés státusz módosítása"
+			<TextBlock Text="Rendelés státusz módosítása"
                        FontSize="20"
                        FontWeight="Bold"
                        Foreground="#004071"
                        HorizontalAlignment="Center" />
-        </Border>
+		</Border>
 
-        <!-- Tartalom -->
-        <Border Grid.Row="1"
+		<!-- Tartalom -->
+		<Border Grid.Row="1"
                 Margin="0,12,0,12"
                 Background="#f5fbff"
                 CornerRadius="8"
                 Padding="12"
                 BoxShadow="0 2 6 #15000000">
-            <StackPanel Spacing="10">
+			<ScrollViewer>
+				<StackPanel Spacing="10">
 
-                <!-- Alap rendelés infók (csak olvasásra) -->
-                <TextBlock Text="Rendelés adatai"
-                           FontWeight="SemiBold"
-                           Foreground="#00324e" />
+					<TextBlock Text="Rendelés adatai"
+                               FontWeight="SemiBold"
+                               Foreground="#00324e" />
 
-                <TextBlock Text="{Binding Order.OrderId, StringFormat='Rendelés azonosító: {0}'}"
-                           Foreground="#00324e" />
+					<TextBlock Text="{Binding Order.OrderId, StringFormat='Rendelés azonosító: {0}'}"
+                               Foreground="#00324e" />
 
-                <Separator Margin="0,8,0,4" />
+					<!-- Betöltés jelző -->
+					<TextBlock Text="Betöltés..."
+                               IsVisible="{Binding IsLoading}"
+                               Foreground="#0078d4"
+                               FontStyle="Italic" />
 
-                <!-- Státusz választó -->
-                <TextBlock Text="Új státusz"
-                           FontWeight="SemiBold"
-                           Foreground="#00324e" />
-                <ComboBox ItemsSource="{Binding Statuses}"
-                          SelectedItem="{Binding SelectedStatus}"
-                          Background="White"
-                          Foreground="Black"
-                          BorderBrush="#0078d4" />
-                
-                <!-- Visszajelző üzenet -->
-                <TextBlock Text="{Binding Message}"
-                           Foreground="#c00000"
-                           Margin="0,4,0,0" />
-            </StackPanel>
-        </Border>
+					<!-- Rendelés részletei -->
+					<StackPanel IsVisible="{Binding IsDetailsLoaded}" Spacing="6">
 
-        <StackPanel Grid.Row="2"
+						<TextBlock Text="{Binding OrderDetails.targetAddress, StringFormat='Cím: {0}'}"
+                                   Foreground="#00324e" />
+						<TextBlock Text="{Binding OrderDetails.date, StringFormat='Dátum: {0:yyyy.MM.dd}'}"
+                                   Foreground="#00324e" />
+						<TextBlock Text="{Binding OrderDetails.totalPrice, StringFormat='Végösszeg: {0} Ft'}"
+                                   Foreground="#00324e"
+                                   FontWeight="SemiBold" />
+
+						<Separator Margin="0,6,0,2" />
+
+						<TextBlock Text="Rendelt termékek"
+                                   FontWeight="SemiBold"
+                                   Foreground="#00324e" />
+
+						<ItemsControl ItemsSource="{Binding OrderDetails.items}">
+							<ItemsControl.ItemTemplate>
+								<DataTemplate x:DataType="dto:OrderItemDto">
+									<Border Background="White"
+                                            CornerRadius="6"
+                                            Padding="10,6"
+                                            Margin="0,3"
+                                            BoxShadow="0 1 4 #10000000">
+										<Grid ColumnDefinitions="*,Auto,Auto">
+											<TextBlock Grid.Column="0"
+                                                       Text="{Binding itemName}"
+                                                       FontWeight="SemiBold"
+                                                       Foreground="#00324e" />
+											<TextBlock Grid.Column="1"
+                                                       Text="{Binding quantity, StringFormat='x{}{0}'}"
+                                                       Foreground="#555"
+                                                       Margin="12,0" />
+											<TextBlock Grid.Column="2"
+                                                       Text="{Binding price, StringFormat='{}{0} Ft'}"
+                                                       Foreground="#0078d4"
+                                                       FontWeight="SemiBold" />
+										</Grid>
+									</Border>
+								</DataTemplate>
+							</ItemsControl.ItemTemplate>
+						</ItemsControl>
+					</StackPanel>
+
+					<Separator Margin="0,8,0,4" />
+
+					<TextBlock Text="Új státusz"
+                               FontWeight="SemiBold"
+                               Foreground="#00324e" />
+					<ComboBox ItemsSource="{Binding Statuses}"
+                              SelectedItem="{Binding SelectedStatus}"
+                              Background="White"
+                              Foreground="Black"
+                              BorderBrush="#0078d4" />
+
+					<TextBlock Text="{Binding Message}"
+                               Foreground="#c00000"
+                               Margin="0,4,0,0" />
+				</StackPanel>
+			</ScrollViewer>
+		</Border>
+
+		<StackPanel Grid.Row="2"
                     Orientation="Horizontal"
                     HorizontalAlignment="Right"
                     Spacing="8">
-            <Button Content="Mégse"
+			<Button Content="Mégse"
                     Background="#ffffff"
                     Foreground="#00324e"
                     BorderBrush="#0078d4"
                     BorderThickness="1"
                     Padding="12,0"
                     Command="{Binding CancelEditCommand}" />
-            <Button Content="Mentés"
+			<Button Content="Mentés"
                     Classes="primary"
                     Command="{Binding SaveStatusCommand}" />
-        </StackPanel>
-    </Grid>
+		</StackPanel>
+	</Grid>
 </UserControl>

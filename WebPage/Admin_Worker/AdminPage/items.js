@@ -260,7 +260,7 @@ document.getElementById('add-item-form')
         if (Number(data.price) <= 0)    { setLog('item-modify-log', 'Az árnak pozitívnak kell lennie.', true); return; }
 
         try {
-            await apiFetch(`${API_BASE}/items`, {
+            await apiFetch(`${API_BASE}/Items/addnewitem`, {
                 method: 'POST',
                 body: JSON.stringify({
                     itemName:     data.itemName,

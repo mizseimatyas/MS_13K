@@ -3,6 +3,7 @@ async function loadAllCategories() {
     try {
         const categories = await apiFetch(`${API_BASE}/Categories/allcategories`);
         renderCategoryList(categories);
+        populateAddItemCategorySelect(categories);
         setLog('add-category-log', `Kategóriák betöltve. Darabszám: ${categories.length}.`);
     } catch (err) {
         if (err.message.includes('404') || err.message.includes('Not Found')) {
@@ -13,6 +14,19 @@ async function loadAllCategories() {
         }
     }
 }
+
+function populateAddItemCategorySelect(categories) {
+    const select = document.getElementById('new-item-category');
+    if (!select) return;
+    select.innerHTML = '<option value="">Válassz...</option>';
+    categories.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat.categoryName;
+        opt.textContent = cat.categoryName;
+        select.appendChild(opt);
+    });
+}
+
 
 function renderCategoryList(categories) {
     const container = document.getElementById('category-list-container');
@@ -96,6 +110,7 @@ async function saveCategoryRow(row, btn) {
 
         row.querySelector('.cell-cat-name').textContent = name;
         setLog('add-category-log', `Kategória módosítva (id = ${id}).`);
+        loadAllCategories(); 
     } catch (err) {
         if (err.message.includes('409') || err.message.includes('Conflict')) {
             setLog('add-category-log', `Már létezik ilyen nevű kategória.`, true);
@@ -116,6 +131,7 @@ async function onDeleteCategoryClick(e) {
         await apiFetch(`${API_BASE}/Categories/deletecategory?categid=${encodeURIComponent(id)}`, { method: 'DELETE' });
         row.remove();
         setLog('add-category-log', `Kategória törölve (id = ${id}).`);
+        loadAllCategories(); 
     } catch (err) {
         setLog('add-category-log', `Hiba kategória törlése közben: ${err.message}`, true);
     }

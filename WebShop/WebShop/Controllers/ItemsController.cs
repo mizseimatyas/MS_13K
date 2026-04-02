@@ -178,7 +178,6 @@ namespace WebShop.Controllers
         }
         #endregion
 
-        // Felhasználói endpointok — nyilvánosak maradnak
 
         #region ItemByName
         [HttpGet("itembyname")]
