@@ -45,7 +45,7 @@
               Dark/Light
             </button>
 
-            <button class="icon-btn" type="button">
+            <button class="icon-btn d-none" id="cartBtn" type="button">
               <img src="shopping-cart.svg" alt="Shopping Cart" />
             </button>
 
@@ -55,9 +55,14 @@
               </button>
 
               <div id="profileMenu" class="profile-menu">
-                <ul class="profile-list">
+                <ul class="profile-list" id="loggedOutProfileMenu">
                   <li id="loginBtn">Bejelentkezés</li>
                   <li id="registerBtn">Regisztráció</li>
+                </ul>
+
+                <ul class="profile-list d-none" id="loggedInProfileMenu">
+                  <li id="profileMenuProfileBtn">Profil</li>
+                  <li id="profileMenuOrdersBtn">Rendeléseim</li>
                 </ul>
               </div>
             </div>
@@ -71,10 +76,11 @@
         <div id="mobileMenu" class="mobile-menu">
           <ul class="mobile-list">
             <li id="mobileThemeBtn">Dark/Light</li>
-            <li>Kosár</li>
+            <li id="mobileCartBtn" class="d-none">Kosár</li>
             <li id="mobileLoginBtn">Bejelentkezés</li>
             <li id="mobileRegisterBtn">Regisztráció</li>
             <li id="mobileProfileBtn" class="d-none">Profil</li>
+            <li id="mobileOrdersBtn" class="d-none">Rendeléseim</li>
           </ul>
         </div>
       </div>
@@ -540,6 +546,15 @@
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="ordersSection" class="page-section d-none">
+      <div class="container py-5">
+        <div class="card shadow p-4">
+          <h2>Rendeléseim</h2>
+          <p>Itt fognak megjelenni a rendeléseid.</p>
         </div>
       </div>
     </section>

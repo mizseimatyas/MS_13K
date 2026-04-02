@@ -5,6 +5,7 @@ function getSections() {
     register: document.getElementById("registerSection"),
     login: document.getElementById("loginSection"),
     profile: document.getElementById("profileSection"),
+    orders: document.getElementById("ordersSection"),
     productDetail: document.getElementById("productDetailSection"),
   };
 }
@@ -29,7 +30,7 @@ function closeMobileMenu() {
 
 function closeProfileMenu() {
   const profileMenu = document.getElementById("profileMenu");
-  if (profileMenu) profileMenu.style.display = "none";
+  if (profileMenu) profileMenu.classList.remove("show");
 }
 
 function closeAllMenus() {
@@ -48,9 +49,9 @@ function toggleMenu() {
 function toggleProfileMenu() {
   const menu = document.getElementById("profileMenu");
   if (!menu) return;
-  const isOpen = menu.style.display === "block";
+  const isOpen = menu.classList.contains("show");
   closeAllMenus();
-  if (!isOpen) menu.style.display = "block";
+  if (!isOpen) menu.classList.add("show");
 }
 
 function handleResponsiveMenu() {
@@ -476,7 +477,7 @@ function initOutsideClickHandlers() {
     }
 
     if (profileWrapper && profileMenu && !profileWrapper.contains(e.target)) {
-      profileMenu.style.display = "none";
+      profileMenu.classList.remove("show");
     }
 
     if (
