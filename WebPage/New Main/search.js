@@ -131,6 +131,8 @@ async function performSearch(rawQuery) {
       categoryFilter.value = categoryMatch.categoryName;
     }
 
+    sessionStorage.setItem("selectedCategory", categoryMatch.categoryName);
+
     showSectionByName("search");
     renderSearchProducts(currentSearchResults);
     applyFiltersAndRender();
@@ -146,6 +148,8 @@ async function performSearch(rawQuery) {
     categoryFilter.value = "Összes";
   }
 
+  sessionStorage.setItem("selectedCategory", "Összes");
+
   showSectionByName("search");
   renderSearchProducts(currentSearchResults);
   applyFiltersAndRender();
@@ -157,6 +161,7 @@ async function handleCategoryFilterChange() {
   if (!categoryFilter) return;
 
   const selectedCategory = categoryFilter.value;
+  sessionStorage.setItem("selectedCategory", selectedCategory);
 
   try {
     if (selectedCategory === "Összes") {
@@ -264,4 +269,37 @@ function initSearch() {
   categoryFilter?.addEventListener("change", async () => {
     await handleCategoryFilterChange();
   });
+}
+
+async function restoreSearchViewAfterRefresh() {
+  const categoryFilter = document.getElementById("brandSelect");
+  const searchInput = document.getElementById("searchInput");
+
+  if (!categoryFilter) return;
+
+  const savedCategory = sessionStorage.getItem("selectedCategory") || "Összes";
+  categoryFilter.value = savedCategory;
+
+  try {
+    if (savedCategory !== "Összes") {
+      if (searchInput) searchInput.value = savedCategory;
+
+      const categoryItems = (await apiGetItemsInCategory(savedCategory)) || [];
+      currentSearchMode = "category";
+      currentSearchResults = categoryItems.map(mapSearchResultToCardItem);
+      applyFiltersAndRender();
+      return;
+    }
+
+    if (searchInput) searchInput.value = "";
+
+    const allItems = (await apiGetAllItems()) || [];
+    currentSearchMode = "general";
+    currentSearchResults = allItems.map(mapAllItemToCardItem);
+    applyFiltersAndRender();
+  } catch (error) {
+    console.error("Search restore hiba:", error);
+    currentSearchResults = [];
+    renderSearchProducts([]);
+  }
 }

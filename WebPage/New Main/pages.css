@@ -209,7 +209,7 @@
   font-size: 2.1rem;
   font-weight: 700;
   text-align: center;
-  color: #111;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .profile-panel {
@@ -221,12 +221,12 @@
 .profile-panel-title {
   margin-bottom: 18px;
   font-weight: 700;
-  color: #0b3a46;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .profile-card .form-label {
   font-weight: 600;
-  color: #0b3a46;
+  color: black;
 }
 
 .profile-card .form-control {
