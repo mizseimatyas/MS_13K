@@ -142,6 +142,12 @@
     min-width: unset;
     font-size: 20px;
   }
+
+  #cartMenu.cart-menu {
+    right: 12px;
+    width: 320px;
+    max-width: calc(100vw - 24px);
+  }
 }
 
 @media screen and (max-width: 480px) {
@@ -167,5 +173,11 @@
     min-width: 90px;
     padding: 7px 10px;
     font-size: 13px;
+  }
+
+  #cartMenu.cart-menu {
+    width: 300px;
+    max-width: calc(100vw - 20px);
+    right: 10px;
   }
 }

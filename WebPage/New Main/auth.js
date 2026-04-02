@@ -1,4 +1,11 @@
 let currentUser = null;
+window.isUserLoggedIn = function () {
+  return !!currentUser;
+};
+
+window.getCurrentUser = function () {
+  return currentUser;
+};
 
 const cartBtn = document.getElementById("cartBtn");
 const mobileCartBtn = document.getElementById("mobileCartBtn");
@@ -165,6 +172,8 @@ function initAuth() {
   logoutBtn?.addEventListener("click", async () => {
     try {
       await apiLogoutUser();
+      localStorage.removeItem("woltmarket_cart");
+      window.renderCartDropdown?.();
       setLoggedOutUI();
       showSectionByName("home");
     } catch (error) {
@@ -173,9 +182,10 @@ function initAuth() {
     }
   });
 
-  profileBtn?.addEventListener("click", (event) => {
-    event.stopPropagation();
-    const profileMenu = document.getElementById("profileMenu");
+  profileBtn?.addEventListener("click", (e) => {
+    e.stopPropagation();
+
+    closeCartMenu();
     profileMenu?.classList.toggle("show");
   });
 
@@ -242,7 +252,15 @@ function initAuth() {
     closeMobileMenu();
   });
 
-  mobileCartBtn?.addEventListener("click", () => {
-    alert("A kosár oldal még nincs kész.");
+  mobileCartBtn?.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    closeMobileMenu();
+    closeProfileMenu();
+    renderCartDropdown();
+
+    const cartMenu = document.getElementById("cartMenu");
+    cartMenu?.classList.add("show");
   });
 }

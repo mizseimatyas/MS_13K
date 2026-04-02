@@ -18,6 +18,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     "login",
     "profile",
     "orders",
+    "checkout",
     "productDetail",
   ];
   const initialSection = validSections.includes(hash) ? hash : "home";
@@ -30,7 +31,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     ?.addEventListener("click", toggleMenu);
   document.getElementById("homeLogo")?.addEventListener("click", async () => {
     const searchInput = document.getElementById("searchInput");
+    const categoryFilter = document.getElementById("brandSelect");
+
     if (searchInput) searchInput.value = "";
+    if (categoryFilter) categoryFilter.value = "Összes";
+
+    sessionStorage.removeItem("selectedCategory");
+
     showSectionByName("home");
     await loadHomeProducts();
   });
@@ -59,11 +66,17 @@ document.addEventListener("DOMContentLoaded", async () => {
   initHistoryHandling();
   initSearch();
   initAuth();
+  initCartUI();
+  renderOrdersList();
 
   await loadAllProducts();
   await loadCategories();
   await loadHomeProducts();
   await checkAuthState();
+
+  if (initialSection === "search") {
+    await restoreSearchViewAfterRefresh();
+  }
 
   requestAnimationFrame(() => {
     if (initialSection === "search") refreshPriceSliderUI();

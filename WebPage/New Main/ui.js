@@ -7,6 +7,7 @@ function getSections() {
     profile: document.getElementById("profileSection"),
     orders: document.getElementById("ordersSection"),
     productDetail: document.getElementById("productDetailSection"),
+    checkout: document.getElementById("checkoutSection"),
   };
 }
 
@@ -36,6 +37,7 @@ function closeProfileMenu() {
 function closeAllMenus() {
   closeMobileMenu();
   closeProfileMenu();
+  closeCartMenu();
 }
 
 function toggleMenu() {
@@ -87,9 +89,14 @@ function initSidebarButtons() {
     item.addEventListener("click", () => {
       items.forEach((i) => i.classList.remove("active"));
       item.classList.add("active");
+
       const category = item.textContent.trim();
       const searchInput = document.getElementById("searchInput");
+
       if (searchInput) searchInput.value = category;
+
+      sessionStorage.setItem("selectedCategory", category);
+
       performSearch(category);
     });
   });
@@ -495,4 +502,409 @@ function initHistoryHandling() {
     const sectionName = event.state?.section || "home";
     showSectionByName(sectionName, false);
   });
+}
+
+const CART_STORAGE_KEY = "woltmarket_cart";
+
+function getCartState() {
+  try {
+    return JSON.parse(localStorage.getItem(CART_STORAGE_KEY)) || [];
+  } catch {
+    return [];
+  }
+}
+
+function saveCartState(cart) {
+  localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+}
+
+function formatCartPrice(value) {
+  return `${Number(value).toLocaleString("hu-HU")} Ft`;
+}
+
+function getCartTotal(cart) {
+  return cart.reduce(
+    (sum, item) => sum + Number(item.price) * item.quantity,
+    0,
+  );
+}
+
+function renderCartDropdown() {
+  const cartItemsContainer = document.getElementById("cartItems");
+  const cartTotalPrice = document.getElementById("cartTotalPrice");
+
+  if (!cartItemsContainer || !cartTotalPrice) return;
+
+  const cart = getCartState();
+
+  if (cart.length === 0) {
+    cartItemsContainer.innerHTML = `<div class="cart-empty">A kosár üres.</div>`;
+    cartTotalPrice.textContent = "0 Ft";
+    return;
+  }
+
+  cartItemsContainer.innerHTML = cart
+    .map(
+      (item) => `
+        <div class="cart-item">
+          <div class="cart-item-name">${item.itemName}</div>
+          <div class="cart-item-row">
+            <div class="cart-qty-controls">
+              <button class="cart-qty-btn" data-action="decrease" data-id="${item.itemId}" type="button">-</button>
+              <span class="cart-qty-value">${item.quantity}</span>
+              <button class="cart-qty-btn" data-action="increase" data-id="${item.itemId}" type="button">+</button>
+            </div>
+            <div class="cart-item-price">${formatCartPrice(Number(item.price) * item.quantity)}</div>
+          </div>
+        </div>
+      `,
+    )
+    .join("");
+
+  cartTotalPrice.textContent = formatCartPrice(getCartTotal(cart));
+}
+
+function addToCart(product) {
+  if (!window.isUserLoggedIn || !window.isUserLoggedIn()) {
+    alert("A kosár használatához először be kell jelentkezned.");
+    return;
+  }
+
+  if (!product || product.itemId === null || product.itemId === undefined) {
+    console.error("Hiányzó itemId a kosárhoz adásnál:", product);
+    alert("A termék nem adható kosárhoz, mert hiányzik az azonosítója.");
+    return;
+  }
+
+  const cart = getCartState();
+  const existingItem = cart.find(
+    (x) => String(x.itemId) === String(product.itemId),
+  );
+
+  if (existingItem) {
+    existingItem.quantity += 1;
+  } else {
+    cart.push({
+      itemId: product.itemId,
+      itemName: product.itemName,
+      price: Number(product.price),
+      quantity: 1,
+    });
+  }
+
+  saveCartState(cart);
+  renderCartDropdown();
+}
+
+function updateCartQuantity(itemId, delta) {
+  let cart = getCartState();
+
+  cart = cart
+    .map((item) => {
+      if (String(item.itemId) === String(itemId)) {
+        return {
+          ...item,
+          quantity: item.quantity + delta,
+        };
+      }
+      return item;
+    })
+    .filter((item) => item.quantity > 0);
+
+  saveCartState(cart);
+  renderCartDropdown();
+}
+
+function closeCartMenu() {
+  const cartMenu = document.getElementById("cartMenu");
+  if (cartMenu) cartMenu.classList.remove("show");
+}
+
+function toggleCartMenu() {
+  const cartMenu = document.getElementById("cartMenu");
+  if (!cartMenu) return;
+
+  const isOpen = cartMenu.classList.contains("show");
+
+  closeProfileMenu();
+  closeMobileMenu();
+
+  if (isOpen) {
+    cartMenu.classList.remove("show");
+  } else {
+    renderCartDropdown();
+    cartMenu.classList.add("show");
+  }
+}
+
+function initCartUI() {
+  const cartBtn = document.getElementById("cartBtn");
+  const cartItems = document.getElementById("cartItems");
+  const checkoutBtn = document.getElementById("checkoutBtn");
+  const detailAddToCartBtn = document.getElementById("detailAddToCartBtn");
+  const placeOrderBtn = document.getElementById("placeOrderBtn");
+
+  cartBtn?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggleCartMenu();
+  });
+
+  cartItems?.addEventListener("click", (e) => {
+    const button = e.target.closest(".cart-qty-btn");
+    if (!button) return;
+
+    e.stopPropagation();
+
+    const itemId = button.dataset.id;
+    const action = button.dataset.action;
+
+    if (action === "increase") updateCartQuantity(itemId, 1);
+    if (action === "decrease") updateCartQuantity(itemId, -1);
+
+    const cartMenu = document.getElementById("cartMenu");
+    if (cartMenu) {
+      cartMenu.classList.add("show");
+    }
+  });
+
+  checkoutBtn?.addEventListener("click", () => {
+    const cart = getCartState();
+
+    if (!window.isUserLoggedIn || !window.isUserLoggedIn()) {
+      alert("A rendeléshez először be kell jelentkezned.");
+      return;
+    }
+
+    if (cart.length === 0) {
+      alert("A kosarad üres.");
+      return;
+    }
+
+    closeCartMenu();
+    renderCheckoutSection();
+    showSectionByName("checkout");
+  });
+
+  detailAddToCartBtn?.addEventListener("click", () => {
+    if (!window.currentDetailProduct) {
+      alert("Ehhez a termékhez most nincs betöltött adat.");
+      return;
+    }
+
+    addToCart(window.currentDetailProduct);
+  });
+
+  document.addEventListener("click", (e) => {
+    const cartWrapper = document.querySelector(".cart-dropdown-wrapper");
+    if (cartWrapper && !cartWrapper.contains(e.target)) {
+      closeCartMenu();
+    }
+  });
+
+  placeOrderBtn?.addEventListener("click", () => {
+    placeOrder();
+  });
+
+  renderCartDropdown();
+}
+
+window.renderCartDropdown = renderCartDropdown;
+window.addToCart = addToCart;
+
+const ORDERS_STORAGE_KEY = "woltmarket_orders";
+
+function getOrdersState() {
+  try {
+    return JSON.parse(localStorage.getItem(ORDERS_STORAGE_KEY)) || [];
+  } catch {
+    return [];
+  }
+}
+
+function saveOrdersState(orders) {
+  localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders));
+}
+
+function renderCheckoutSection() {
+  const currentUser = window.getCurrentUser?.();
+  const cart = getCartState();
+
+  const checkoutAddress = document.getElementById("checkoutAddress");
+  const checkoutName = document.getElementById("checkoutName");
+  const checkoutPhone = document.getElementById("checkoutPhone");
+  const checkoutEmail = document.getElementById("checkoutEmail");
+
+  const shippingAddress = document.getElementById("shippingAddress");
+  const shippingName = document.getElementById("shippingName");
+  const shippingPhone = document.getElementById("shippingPhone");
+  const shippingEmail = document.getElementById("shippingEmail");
+
+  const sameAsCustomerData = document.getElementById("sameAsCustomerData");
+
+  const checkoutItems = document.getElementById("checkoutItems");
+  const checkoutTotalPrice = document.getElementById("checkoutTotalPrice");
+
+  if (!currentUser || !checkoutItems || !checkoutTotalPrice) return;
+
+  const userAddress = currentUser.address || "";
+  const userName = currentUser.name || "";
+  const userPhone = currentUser.phone || "";
+  const userEmail = currentUser.email || "";
+
+  if (checkoutAddress) checkoutAddress.value = userAddress;
+  if (checkoutName) checkoutName.value = userName;
+  if (checkoutPhone) checkoutPhone.value = userPhone;
+  if (checkoutEmail) checkoutEmail.value = userEmail;
+
+  if (sameAsCustomerData) {
+    sameAsCustomerData.checked = false;
+  }
+
+  if (shippingAddress) shippingAddress.value = "";
+  if (shippingName) shippingName.value = "";
+  if (shippingPhone) shippingPhone.value = "";
+  if (shippingEmail) shippingEmail.value = "";
+
+  if (sameAsCustomerData && !sameAsCustomerData.dataset.bound) {
+    sameAsCustomerData.addEventListener("change", () => {
+      if (sameAsCustomerData.checked) {
+        if (shippingAddress) shippingAddress.value = userAddress;
+        if (shippingName) shippingName.value = userName;
+        if (shippingPhone) shippingPhone.value = userPhone;
+        if (shippingEmail) shippingEmail.value = userEmail;
+      } else {
+        if (shippingAddress) shippingAddress.value = "";
+        if (shippingName) shippingName.value = "";
+        if (shippingPhone) shippingPhone.value = "";
+        if (shippingEmail) shippingEmail.value = "";
+      }
+    });
+
+    sameAsCustomerData.dataset.bound = "true";
+  }
+
+  if (cart.length === 0) {
+    checkoutItems.innerHTML = `<div class="text-muted">A kosár üres.</div>`;
+    checkoutTotalPrice.textContent = "0 Ft";
+    return;
+  }
+
+  checkoutItems.innerHTML = cart
+    .map(
+      (item) => `
+        <div class="d-flex justify-content-between align-items-center border rounded p-3 mb-2">
+          <div>
+            <div><strong>${item.itemName}</strong></div>
+            <div>Darabszám: ${item.quantity}</div>
+          </div>
+          <div><strong>${formatCartPrice(Number(item.price) * item.quantity)}</strong></div>
+        </div>
+      `,
+    )
+    .join("");
+
+  checkoutTotalPrice.textContent = formatCartPrice(getCartTotal(cart));
+}
+
+function renderOrdersList() {
+  const ordersList = document.getElementById("ordersList");
+  if (!ordersList) return;
+
+  const orders = getOrdersState();
+
+  if (orders.length === 0) {
+    ordersList.innerHTML = `<div class="text-muted">Még nincs leadott rendelésed.</div>`;
+    return;
+  }
+
+  ordersList.innerHTML = orders
+    .slice()
+    .reverse()
+    .map(
+      (order) => `
+        <div class="border rounded p-3">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <strong>Rendelés időpontja</strong>
+            <span>${order.createdAt}</span>
+          </div>
+
+          <div class="mb-2">
+            ${order.items
+              .map(
+                (item) => `
+                  <div class="d-flex justify-content-between">
+                    <span>${item.itemName} (${item.quantity} db)</span>
+                    <span>${formatCartPrice(Number(item.price) * item.quantity)}</span>
+                  </div>
+                `,
+              )
+              .join("")}
+          </div>
+
+          <div class="d-flex justify-content-between">
+            <strong>Összesen:</strong>
+            <strong>${formatCartPrice(order.total)}</strong>
+          </div>
+        </div>
+      `,
+    )
+    .join("");
+}
+
+function placeOrder() {
+  const cart = getCartState();
+  const currentUser = window.getCurrentUser?.();
+
+  const shippingAddress =
+    document.getElementById("shippingAddress")?.value.trim() || "";
+  const shippingName =
+    document.getElementById("shippingName")?.value.trim() || "";
+  const shippingPhone =
+    document.getElementById("shippingPhone")?.value.trim() || "";
+  const shippingEmail =
+    document.getElementById("shippingEmail")?.value.trim() || "";
+
+  if (!currentUser) {
+    alert("A rendeléshez be kell jelentkezned.");
+    return;
+  }
+
+  if (cart.length === 0) {
+    alert("A kosár üres.");
+    return;
+  }
+
+  if (!shippingAddress || !shippingName || !shippingPhone || !shippingEmail) {
+    alert("Kérlek töltsd ki a szállítási információkat.");
+    return;
+  }
+
+  const newOrder = {
+    createdAt: new Date().toLocaleString("hu-HU"),
+    total: getCartTotal(cart),
+    items: cart,
+    user: {
+      name: currentUser.name || "",
+      email: currentUser.email || "",
+      phone: currentUser.phone || "",
+      address: currentUser.address || "",
+    },
+    shipping: {
+      name: shippingName,
+      email: shippingEmail,
+      phone: shippingPhone,
+      address: shippingAddress,
+    },
+  };
+
+  const orders = getOrdersState();
+  orders.push(newOrder);
+  saveOrdersState(orders);
+
+  localStorage.removeItem(CART_STORAGE_KEY);
+  renderCartDropdown();
+  renderOrdersList();
+
+  alert("Sikeres rendelés!");
+  showSectionByName("home");
 }

@@ -26,17 +26,21 @@ function mapAllItemToCardItem(item) {
 }
 
 function mapSearchResultToCardItem(item) {
+  const normalizedName = (item.itemNamE || item.itemName || "").toLowerCase();
+
   const matchedFullItem = allProducts.find(
-    (full) => full.itemName.toLowerCase() === item.itemNamE?.toLowerCase(),
+    (full) => (full.itemName || "").toLowerCase() === normalizedName,
   );
 
   return {
-    itemId: matchedFullItem?.itemId || null,
-    itemName: item.itemNamE,
-    categoryName: item.categoryNamE,
-    description: matchedFullItem?.description || "Nincs leírás",
-    quantity: matchedFullItem?.quantity ?? 0,
-    price: item.pricE,
+    itemId: item.itemId ?? item.id ?? matchedFullItem?.itemId ?? null,
+    itemName: item.itemNamE ?? item.itemName ?? "Ismeretlen termék",
+    categoryName:
+      item.categoryNamE ?? item.categoryName ?? "Ismeretlen kategória",
+    description:
+      item.description ?? matchedFullItem?.description ?? "Nincs leírás",
+    quantity: item.quantity ?? matchedFullItem?.quantity ?? 0,
+    price: Number(item.pricE ?? item.price ?? 0),
   };
 }
 
@@ -170,6 +174,15 @@ async function openProductDetailById(itemId) {
   document.getElementById("detailProductPrice").textContent = formatPrice(
     product.price,
   );
+  window.currentDetailProduct = {
+    itemId: product.itemId ?? product.id ?? fullItem?.itemId ?? null,
+    itemName:
+      product.itemName ??
+      product.name ??
+      fullItem?.itemName ??
+      "Ismeretlen termék",
+    price: Number(product.price ?? fullItem?.price ?? 0),
+  };
   document.querySelector(".product-gallery-image").innerHTML =
     `<span>${product.itemName}</span>`;
   document.getElementById("detailSpecText").textContent =
