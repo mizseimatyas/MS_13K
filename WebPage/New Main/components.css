@@ -97,6 +97,10 @@
   display: none;
 }
 
+.profile-menu.show {
+  display: block;
+}
+
 .mobile-menu,
 .profile-menu {
   position: absolute;
