@@ -89,7 +89,10 @@ namespace WebShop.Model
                     userid = x.UserId,
                     email = x.Email,
                     address = x.Address ?? "",
-                    phone = x.Phone ?? ""
+                    phone = x.Phone ?? "",
+                    name = x.Name ?? "",
+                    city = x.City ?? "",
+                    zipCode = x.ZipCode ?? ""
                 })
                 .FirstOrDefaultAsync();
 
@@ -97,6 +100,32 @@ namespace WebShop.Model
                 throw new KeyNotFoundException("Nincs ilyen felhasználó");
 
             return user;
+        }
+
+        public async Task UpdateProfile(int userId, string email, string? name, string? city, string? zipCode, string? address, string? phone)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.UserId == userId);
+
+            if (user == null)
+                throw new InvalidOperationException("A felhasználó nem található.");
+
+            if (string.IsNullOrWhiteSpace(email))
+                throw new ArgumentException("Az e-mail cím megadása kötelező.");
+
+            var normalizedEmail = email.Trim();
+
+            var emailExists = await _context.Users.AnyAsync(x => x.Email == normalizedEmail && x.UserId != userId);
+            if (emailExists)
+                throw new InvalidOperationException("Ez az e-mail cím már használatban van.");
+
+            user.Email = normalizedEmail;
+            user.Name = string.IsNullOrWhiteSpace(name) ? null : name.Trim();
+            user.City = string.IsNullOrWhiteSpace(city) ? null : city.Trim();
+            user.ZipCode = string.IsNullOrWhiteSpace(zipCode) ? null : zipCode.Trim();
+            user.Address = string.IsNullOrWhiteSpace(address) ? null : address.Trim();
+            user.Phone = string.IsNullOrWhiteSpace(phone) ? null : phone.Trim();
+
+            await _context.SaveChangesAsync();
         }
     }
 }

@@ -177,3 +177,64 @@
   line-height: 1.45;
   color: #111;
 }
+
+.profile-section {
+  min-height: calc(100vh - 76px);
+  padding: 20px 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(to right, teal, rgb(3, 60, 75));
+}
+
+.profile-center-wrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.profile-shell {
+  width: 100%;
+  max-width: 760px;
+}
+
+.profile-card {
+  border: 0;
+  border-radius: 18px;
+  overflow: hidden;
+  background-color: rgb(62, 160, 160);
+}
+
+.profile-title {
+  font-size: 2.1rem;
+  font-weight: 700;
+  text-align: center;
+  color: #111;
+}
+
+.profile-panel {
+  padding: 20px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.profile-panel-title {
+  margin-bottom: 18px;
+  font-weight: 700;
+  color: #0b3a46;
+}
+
+.profile-card .form-label {
+  font-weight: 600;
+  color: #0b3a46;
+}
+
+.profile-card .form-control {
+  min-height: 46px;
+}
+
+.profile-card .form-control:disabled {
+  color: #111;
+  background-color: #e9ecef;
+  opacity: 1;
+}

@@ -46,23 +46,6 @@ async function apiGetAllCategories() {
   return await fetchJSON(`${API_BASE}/categories/allcategories`);
 }
 
-async function apiRegisterUser(payload) {
-  const response = await fetch(`${API_BASE}/users/register`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    credentials: "include",
-    body: JSON.stringify(payload),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Regisztrációs hiba: ${response.status}`);
-  }
-
-  return await response.json().catch(() => null);
-}
-
 async function apiLoginUser(email, password) {
   const response = await fetch(
     `${API_BASE}/Users/loginuser?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`,
@@ -77,6 +60,29 @@ async function apiLoginUser(email, password) {
   }
 
   return await response.json().catch(() => null);
+}
+
+async function apiUpdateProfile(payload) {
+  const response = await fetch(`${API_BASE}/Users/updateprofile`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+
+  const text = await response.text();
+
+  if (!response.ok) {
+    throw new Error(text || "A profil mentése nem sikerült.");
+  }
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    return text || null;
+  }
 }
 
 async function apiLogoutUser() {
@@ -118,9 +124,16 @@ async function apiRegisterUser(email, password, address, phone) {
     },
   );
 
+  const text = await response.text();
+
   if (!response.ok) {
-    throw new Error(`Regisztrációs hiba: ${response.status}`);
+    console.error(text);
+    throw new Error(text || "A regisztráció nem sikerült.");
   }
 
-  return await response.json().catch(() => null);
+  try {
+    return JSON.parse(text);
+  } catch {
+    return text || null;
+  }
 }
