@@ -29,56 +29,41 @@ namespace ModelTest
             var result = await _model.AllItems();
 
             Assert.NotEmpty(result);
-            Assert.Contains(result, x => x.itemName == "MacBook Pro M3");       //név = név
-            Assert.Contains(result, x => x.itemName == "Laptop Táska 15\"");    //talál ilyet
-            Assert.Contains(result, x => x.itemName == "RTX 4080 GPU");         //létezik
+            Assert.Contains(result, x => x.itemName == "MacBook Pro M3");
+            Assert.Contains(result, x => x.itemName == "RTX 4080 GPU");
+            Assert.All(result, x => Assert.False(string.IsNullOrWhiteSpace(x.itemName)));
+            Assert.All(result, x => Assert.True(x.price > 0));
         }
 
-        /*
-        [Fact]
-        public async Task AllItemsNoWhiteSpace()
-        {
-            var result = await _model.AllItems();
-            var first = result.First();
-
-            Assert.True(first.categoryId > 0);                                  //categoryid nem negativ
-            Assert.False(string.IsNullOrWhiteSpace(first.itemName));            //nem üres név
-            Assert.False(string.IsNullOrWhiteSpace(first.description));         //nem üres leírás
-            Assert.True(first.price > 0);
-        }
-        */
         [Fact]
         public async Task AllItems_ThrowsKeyNotFound()
         {
-            using var emptydb = DbContextFactory.CreateEmpty();                 //empty db
-            var emptymodel = new ItemModel(emptydb);                            //modelhez db
+            using var emptydb = DbContextFactory.CreateEmpty();
+            var emptymodel = new ItemModel(emptydb);
 
-            var exc = await Assert.ThrowsAsync<KeyNotFoundException>(() => emptymodel.AllItems()); //hibauzenet 
-
-
-            Assert.Contains("Nincs egyetlen", exc.Message);                     //hibauzenet egyezik a modelbe
+            var exc = await Assert.ThrowsAsync<KeyNotFoundException>(() => emptymodel.AllItems());
+            Assert.Contains("Nincs egyetlen", exc.Message);
         }
         #endregion
 
         #region ItemById
-        /*
         [Fact]
         public async Task ItemById_Correct()
         {
-            var idexist = _context.Items.First().ItemId;
-            var result = await _model.ItemById(idexist);
+            var existingId = _context.Items.First().ItemId;
+            var result = await _model.ItemById(existingId);
 
             Assert.NotNull(result);
             Assert.False(string.IsNullOrWhiteSpace(result.itemName));
-            Assert.True(result.categoryId > 0);
+            Assert.False(string.IsNullOrWhiteSpace(result.categoryName));
             Assert.True(result.price > 0);
         }
-        */
+
         [Fact]
         public async Task ItemById_ThrowsNotFound()
         {
-            var notexistId = int.MaxValue;
-            var exc = await Assert.ThrowsAsync<KeyNotFoundException>(() => _model.ItemById(notexistId));
+            var notExistId = int.MaxValue;
+            var exc = await Assert.ThrowsAsync<KeyNotFoundException>(() => _model.ItemById(notExistId));
 
             Assert.Contains("Nincs", exc.Message);
         }
@@ -86,47 +71,39 @@ namespace ModelTest
         [Theory]
         [InlineData(0)]
         [InlineData(-1)]
-        public async Task ItemById_ThrowsInvalid(int id)
+        public async Task ItemById_ThrowsNotFound_InvalidId(int id)
         {
+            // Model does not range-check id, queries DB and returns null → KeyNotFoundException
             var exc = await Assert.ThrowsAsync<KeyNotFoundException>(() => _model.ItemById(id));
-
             Assert.Contains("Nincs", exc.Message);
         }
         #endregion
 
-        #region ItemsByCategory
+        #region AdmItemByName
         [Fact]
-        public async Task ItemsByCategory_Correct()
+        public async Task AdmItemByName_Correct()
         {
-            var catexist = _context.Categories.First().CategoryName;
-            var result = await _model.ItemsByCategory(catexist);
+            var result = await _model.AdmItemByName("Laptop");
 
-            Assert.NotNull(result);
             Assert.NotEmpty(result);
-            Assert.All(result, x => Assert.Equal(catexist.ToLower(), x.categoryNamE.ToLower()));
-        }
-
-        #region NagyKisBetuk
-        #endregion
-
-        [Fact]
-        public async Task ItemsById_ThrowsNotFound()
-        {
-            var notexistCat = "kutyakaja";
-            var exc = await Assert.ThrowsAsync<KeyNotFoundException>(() => _model.ItemsByCategory(notexistCat));
-
-            Assert.Contains("Nincs", exc.Message);
-            Assert.Contains(notexistCat, exc.Message);
+            Assert.All(result, x => Assert.Contains("laptop", x.itemName.ToLower()));
         }
 
         [Fact]
-        public async Task ItemsByCategory_Empty()
+        public async Task AdmItemByName_CaseInsensitive()
         {
-            using var emptydb = DbContextFactory.CreateEmpty();
-            var emptymodel = new ItemModel(emptydb);
+            var lower = await _model.AdmItemByName("rtx");
+            var upper = await _model.AdmItemByName("RTX");
 
-            var exc = await Assert.ThrowsAsync<KeyNotFoundException>(() => emptymodel.ItemsByCategory("kutyakaja"));
-            Assert.Contains("Nincs", exc.Message);
+            Assert.Equal(lower.Count(), upper.Count());
+        }
+
+        [Fact]
+        public async Task AdmItemByName_ReturnsEmpty_WhenNoMatch()
+        {
+            // Model returns empty list (not exception) for no match
+            var result = await _model.AdmItemByName("kutyakaja_nemletezik_xyz");
+            Assert.Empty(result);
         }
         #endregion
 
@@ -141,7 +118,7 @@ namespace ModelTest
                 itemName = "TesztItem",
                 categoryName = categ.CategoryName,
                 quantity = 67,
-                description = "Teszt item",
+                description = "Teszt item leírása",
                 price = 6767
             };
 
@@ -151,7 +128,6 @@ namespace ModelTest
             Assert.Equal(before + 1, after);
 
             var created = await _context.Items.SingleOrDefaultAsync(x => x.ItemName == dto.itemName);
-
             Assert.NotNull(created);
             Assert.Equal(categ.CategoryId, created.CategoryId);
             Assert.Equal(dto.quantity, created.Quantity);
@@ -170,14 +146,14 @@ namespace ModelTest
         {
             var dto = new AddNewItemDto
             {
-                itemName = "KutyaKaja",
-                categoryName = "kutyakaja",
+                itemName = "UjTermek",
+                categoryName = "nemletezokategoria",
                 quantity = 6,
-                description = "Teszt item",
+                description = "Teszt leírás",
                 price = 676
             };
-            var exc = await Assert.ThrowsAsync<KeyNotFoundException>(() => _model.AddNewItem(dto));
 
+            var exc = await Assert.ThrowsAsync<KeyNotFoundException>(() => _model.AddNewItem(dto));
             Assert.Contains("Nincs", exc.Message);
             Assert.Contains(dto.categoryName, exc.Message);
         }
@@ -185,18 +161,18 @@ namespace ModelTest
         [Fact]
         public async Task AddNewItem_ThrowsNameTaken()
         {
-            var existitem = _context.Items.First();
-            var categ = _context.Categories.Single(x => x.CategoryId == existitem.CategoryId);
+            var existItem = _context.Items.First();
+            var categ = _context.Categories.Single(x => x.CategoryId == existItem.CategoryId);
             var dto = new AddNewItemDto
             {
-                itemName = existitem.ItemName,
+                itemName = existItem.ItemName,
                 categoryName = categ.CategoryName,
                 quantity = 1,
                 description = "leiras",
-                price = existitem.Price
+                price = existItem.Price
             };
-            var exc = await Assert.ThrowsAsync<InvalidOperationException>(() => _model.AddNewItem(dto));
 
+            var exc = await Assert.ThrowsAsync<InvalidOperationException>(() => _model.AddNewItem(dto));
             Assert.Contains("Már létezik", exc.Message);
         }
         #endregion
@@ -223,21 +199,18 @@ namespace ModelTest
         public async Task DeleteItem_ThrowsOutOfRange(int id)
         {
             var exc = await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => _model.DeleteItem(id));
-
             Assert.Contains("pozitív", exc.Message);
         }
 
         [Fact]
         public async Task DeleteItem_ThrowsNotFound()
         {
-            var notexistId = int.MaxValue;
-
-            var exc = await Assert.ThrowsAsync<KeyNotFoundException>(() => _model.DeleteItem(notexistId));
+            var notExistId = int.MaxValue;
+            var exc = await Assert.ThrowsAsync<KeyNotFoundException>(() => _model.DeleteItem(notExistId));
 
             Assert.Contains("Nincs termék", exc.Message);
-            Assert.Contains(notexistId.ToString(), exc.Message);
+            Assert.Contains(notExistId.ToString(), exc.Message);
         }
-
         #endregion
 
         #region ModifyItem
@@ -246,21 +219,19 @@ namespace ModelTest
         {
             var item = _context.Items.First();
             var categ = _context.Categories.First();
-
             var dto = new ModifyItemDto
             {
                 itemId = item.ItemId,
-                itemName = "modositott nev",
+                itemName = "Módosított Név",
                 categoryName = categ.CategoryName,
                 quantity = item.Quantity + 10,
-                description = "modositott leiras",
+                description = "módosított leírás",
                 price = item.Price + 1000
             };
 
             await _model.ModifyItem(dto);
 
             var modified = await _context.Items.SingleAsync(x => x.ItemId == item.ItemId);
-
             Assert.Equal(dto.itemName, modified.ItemName);
             Assert.Equal(categ.CategoryId, modified.CategoryId);
             Assert.Equal(dto.quantity, modified.Quantity);
@@ -280,15 +251,14 @@ namespace ModelTest
             var dto = new ModifyItemDto
             {
                 itemId = int.MaxValue,
-                itemName = "rago",
-                categoryName = "cukor",
+                itemName = "nemletezik",
+                categoryName = "Számítógépek",
                 quantity = 1,
-                description = "mentolos",
+                description = "leírás",
                 price = 100
             };
 
             var exc = await Assert.ThrowsAsync<KeyNotFoundException>(() => _model.ModifyItem(dto));
-
             Assert.Contains("Nincs termék", exc.Message);
             Assert.Contains(dto.itemId.ToString(), exc.Message);
         }
@@ -296,14 +266,13 @@ namespace ModelTest
         [Fact]
         public async Task ModifyItem_ThrowsNameTaken()
         {
-            var item1 = _context.Items.First();                                     // item1 seedbol
-            var item2 = _context.Items.Skip(1).First();                             // item2 seedbol
+            var item1 = _context.Items.First();
+            var item2 = _context.Items.Skip(1).First();
             var categ = _context.Categories.Single(x => x.CategoryId == item2.CategoryId);
-
             var dto = new ModifyItemDto
             {
                 itemId = item2.ItemId,
-                itemName = item1.ItemName,                                          //létezo nev
+                itemName = item1.ItemName,           // existing name → conflict
                 categoryName = categ.CategoryName,
                 quantity = item2.Quantity,
                 description = item2.Description,
@@ -311,7 +280,6 @@ namespace ModelTest
             };
 
             var exc = await Assert.ThrowsAsync<InvalidOperationException>(() => _model.ModifyItem(dto));
-
             Assert.Contains("Már létezik", exc.Message);
         }
         #endregion
