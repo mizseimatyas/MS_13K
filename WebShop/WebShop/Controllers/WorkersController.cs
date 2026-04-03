@@ -42,8 +42,8 @@ namespace WebShop.Controllers
 
                 return Ok(new { message = "Belepve", Role = worker.Role });
             }
-            catch (ArgumentException) { return BadRequest(); }
-            catch { return BadRequest(); }
+            catch (ArgumentException ex) { return BadRequest(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
         [Authorize(Roles = "Admin")]
@@ -58,9 +58,9 @@ namespace WebShop.Controllers
                 await _model.WorkerRegistration(username, password, phone);
                 return Ok();
             }
-            catch (InvalidOperationException) { return Conflict(); }
-            catch (ArgumentException) { return BadRequest(); }
-            catch { return BadRequest(); }
+            catch (InvalidOperationException ex) { return Conflict(ex.Message); }
+            catch (ArgumentException ex) { return BadRequest(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
         [Authorize(Roles = "Admin")]
@@ -72,8 +72,8 @@ namespace WebShop.Controllers
                 await _model.DeleteWorker(id);
                 return Ok();
             }
-            catch (KeyNotFoundException) { return NotFound(); }
-            catch { return BadRequest(); }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
         [Authorize(Roles = "Admin")]
@@ -87,9 +87,9 @@ namespace WebShop.Controllers
                 await _model.ModifyWorkerData(id, dto.WorkerName, dto.Role, dto.Phone);
                 return Ok();
             }
-            catch (KeyNotFoundException) { return NotFound(); }
-            catch (ArgumentException) { return BadRequest(); }
-            catch { return BadRequest(); }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (ArgumentException ex) { return BadRequest(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
         [Authorize(Roles = "Worker,Admin")]
@@ -103,10 +103,10 @@ namespace WebShop.Controllers
                 await _model.ChangePassword(workerId, newPassword);
                 return Ok();
             }
-            catch (ArgumentOutOfRangeException) { return BadRequest(); }
-            catch (ArgumentException) { return BadRequest(); }
-            catch (KeyNotFoundException) { return NotFound(); }
-            catch { return BadRequest(); }
+            catch (ArgumentOutOfRangeException ex) { return BadRequest(ex.Message); }
+            catch (ArgumentException ex) { return BadRequest(ex.Message); }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
         [Authorize]

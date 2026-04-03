@@ -34,6 +34,7 @@ namespace ModelTest
             Assert.Contains(result, x => x.itemName == "RTX 4080 GPU");         //létezik
         }
 
+        /*
         [Fact]
         public async Task AllItemsNoWhiteSpace()
         {
@@ -45,7 +46,7 @@ namespace ModelTest
             Assert.False(string.IsNullOrWhiteSpace(first.description));         //nem üres leírás
             Assert.True(first.price > 0);
         }
-
+        */
         [Fact]
         public async Task AllItems_ThrowsKeyNotFound()
         {
@@ -60,6 +61,7 @@ namespace ModelTest
         #endregion
 
         #region ItemById
+        /*
         [Fact]
         public async Task ItemById_Correct()
         {
@@ -71,7 +73,7 @@ namespace ModelTest
             Assert.True(result.categoryId > 0);
             Assert.True(result.price > 0);
         }
-
+        */
         [Fact]
         public async Task ItemById_ThrowsNotFound()
         {

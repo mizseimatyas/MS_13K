@@ -25,8 +25,8 @@ namespace WebShop.Controllers
                 var response = await _model.AllItems();
                 return Ok(response);
             }
-            catch (KeyNotFoundException) { return NotFound(); }
-            catch { return BadRequest(); }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
 
@@ -40,8 +40,8 @@ namespace WebShop.Controllers
                 var response = await _model.ItemById(id);
                 return Ok(response);
             }
-            catch (KeyNotFoundException) { return NotFound(); }
-            catch { return BadRequest(); }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
 
@@ -55,8 +55,8 @@ namespace WebShop.Controllers
                 var response = await _model.AdmItemByName(iname);
                 return Ok(response);
             }
-            catch (KeyNotFoundException) { return NotFound(); }
-            catch { return BadRequest(); }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
 
@@ -69,8 +69,8 @@ namespace WebShop.Controllers
                 var response = await _model.ItemsWithQunatity0();
                 return Ok(response);
             }
-            catch (KeyNotFoundException) { return NotFound(); }
-            catch { return BadRequest(); }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
 
@@ -83,7 +83,7 @@ namespace WebShop.Controllers
                 var response = await _model.ItemsWithQuantityOrderByAsc();
                 return Ok(response);
             }
-            catch { return BadRequest(); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
 
@@ -96,7 +96,7 @@ namespace WebShop.Controllers
                 var response = await _model.ItemsWithQuantityOrderByDesc();
                 return Ok(response);
             }
-            catch { return BadRequest(); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
 
@@ -110,7 +110,7 @@ namespace WebShop.Controllers
                 var response = await _model.CategoryItemsQuantityOrderByAsc(category);
                 return Ok(response);
             }
-            catch { return BadRequest(); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
 
@@ -123,7 +123,7 @@ namespace WebShop.Controllers
                 var response = await _model.CategoryItemsQuantityOrderByDesc(category);
                 return Ok(response);
             }
-            catch { return BadRequest(); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
 
@@ -137,11 +137,11 @@ namespace WebShop.Controllers
                 await _model.AddNewItem(dto);
                 return Ok();
             }
-            catch (ArgumentNullException) { return BadRequest(); }
-            catch (ArgumentException) { return BadRequest(); }
-            catch (KeyNotFoundException) { return NotFound(); }
-            catch (InvalidOperationException) { return Conflict(); }
-            catch { return BadRequest(); }
+            catch (ArgumentNullException ex) { return BadRequest(ex.Message); }
+            catch (ArgumentException ex) { return BadRequest(ex.Message); }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (InvalidOperationException ex) { return Conflict(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
 
@@ -154,12 +154,12 @@ namespace WebShop.Controllers
                 await _model.ModifyItem(dto);
                 return Ok();
             }
-            catch (ArgumentNullException) { return BadRequest(); }
-            catch (ArgumentOutOfRangeException) { return BadRequest(); }
-            catch (ArgumentException) { return BadRequest(); }
-            catch (KeyNotFoundException) { return NotFound(); }
-            catch (InvalidOperationException) { return Conflict(); }
-            catch { return BadRequest(); }
+            catch (ArgumentNullException ex) { return BadRequest(ex.Message); }
+            catch (ArgumentOutOfRangeException ex) { return BadRequest(ex.Message); }
+            catch (ArgumentException ex) { return BadRequest(ex.Message); }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (InvalidOperationException ex) { return Conflict(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
 
@@ -172,9 +172,9 @@ namespace WebShop.Controllers
                 await _model.DeleteItem(id);
                 return Ok();
             }
-            catch (ArgumentOutOfRangeException) { return BadRequest(); }
-            catch (KeyNotFoundException) { return NotFound(); }
-            catch { return BadRequest(); }
+            catch (ArgumentOutOfRangeException ex) { return BadRequest(ex.Message); }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
 
@@ -188,8 +188,8 @@ namespace WebShop.Controllers
                 var response = await _model.ItemByName(name);
                 return Ok(response);
             }
-            catch (KeyNotFoundException) { return NotFound(); }
-            catch { return BadRequest(); }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
 
@@ -202,8 +202,8 @@ namespace WebShop.Controllers
                 var response = await _model.ItemsByNameSnipet(fragname);
                 return Ok(response);
             }
-            catch (KeyNotFoundException) { return NotFound(); }
-            catch { return BadRequest(); }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
 
@@ -216,8 +216,8 @@ namespace WebShop.Controllers
                 var response = await _model.ItemsByCategory(category);
                 return Ok(response);
             }
-            catch (KeyNotFoundException) { return NotFound(); }
-            catch { return BadRequest(); }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
 
@@ -230,8 +230,8 @@ namespace WebShop.Controllers
                 var response = await _model.ItemsByPriceMax(max);
                 return Ok(response);
             }
-            catch (KeyNotFoundException) { return NotFound(); }
-            catch { return BadRequest(); }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
 
@@ -244,8 +244,8 @@ namespace WebShop.Controllers
                 var response = await _model.ItemsByPriceMin(min);
                 return Ok(response);
             }
-            catch (KeyNotFoundException) { return NotFound(); }
-            catch { return BadRequest(); }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
 
@@ -258,8 +258,8 @@ namespace WebShop.Controllers
                 var response = await _model.ItemsByPriceMinMax(min, max);
                 return Ok(response);
             }
-            catch (KeyNotFoundException) { return NotFound(); }
-            catch { return BadRequest(); }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
     }

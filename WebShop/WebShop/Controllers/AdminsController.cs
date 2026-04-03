@@ -51,8 +51,8 @@ namespace WebShop.Controllers
 
                 return Ok(new { message = "Belepve", Role = admin.Role });
             }
-            catch (ArgumentException) { return BadRequest(); }
-            catch { return BadRequest(); }
+            catch (ArgumentException ex) { return BadRequest(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
 
@@ -66,9 +66,9 @@ namespace WebShop.Controllers
                 await _model.AdminRegistration(username, password);
                 return Ok();
             }
-            catch (ArgumentException) { return BadRequest(); }
-            catch (InvalidOperationException) { return Conflict(); }
-            catch { return BadRequest(); }
+            catch (ArgumentException ex) { return BadRequest(ex.Message); }
+            catch (InvalidOperationException ex) { return Conflict(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
 
@@ -82,10 +82,10 @@ namespace WebShop.Controllers
                 await _model.ChangePassword(adminId, newPassword);
                 return Ok();
             }
-            catch (ArgumentOutOfRangeException) { return BadRequest(); }
-            catch (ArgumentException) { return BadRequest(); }
-            catch (KeyNotFoundException) { return NotFound(); }
-            catch { return BadRequest(); }
+            catch (ArgumentOutOfRangeException ex) { return BadRequest(ex.Message); }
+            catch (ArgumentException ex) { return BadRequest(ex.Message); }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
         [HttpGet("allworkers")]
@@ -96,8 +96,8 @@ namespace WebShop.Controllers
                 var response = await _model.AllWorkers();
                 return Ok(response);
             }
-            catch (KeyNotFoundException) { return NotFound(); }
-            catch { return BadRequest(); }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
 

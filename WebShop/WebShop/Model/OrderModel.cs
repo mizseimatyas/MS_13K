@@ -148,7 +148,6 @@ namespace WebShop.Model
 
         #endregion
 
-
         #region OrderDetailsById
         public async Task<OrderDetailsDto> OrderDetailsByOrderId(int orderId)
         {
@@ -178,7 +177,6 @@ namespace WebShop.Model
         }
 
         #endregion
-
 
         #region CompleteOrder
         public async Task CompleteOrder(int orderId)
