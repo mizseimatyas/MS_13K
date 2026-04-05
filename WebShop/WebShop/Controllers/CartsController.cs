@@ -60,5 +60,23 @@ namespace WebShop.Controllers
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
+
+        #region AddToCart
+        [HttpPost("addtocart")]
+        public async Task<ActionResult> AddToCart([FromBody] AddToCartDto dto)
+        {
+            try
+            {
+                await _model.AddToCart(dto);
+                return Ok();
+            }
+            catch (ArgumentNullException ex) { return BadRequest(ex.Message); }
+            catch (ArgumentOutOfRangeException ex) { return BadRequest(ex.Message); }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (InvalidOperationException ex) { return Conflict(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
+        }
+        #endregion
+
     }
 }
