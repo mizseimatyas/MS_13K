@@ -167,3 +167,57 @@ async function apiCancelOrder(orderId, userId) {
 
   return text || true;
 }
+
+async function apiGetCartInventory(userId) {
+  return await fetchJSON(
+    `${API_BASE}/Carts/cartinventory?userid=${encodeURIComponent(userId)}`,
+  );
+}
+
+async function apiGetCartTotalPrice(userId) {
+  return await fetchJSON(
+    `${API_BASE}/Carts/cartinventorytotalprice?userid=${encodeURIComponent(userId)}`,
+  );
+}
+
+async function apiModifyCartItem(payload) {
+  const response = await fetch(`${API_BASE}/Carts/modifycart`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+
+  const text = await response.text();
+
+  if (!response.ok) {
+    throw new Error(text || "A kosár módosítása nem sikerült.");
+  }
+
+  return text || true;
+}
+
+async function apiPlaceOrder(payload) {
+  const response = await fetch(`${API_BASE}/Orders/placeorder`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+
+  const text = await response.text();
+
+  if (!response.ok) {
+    throw new Error(text || "A rendelés leadása nem sikerült.");
+  }
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    return text || null;
+  }
+}
