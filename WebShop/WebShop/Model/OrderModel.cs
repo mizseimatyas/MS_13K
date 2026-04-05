@@ -43,7 +43,7 @@ namespace WebShop.Model
                 UserId = userId,
                 TargetAddress = targetAddress,
                 Date = DateTime.UtcNow,
-                Status = OrderStatus.PendingPayment,
+                Status = OrderStatus.PaymentSuccess,
                 TotalPrice = cartItems.Sum(x => x.Quantity * x.Price),
                 OrderItems = cartItems.Select(x => new OrderItem
                 {
@@ -191,14 +191,23 @@ namespace WebShop.Model
             if(string.IsNullOrWhiteSpace(dto.orderStatus))
                 throw new ArgumentException("Státusz nem lehet üres", nameof(dto.orderStatus));
 
-            var order = await _context.Orders
-                .Include(x => x.OrderItems)
-                .FirstOrDefaultAsync(x => x.OrderId == dto.orderId);
+            var order = await _context.Orders.FindAsync(dto.orderId);
             if (order == null)
                 throw new KeyNotFoundException($"Nem található rendelés #{dto.orderId} azonosítóval");
 
             if (!Enum.TryParse<OrderStatus>(dto.orderStatus, true, out var newStatus))
                 throw new ArgumentException($"Érvénytelen státusz: {dto.orderStatus}");
+
+            var allowedTransitions = new Dictionary<OrderStatus, OrderStatus[]>
+                {
+                    { OrderStatus.PaymentSuccess, new[] { OrderStatus.Delivering } },
+                    { OrderStatus.Delivering, new[] { OrderStatus.OrderCompleted } }
+                };
+
+            if (!allowedTransitions.TryGetValue(order.Status, out var allowed) || !allowed.Contains(newStatus))
+                throw new InvalidOperationException(
+                    $"Érvénytelen státuszváltás: '{order.Status}' → '{newStatus}'");
+
             order.Status = newStatus;
             await _context.SaveChangesAsync();
         }

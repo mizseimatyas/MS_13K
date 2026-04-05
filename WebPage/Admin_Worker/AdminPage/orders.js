@@ -20,6 +20,11 @@ function formatDate(raw) {
     });
 }
 
+const STATUS_TRANSITIONS = {
+    'PaymentSuccess': ['Delivering'],
+    'Delivering':     ['OrderCompleted']
+};
+
 function renderOrdersTable(orders) {
     const container = document.getElementById('orders-table-container');
     if (!container) return;
@@ -66,34 +71,32 @@ async function onOrderDetailsClick(e) {
 
 async function loadOrderDetailsToModal(orderId) {
     if (!Number.isInteger(orderId) || orderId <= 0) {
-        setLog('orders-log', 'Érvénytelen rendelés ID.', true);
+        showToast('Érvénytelen rendelés ID.', true);
         return;
     }
 
     try {
         const order = await apiFetch(`${API_BASE}/Orders/orderDetailsByOrderId?orderId=${encodeURIComponent(orderId)}`);
 
-        const hiddenId         = document.getElementById('order-modal-order-id');
-        const statusSelect     = document.getElementById('order-modal-status-select');
         const completeBtn      = document.getElementById('order-modal-complete-btn');
         const detailsContainer = document.getElementById('order-modal-details');
         const itemsContainer   = document.getElementById('order-modal-items');
-        const updateForm       = document.getElementById('order-modal-update-status-form'); 
-        const submitBtn        = updateForm?.querySelector('button[type="submit"]');
-        const isTerminal = order.status === 'OrderCompleted' || order.status === 'Cancelled';
+        const nextStatus         = STATUS_TRANSITIONS[order.status]?.[0] ?? null;
+        const currentStatusLabel = document.getElementById('order-modal-current-status');
+        const nextStatusLabel    = document.getElementById('order-modal-next-status');
+        const nextBtn            = document.getElementById('order-modal-next-btn');
 
-        if (hiddenId) hiddenId.value = order.orderId;
-        if (statusSelect) { statusSelect.value = order.status || ''; statusSelect.disabled = isTerminal; }
-        if (submitBtn)    submitBtn.disabled = isTerminal;
-        if (completeBtn)  { completeBtn.disabled = isTerminal; completeBtn.dataset.orderId = order.orderId; }
+        if (currentStatusLabel) currentStatusLabel.textContent = order.status;
+        if (nextStatusLabel)    nextStatusLabel.textContent    = nextStatus ?? '–';
+        if (nextBtn)            { nextBtn.disabled = !nextStatus; nextBtn.dataset.orderId = order.orderId; nextBtn.dataset.nextStatus = nextStatus; }
+        if (completeBtn)        { completeBtn.disabled = order.status !== 'Delivering'; completeBtn.dataset.orderId = order.orderId; }
 
         if (detailsContainer) {
             detailsContainer.innerHTML = `
                 <p><strong>Rendelés ID:</strong> ${order.orderId}</p>
                 <p><strong>Dátum:</strong> ${formatDate(order.date)}</p>
-                <p><strong>Státusz:</strong> ${order.status}</p>
                 <p><strong>Célcím:</strong> ${order.targetAddress}</p>
-                <p><strong>Végösszeg:</strong> ${order.totalPrice}</p>`;
+                <p><strong>Végösszeg:</strong> ${order.totalPrice} Ft</p>`;
         }
 
         if (itemsContainer) {
@@ -113,52 +116,47 @@ async function loadOrderDetailsToModal(orderId) {
 
         openOrderModal();
     } catch (err) {
-        setLog('orders-log', `Hiba rendelés részleteinek lekérése közben: ${err.message}`, true);
+        showToast(`Hiba rendelés betöltésekor: ${err.message}`, true);
     }
 }
 
-document.getElementById('load-all-orders-btn')
-    ?.addEventListener('click', loadAllOrders);
+document.getElementById('order-modal-next-btn')
+    ?.addEventListener('click', async e => {
+        const orderId   = Number(e.currentTarget.dataset.orderId    || 0);
+        const newStatus =        e.currentTarget.dataset.nextStatus || '';
 
-document.getElementById('order-modal-update-status-form')
-    ?.addEventListener('submit', async e => {
-        e.preventDefault();
-        if (!validateForm(e.target)) return;
+        if (!orderId || !newStatus) { showToast('Érvénytelen adat.', true); return; }
 
-        const orderId   = Number(document.getElementById('order-modal-order-id')?.value || 0);
-        const newStatus = document.getElementById('order-modal-status-select')?.value;
-        const logEl     = document.getElementById('order-modal-log');
-
-        if (!orderId || orderId <= 0) { if (logEl) logEl.textContent = 'Érvénytelen rendelés ID.'; return; }
-        if (!newStatus)               { if (logEl) logEl.textContent = 'Válassz új státuszt.'; return; }
 
         try {
             await apiFetch(`${API_BASE}/Orders/updateorderstatus`, {
                 method: 'PUT',
                 body: JSON.stringify({ orderId, orderStatus: newStatus })
             });
-            if (logEl) logEl.textContent = `Státusz frissítve (id = ${orderId}, új: ${newStatus}).`;
-            await loadOrderDetailsToModal(orderId);
+            closeOrderModal();
+            showToast(`Státusz frissítve → ${newStatus}`);
             await loadAllOrders();
         } catch (err) {
-            if (logEl) logEl.textContent = `Hiba státusz frissítése közben: ${err.message}`;
+            showToast(`Hiba: ${err.message}`, true);
         }
     });
+
+document.getElementById('load-all-orders-btn')
+    ?.addEventListener('click', loadAllOrders);
 
 document.getElementById('order-modal-complete-btn')
     ?.addEventListener('click', async e => {
         const orderId = Number(e.currentTarget.dataset.orderId || 0);
-        const logEl   = document.getElementById('order-modal-log');
 
-        if (!orderId || orderId <= 0) { if (logEl) logEl.textContent = 'Érvénytelen rendelés ID.'; return; }
+        if (!orderId || orderId <= 0) { showToast('Érvénytelen rendelés ID.', true); return; }
         if (!confirm(`Biztosan lezárod ezt a rendelést? (id: ${orderId})`)) return;
 
         try {
             await apiFetch(`${API_BASE}/Orders/completeorder?orderId=${encodeURIComponent(orderId)}`, { method: 'PUT' });
-            if (logEl) logEl.textContent = `Rendelés lezárva (id = ${orderId}).`;
-            await loadOrderDetailsToModal(orderId);
+            closeOrderModal();
+            showToast(`Rendelés lezárva (id = ${orderId}).`);
             await loadAllOrders();
         } catch (err) {
-            if (logEl) logEl.textContent = `Hiba rendelés lezárása közben: ${err.message}`;
+            showToast(`Hiba: ${err.message}`, true);
         }
-    });
+});

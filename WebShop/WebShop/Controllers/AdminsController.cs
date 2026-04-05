@@ -19,6 +19,7 @@ namespace WebShop.Controllers
         }
 
 
+        [Authorize]
         [HttpGet("me")]
         public ActionResult GetMe()
         {
@@ -84,6 +85,18 @@ namespace WebShop.Controllers
             }
             catch (ArgumentOutOfRangeException ex) { return BadRequest(ex.Message); }
             catch (ArgumentException ex) { return BadRequest(ex.Message); }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
+        }
+
+        [HttpGet("allusers")]
+        public async Task<ActionResult<IEnumerable<UserDto>>> AllUsers()
+        {
+            try
+            {
+                var response = await _model.AllUsers();
+                return Ok(response);
+            }
             catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
             catch (Exception ex) { return BadRequest(ex.Message); }
         }

@@ -37,8 +37,12 @@ builder.Services
     .AddCookie(options =>
     {
         options.Cookie.Name = "webshop_auth";
-        options.Cookie.SameSite = isDev ? SameSiteMode.Lax : SameSiteMode.None;
-        options.Cookie.SecurePolicy = isDev ? CookieSecurePolicy.SameAsRequest : CookieSecurePolicy.Always;
+        options.Cookie.HttpOnly = true;
+
+        options.Cookie.SameSite = SameSiteMode.None;
+
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+
         options.SlidingExpiration = true;
         options.Events = new CookieAuthenticationEvents
         {
