@@ -20,7 +20,8 @@ namespace WebShop.Persistence
             {
                 new Category { CategoryName = "Számítógépek" },
                 new Category { CategoryName = "Kiegészítők" },
-                new Category { CategoryName = "Alkatrészek" }
+                new Category { CategoryName = "Alkatrészek" },
+                new Category { CategoryName = "Kategorizálatlan" }
             };
 
             db.Categories.AddRange(categories);
@@ -29,6 +30,7 @@ namespace WebShop.Persistence
             var catComputers = categories.First(c => c.CategoryName == "Számítógépek").CategoryId;
             var catAccessories = categories.First(c => c.CategoryName == "Kiegészítők").CategoryId;
             var catParts = categories.First(c => c.CategoryName == "Alkatrészek").CategoryId;
+            var catUn = categories.First(c => c.CategoryName == "Kategorizálatlan").CategoryId;
 
             // Items - csak elektronikai dolgok (ID-t NEM állítunk)
             var items = new List<Item>

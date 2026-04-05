@@ -1,0 +1,113 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:WorkerApp.ViewModels"
+             xmlns:dto="clr-namespace:WorkerApp.Dto"
+             mc:Ignorable="d"
+             x:Class="WorkerApp.Views.ItemsListView"
+             x:DataType="vm:ItemsListViewModel"
+             d:DesignWidth="600"
+             d:DesignHeight="400"
+             Background="#f5f8ff">
+
+    <UserControl.Styles>
+        <Style Selector="Button.primary">
+            <Setter Property="Background" Value="#1f6fe0" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Height" Value="40" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+
+        <Style Selector="Button.primary:pointerover">
+            <Setter Property="Background" Value="#1958b8" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />   <!-- felső sáv -->
+            <RowDefinition Height="*" />      <!-- lista -->
+        </Grid.RowDefinitions>
+
+        <!-- Felső sáv: cím + frissítés + szerkesztés -->
+        <Border Grid.Row="0"
+                Background="White"
+                Padding="12"
+                BoxShadow="0 2 6 #20000000">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />   <!-- Vissza -->
+                    <ColumnDefinition Width="*" />      <!-- Cím -->
+                    <ColumnDefinition Width="Auto" />   <!-- Szerkesztés -->
+                    <ColumnDefinition Width="Auto" />   <!-- Frissítés -->
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0"
+                        Classes="primary"
+                        Content="Vissza"
+                        Command="{Binding BackCommand}"
+                        Width="90"
+                        Margin="0,0,12,0" />
+
+                <TextBlock Grid.Column="1"
+                           Text="Raktár / Készlet"
+                           FontSize="20"
+                           FontWeight="Bold"
+                           Foreground="#1f4b99"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center" />
+
+                <!-- Kijelölt elem szerkesztése -->
+                <Button Grid.Column="2"
+                        Classes="primary"
+                        Content="Szerkesztés"
+                        Command="{Binding EditItemCommand}"
+                        Width="110"
+                        Margin="12,0,0,0" />
+
+                <Button Grid.Column="3"
+                        Classes="primary"
+                        Content="Frissítés"
+                        Command="{Binding LoadItemsCommand}"
+                        Margin="12,0,0,0"
+                        Width="110" />
+            </Grid>
+        </Border>
+
+        <!-- Lista tartalom -->
+        <Grid Grid.Row="1" Margin="12,8,12,12">
+            <Border Background="White"
+                    CornerRadius="8"
+                    Padding="4"
+                    BoxShadow="0 2 8 #20000000">
+                <ListBox ItemsSource="{Binding Items}"
+                         SelectedItem="{Binding SelectedItem}"
+                         BorderThickness="0">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="dto:ItemDto">
+                            <Border BorderBrush="#dde2f0"
+                                    BorderThickness="0,0,0,1"
+                                    Padding="8">
+                                <Grid ColumnDefinitions="80,*,100,80,80">
+                                    <TextBlock Text="{Binding ItemId}"
+                                               HorizontalAlignment="Left" />
+                                    <TextBlock Grid.Column="1"
+                                               Text="{Binding ItemName}"
+                                               FontWeight="SemiBold" />
+                                    <TextBlock Grid.Column="2"
+                                               Text="{Binding CategoryName}" />
+                                    <TextBlock Grid.Column="3"
+                                               Text="{Binding Quantity}" />
+                                    <TextBlock Grid.Column="4"
+                                               Text="{Binding Price}" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

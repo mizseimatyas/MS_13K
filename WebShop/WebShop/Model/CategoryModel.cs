@@ -79,6 +79,9 @@ namespace WebShop.Model
                 .SingleOrDefaultAsync(x => x.CategoryId == categid);
             if (categ is null)
                 throw new KeyNotFoundException($"Nincs kategória ezzel az azonosítóval: {categid}");
+            var items = await _context.Items.Where(x => x.CategoryId == categid).ToListAsync();
+            foreach (var item in items)
+                item.CategoryId = 15;
 
             _context.Categories.Remove(categ);
 
@@ -93,7 +96,9 @@ namespace WebShop.Model
             var categories = await _context.Categories
                 .Select(x => new CategoryDto
                 {
+                    categoryId = x.CategoryId,
                     categoryName = x.CategoryName,
+                    itemCount = x.Items.Count
                 })
                 .ToListAsync();
 
@@ -104,8 +109,7 @@ namespace WebShop.Model
         }
         #endregion
 
-        #region ModifyCategorySpecifics(WIP)
-        #endregion
+
 
     }
 }

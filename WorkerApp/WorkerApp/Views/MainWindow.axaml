@@ -1,0 +1,39 @@
+<Window xmlns="https://github.com/avaloniaui"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:vm="using:WorkerApp.ViewModels"
+		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:views="using:WorkerApp.Views"
+		mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+		x:Class="WorkerApp.Views.MainWindow"
+		x:DataType="vm:MainViewModel"
+		Title="WorkerApp">
+
+	<Window.DataTemplates>
+		<DataTemplate DataType="vm:LoginViewModel">
+			<views:LoginView />
+		</DataTemplate>
+
+		<DataTemplate DataType="vm:SelectionViewModel">
+			<views:SelectionView />
+		</DataTemplate>
+
+		<DataTemplate DataType="vm:ItemsListViewModel">
+			<views:ItemsListView />
+		</DataTemplate>
+
+		<DataTemplate DataType="vm:ItemsEditViewModel">
+			<views:ItemEditView />
+		</DataTemplate>
+
+		<DataTemplate DataType="vm:OrdersListViewModel">
+			<views:OrdersListView />
+		</DataTemplate>
+
+		<DataTemplate DataType="vm:OrderEditViewModel">
+			<views:OrderEditView />
+		</DataTemplate>
+	</Window.DataTemplates>
+
+	<ContentControl Content="{Binding CurrentPage}" />
+</Window>

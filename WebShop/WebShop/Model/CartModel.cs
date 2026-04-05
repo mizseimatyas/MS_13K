@@ -96,8 +96,5 @@ namespace WebShop.Model
         }
         #endregion
 
-        #region ModifyCartStatus(WIP)
-        #endregion
-
     }
 }

@@ -1,0 +1,110 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+			 xmlns:vm="using:WorkerApp.ViewModels"
+			 x:Class="WorkerApp.Views.LoginView"
+			 x:DataType="vm:LoginViewModel"
+			 Background="#f5f8ff">
+
+	<!-- Stílusok: alap és hover gombra -->
+	<UserControl.Styles>
+		<Style Selector="Button.login">
+			<Setter Property="Background" Value="#1f6fe0" />
+			<Setter Property="Foreground" Value="White" />
+			<Setter Property="CornerRadius" Value="6" />
+			<Setter Property="Height" Value="36" />
+			<Setter Property="FontWeight" Value="SemiBold" />
+		</Style>
+
+		<Style Selector="Button.login:pointerover">
+			<Setter Property="Background" Value="#2f7fff" />
+		</Style>
+	</UserControl.Styles>
+
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="*" />
+		</Grid.RowDefinitions>
+
+		<Border Grid.Row="1"
+				Width="360"
+				Padding="24"
+				CornerRadius="12"
+				Background="White"
+				BoxShadow="0 4 16 #40000000">
+			<StackPanel Spacing="16">
+				<!-- Cím -->
+				<TextBlock Text="Raktárkezelés"
+						   HorizontalAlignment="Center"
+						   FontSize="24"
+						   FontWeight="Bold"
+						   Foreground="#1f4b99" />
+
+				<!-- Felhasználónév -->
+				<StackPanel Spacing="4">
+					<TextBlock Text="Felhasználónév"
+							   Foreground="#335"
+							   FontSize="12" />
+					<TextBox Text="{Binding UserName}"
+							 Watermark="Írd be a felhasználónevet"
+							 Background="#f0f5ff"
+							 BorderBrush="#1f4b99"
+							 BorderThickness="1"
+							 CornerRadius="4" />
+				</StackPanel>
+
+				<!-- Jelszó -->
+				<StackPanel Spacing="4">
+					<TextBlock Text="Jelszó"
+							   Foreground="#335"
+							   FontSize="12" />
+					<TextBox Text="{Binding Password}"
+							 PasswordChar="●"
+							 Watermark="Írd be a jelszót"
+							 Background="#f0f5ff"
+							 BorderBrush="#1f4b99"
+							 BorderThickness="1"
+							 CornerRadius="4" />
+				</StackPanel>
+
+				<!-- Role választás -->
+				<Border Background="#e3edff"
+						CornerRadius="6"
+						Padding="8">
+					<StackPanel Spacing="8">
+						<TextBlock Text="Bejelentkezés szerepkörrel:"
+								   Foreground="#1f4b99"
+								   FontSize="12"
+								   HorizontalAlignment="Center" />
+
+						<StackPanel Orientation="Horizontal"
+									HorizontalAlignment="Center"
+									Spacing="24">
+							<RadioButton Content="Worker"
+										 GroupName="LoginRole"
+										 IsChecked="{Binding IsWorkerSelected}"
+										 Foreground="#1f4b99" />
+							<RadioButton Content="Admin"
+										 GroupName="LoginRole"
+										 IsChecked="{Binding IsAdminSelected}"
+										 Foreground="#1f4b99" />
+						</StackPanel>
+					</StackPanel>
+				</Border>
+
+				<!-- Hibaüzenet -->
+				<TextBlock Text="{Binding ErrorMessage}"
+						   Foreground="Crimson"
+						   FontSize="12"
+						   TextWrapping="Wrap"
+						   HorizontalAlignment="Center" />
+
+				<!-- Belépés gomb -->
+				<Button Classes="login"
+						Content="Belépés"
+						Command="{Binding LoginWithSelectedRoleCommand}" />
+			</StackPanel>
+		</Border>
+	</Grid>
+</UserControl>

@@ -24,18 +24,9 @@ namespace WebShop.Controllers
                 var response = await _model.CartInventoryByUserId(userid);
                 return Ok(response);
             }
-            catch (ArgumentOutOfRangeException)
-            {
-                return BadRequest();
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
+            catch (ArgumentOutOfRangeException ex) { return BadRequest(ex.Message); }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
 
@@ -48,18 +39,9 @@ namespace WebShop.Controllers
                 var response = await _model.CartInventoryTotalPrice(userid);
                 return Ok(response);
             }
-            catch (ArgumentOutOfRangeException)
-            {
-                return BadRequest();
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
+            catch (ArgumentOutOfRangeException ex) { return BadRequest(ex.Message); }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
 
@@ -72,22 +54,10 @@ namespace WebShop.Controllers
                 await _model.ModifyCartItems(dto);
                 return Ok();
             }
-            catch (ArgumentException)
-            {
-                return BadRequest();
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (InvalidOperationException)
-            {
-                return Conflict();
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
+            catch (ArgumentException ex) { return BadRequest(ex.Message); }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (InvalidOperationException ex) { return Conflict(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
     }

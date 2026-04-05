@@ -12,16 +12,22 @@
             <nav>
                 <button class="nav-btn" data-view="user-panel">Felhasználók</button>
                 <button class="nav-btn" data-view="item-panel">Termékek</button>
+                <button class="nav-btn" data-view="order-panel">Megrendelések</button>
+                <button class="nav-btn" data-view="category-panel">Kategóriák</button>
             </nav>
         </aside>
+
 
         <main class="main">
             <header class="topbar">
                 <h1>Admin felület</h1>
             </header>
 
+
+            <!-- FELHASZNÁLÓK PANEL -->
             <section id="user-panel" class="panel active">
                 <h2>Felhasználókezelés</h2>
+
 
                 <div class="user-layout">
                     <div class="card">
@@ -52,6 +58,7 @@
                         <div class="log" id="register-log"></div>
                     </div>
 
+
                     <div class="card">
                         <h3>Dolgozók</h3>
                         <div class="log" id="worker-query-log"></div>
@@ -60,102 +67,113 @@
                 </div>
             </section>
 
+            <!-- TERMÉKEK PANEL -->
             <section id="item-panel" class="panel">
                 <h2>Termékek kezelése</h2>
-                <div class="grid-2">
-                    <div class="card">
-                        <h3>Item lekérdezések</h3>
-                        <div class="stack">
-                            <button id="btn-all-items" class="secondary-btn">Összes termék (AllItems)</button>
+                <div style="display: flex; gap: 1.5rem; align-items: flex-start; flex-wrap: wrap;">
+                <div class="card">
+                <h3>Keresés</h3>
+                <form id="item-by-id-form" class="search-form">
+                    <label>
+                        Item ID
+                        <input type="number" name="itemId" min="1" required>
+                    </label>
+                    <button type="submit" class="secondary-btn">ItemById</button>
+                </form>
+                <form id="item-by-name-form" class="search-form">
+                    <label>
+                        Név részlete
+                        <input type="text" name="fragname" required>
+                    </label>
+                    <button type="submit" class="secondary-btn">ItemByName</button>
+                </form>
+                <button id="reset-items-btn" class="secondary-btn">Összes termék</button>
+            </div>
+            <div class="card">
+                <h3>Új termék hozzáadása</h3>
+                <form id="add-item-form">
+                <div class="form-group">
+                    <label for="new-item-name">Terméknév</label>
+                    <input type="text" name="itemName" id="new-item-name" placeholder="Terméknév" required />
+                </div>
+                <div class="form-group">
+                    <label for="new-item-category">Kategória</label>
+                    <select id="new-item-category" name="categoryName" required>
+                    <option value="">Válassz...</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="new-item-quantity">Mennyiség</label>
+                    <input type="number" name="quantity" id="new-item-quantity" placeholder="pl. 10" min="1" required />
+                </div>
+                <div class="form-group">
+                    <label for="new-item-description">Leírás</label>
+                    <input type="text" name="description" id="new-item-description" placeholder="Termék leírása" required />
+                </div>
+                <div class="form-group">
+                    <label for="new-item-price">Ár</label>
+                    <input type="number" name="price" id="new-item-price" placeholder="pl. 1990" min="1" required />
+                </div>
+                <button type="submit">Hozzáadás</button>
+                </form>
+                <p id="item-modify-log"></p>
+            </div>
 
-                            <form id="item-by-id-form" class="inline-form">
-                                <label>
-                                    Item ID
-                                    <input type="number" name="itemId" min="1" required>
-                                </label>
-                                <button type="submit" class="secondary-btn">ItemById</button>
-                            </form>
-                        </div>
-                        <div class="log" id="item-query-log"></div>
+            <div class="card">
+                <h3>Termékek táblázat</h3>
+                <div id="items-table-container"></div>
+            </div>
+        </section>
+
+        <!-- KATEGÓRIÁK PANEL -->
+        <section id="category-panel" class="panel">
+            <!-- Létrehozás kártya -->
+            <div class="card">
+                <h3>Kategória létrehozása</h3>
+                <form id="add-category-form">
+                <label>Kategória neve
+                    <input type="text" name="categoryName" required placeholder="pl. Elektronika" />
+                </label>
+                <button type="submit" class="primary-btn">Kategória létrehozása</button>
+                </form>
+                <div class="log" id="add-category-log"></div>
+            </div>
+
+            <!-- Összes kategória kártya -->
+            <div class="card">
+                <h3>Minden kategória</h3>
+                <button class="secondary-btn" id="load-categories-btn" style="align-self:flex-start">
+                ↻ Frissítés
+                </button>
+                <div id="category-list-container"></div>
+            </div>
+        </section>
+
+        <!-- MEGRENDELÉSEK PANEL -->
+        <section id="order-panel" class="panel">
+                <h2>Megrendelések kezelése</h2>
+
+                <div class="card">
+                    <h3>Megrendelések műveletek</h3>
+                    <div class="order-actions">
+                        <!-- CSAK ez marad felül -->
+                        <button type="button" id="load-all-orders-btn" class="secondary-btn">
+                            Összes megrendelés betöltése
+                        </button>
                     </div>
-
-                    <div class="card">
-                        <h3>Item módosítások</h3>
-
-                        <form id="add-item-form">
-                            <h4>Új termék (AddNewItem)</h4>
-                            <label>
-                                Név
-                                <input type="text" name="itemName" required>
-                            </label>
-                            <label>
-                                Kategória név
-                                <input type="text" name="categoryName" required>
-                            </label>
-                            <label>
-                                Mennyiség
-                                <input type="number" name="quantity" min="1" required>
-                            </label>
-                            <label>
-                                Leírás
-                                <textarea name="description" required></textarea>
-                            </label>
-                            <label>
-                                Ár
-                                <input type="number" step="1" min="1" name="price" required>
-                            </label>
-                            <button type="submit" class="primary-btn">Hozzáadás</button>
-                        </form>
-
-                        <form id="modify-item-form">
-                            <h4>Termék módosítása (ModifyItem)</h4>
-                            <label>
-                                Item ID
-                                <input type="number" name="itemId" min="1" required>
-                            </label>
-                            <label>
-                                Név
-                                <input type="text" name="itemName" required>
-                            </label>
-                            <label>
-                                Kategória név
-                                <input type="text" name="categoryName" required>
-                            </label>
-                            <label>
-                                Mennyiség
-                                <input type="number" name="quantity" min="1" required>
-                            </label>
-                            <label>
-                                Leírás
-                                <textarea name="description" required></textarea>
-                            </label>
-                            <label>
-                                Ár
-                                <input type="number" step="1" min="1" name="price" required>
-                            </label>
-                            <button type="submit" class="secondary-btn">Módosítás</button>
-                        </form>
-
-                        <form id="delete-item-form">
-                            <h4>Termék törlése (DeleteItem)</h4>
-                            <label>
-                                Item ID
-                                <input type="number" name="itemId" min="1" required>
-                            </label>
-                            <button type="submit" class="danger-btn">Törlés</button>
-                        </form>
-                        <div class="log" id="item-modify-log"></div>
-                    </div>
+                    <div class="log" id="orders-log"></div>
                 </div>
 
                 <div class="card">
-                    <h3>Termékek táblázat</h3>
-                    <div id="items-table-container"></div>
+                    <h3>Megrendelések táblázat</h3>
+                    <div id="orders-table-container"></div>
                 </div>
-            </section>
+        </section>
         </main>
     </div>
 
+
+    <!-- Dolgozó törlés megerősítő modal (változatlan) -->
     <div id="delete-modal" class="modal-overlay" style="display:none;">
         <div class="modal-box">
             <button id="modal-close-x" class="secondary-btn" style="position:absolute; top:0.5rem; right:0.7rem;">×</button>
@@ -167,6 +185,48 @@
         </div>
     </div>
 
-    <script src="admin.js"></script>
+    <div id="order-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-box">
+            <button id="order-modal-close-x" class="secondary-btn" style="position:absolute; top:0.5rem; right:0.7rem;">×</button>
+            <h3>Rendelés részletei</h3>
+
+            <div id="order-modal-details"></div>
+                <div id="order-modal-items"></div>
+
+                <div class="order-modal-actions">
+                    <form id="order-modal-update-status-form" class="order-status-row">
+                        <label>
+                            Új státusz
+                            <select name="orderStatus" id="order-modal-status-select" required>
+                                <option value="">Válassz...</option>
+                                <option value="Pending">Pending</option>
+                                <option value="PaymentSuccess">PaymentSuccess</option>
+                                <option value="Delivering">Delivering</option>
+                                <option value="Cancelled">Cancelled</option>
+                                <option value="OrderCompleted">OrderCompleted</option>
+                            </select>
+                        </label>
+                        <button type="submit" class="secondary-btn">
+                            Státusz frissítése
+                        </button>
+                    </form>
+
+                    <button type="button" id="order-modal-complete-btn" class="danger-btn" disabled>
+                        Rendelés lezárása
+                    </button>
+                </div>
+
+                <div class="log" id="order-modal-log"></div>
+        </div>
+    </div>
+
+    <script src="api.js"></script>
+    <script src="utils.js"></script>
+    <script src="workers.js"></script>
+    <script src="items.js"></script>
+    <script src="orders.js"></script>
+    <script src="categories.js"></script>
+    <script src="app.js"></script> 
+    <div id="toast-container"></div>
 </body>
 </html>

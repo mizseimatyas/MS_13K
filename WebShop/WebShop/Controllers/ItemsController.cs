@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebShop.Dto;
 using WebShop.Model;
@@ -17,136 +16,119 @@ namespace WebShop.Controllers
         }
 
         #region AllItems
+
         [HttpGet("allitems")]
-        public async Task<ActionResult<IEnumerable<AllItemDto>>> AllItems()
+        public async Task<ActionResult<IEnumerable<AdminItemDto>>> AllItems()
         {
             try
             {
                 var response = await _model.AllItems();
                 return Ok(response);
             }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
 
         #region ItemById
+
         [HttpGet("itembyid")]
-        public async Task<ActionResult<ItemDto>> ItemById([FromQuery] int id)
+        public async Task<ActionResult<AllItemDto>> ItemById([FromQuery] int id)
         {
             try
             {
                 var response = await _model.ItemById(id);
                 return Ok(response);
             }
-            catch (KeyNotFoundException)
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
+        }
+        #endregion
+
+        #region AdmItemByName
+
+        [HttpGet("admitembyname")]
+        public async Task<ActionResult<AllItemDto>> AdmItemByName([FromQuery] string iname)
+        {
+            try
             {
-                return NotFound();
+                var response = await _model.AdmItemByName(iname);
+                return Ok(response);
             }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
 
         #region ItemsWithQuantity0
-        [Authorize(Roles = "Worker")]
         [HttpGet("itemswithquantity0")]
-        public async Task<ActionResult<IEnumerable<SearchItemsByQuantityDto>>> ItemsQuantityZero()
+        public async Task<ActionResult<IEnumerable<AllItemDto>>> ItemsQuantityZero()
         {
             try
             {
                 var response = await _model.ItemsWithQunatity0();
                 return Ok(response);
             }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
 
         #region ItemsQuantityOrderByLowestFirst
-        [Authorize(Roles = "Worker")]
         [HttpGet("itemsquantityasc")]
-        public async Task<ActionResult<IEnumerable<SearchItemsByQuantityDto>>> ItemsByQuantityAsc()
+        public async Task<ActionResult<IEnumerable<AllItemDto>>> ItemsByQuantityAsc()
         {
             try
             {
                 var response = await _model.ItemsWithQuantityOrderByAsc();
                 return Ok(response);
             }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
 
         #region ItemsQuantityOrderByHighestFirst
-        [Authorize(Roles = "Worker")]
         [HttpGet("itemsquantitydesc")]
-        public async Task<ActionResult<IEnumerable<SearchItemsByQuantityDto>>> ItemsByQuantityDesc()
+        public async Task<ActionResult<IEnumerable<AllItemDto>>> ItemsByQuantityDesc()
         {
             try
             {
                 var response = await _model.ItemsWithQuantityOrderByDesc();
                 return Ok(response);
             }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
 
         #region ItemsQuantityInCategoryOrderByLowestFirst
-        [Authorize(Roles = "Worker")]
+
         [HttpGet("itemsquantityincategoryasc")]
-        public async Task<ActionResult<IEnumerable<SearchItemsByQuantityDto>>> CategoryItemsQuantityAsc([FromQuery] string category)
+        public async Task<ActionResult<IEnumerable<AllItemDto>>> CategoryItemsQuantityAsc([FromQuery] string category)
         {
             try
             {
                 var response = await _model.CategoryItemsQuantityOrderByAsc(category);
                 return Ok(response);
             }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
 
         #region ItemsQuantityInCategoryOrderByHighestFirst
-        [Authorize(Roles = "Worker")]
         [HttpGet("itemsquantityincategorydesc")]
-        public async Task<ActionResult<IEnumerable<SearchItemsByQuantityDto>>> CategoryItemsQuantityDesc([FromQuery] string category)
+        public async Task<ActionResult<IEnumerable<AllItemDto>>> CategoryItemsQuantityDesc([FromQuery] string category)
         {
             try
             {
                 var response = await _model.CategoryItemsQuantityOrderByDesc(category);
                 return Ok(response);
             }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
 
         #region AddNewItem
-        [Authorize(Roles = "Worker")]
+
         [HttpPost("addnewitem")]
         public async Task<ActionResult> AddNewItem([FromBody] AddNewItemDto dto)
         {
@@ -155,32 +137,16 @@ namespace WebShop.Controllers
                 await _model.AddNewItem(dto);
                 return Ok();
             }
-            catch (ArgumentNullException)
-            {
-                return BadRequest();
-            }
-            catch (ArgumentException)
-            {
-                return BadRequest();
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (InvalidOperationException)
-            {
-                return Conflict();
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
+            catch (ArgumentNullException ex) { return BadRequest(ex.Message); }
+            catch (ArgumentException ex) { return BadRequest(ex.Message); }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (InvalidOperationException ex) { return Conflict(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
 
         #region ModifyItem
-        [Authorize(Roles = "Worker")]
-        [HttpPost("modifyitem")]
+        [HttpPut("modifyitem")]
         public async Task<ActionResult> ModifyItem([FromBody] ModifyItemDto dto)
         {
             try
@@ -188,36 +154,17 @@ namespace WebShop.Controllers
                 await _model.ModifyItem(dto);
                 return Ok();
             }
-            catch (ArgumentNullException)
-            {
-                return BadRequest();
-            }
-            catch (ArgumentOutOfRangeException)
-            {
-                return BadRequest();
-            }
-            catch (ArgumentException)
-            {
-                return BadRequest();
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (InvalidOperationException)
-            {
-                return Conflict();
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
+            catch (ArgumentNullException ex) { return BadRequest(ex.Message); }
+            catch (ArgumentOutOfRangeException ex) { return BadRequest(ex.Message); }
+            catch (ArgumentException ex) { return BadRequest(ex.Message); }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (InvalidOperationException ex) { return Conflict(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
 
         #region DeleteItem
-        [Authorize(Roles = "Worker")]
-        [HttpPost("deleteitem")]
+        [HttpDelete("deleteitem")]
         public async Task<ActionResult> DeleteItem([FromQuery] int id)
         {
             try
@@ -225,20 +172,12 @@ namespace WebShop.Controllers
                 await _model.DeleteItem(id);
                 return Ok();
             }
-            catch (ArgumentOutOfRangeException)
-            {
-                return BadRequest();
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
+            catch (ArgumentOutOfRangeException ex) { return BadRequest(ex.Message); }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
+
 
         #region ItemByName
         [HttpGet("itembyname")]
@@ -249,14 +188,8 @@ namespace WebShop.Controllers
                 var response = await _model.ItemByName(name);
                 return Ok(response);
             }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
 
@@ -269,54 +202,8 @@ namespace WebShop.Controllers
                 var response = await _model.ItemsByNameSnipet(fragname);
                 return Ok(response);
             }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
-        }
-        #endregion
-
-        #region ItemsInCategoryNameAsc
-        [HttpGet("categoryitemsnameasc")]
-        public async Task<ActionResult<IEnumerable<SearchItemsByDto>>> ItemsInCategoryNameAsc([FromQuery] string category)
-        {
-            try
-            {
-                var response = await _model.ItemsByCategoryNameAsc(category);
-                return Ok(response);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
-        }
-        #endregion
-
-        #region ItemsInCategoryNameDesc
-        [HttpGet("categoryitemsnamedesc")]
-        public async Task<ActionResult<IEnumerable<SearchItemsByDto>>> ItemsInCategoryNameDesc([FromQuery] string category)
-        {
-            try
-            {
-                var response = await _model.ItemsByCategoryNameDesc(category);
-                return Ok(response);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
 
@@ -329,14 +216,8 @@ namespace WebShop.Controllers
                 var response = await _model.ItemsByCategory(category);
                 return Ok(response);
             }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
 
@@ -349,14 +230,8 @@ namespace WebShop.Controllers
                 var response = await _model.ItemsByPriceMax(max);
                 return Ok(response);
             }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
 
@@ -369,14 +244,8 @@ namespace WebShop.Controllers
                 var response = await _model.ItemsByPriceMin(min);
                 return Ok(response);
             }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
 
@@ -389,54 +258,8 @@ namespace WebShop.Controllers
                 var response = await _model.ItemsByPriceMinMax(min, max);
                 return Ok(response);
             }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
-        }
-        #endregion
-
-        #region ItemsInCategoryPriceAsc
-        [HttpGet("itemsincategorypriceasc")]
-        public async Task<ActionResult<IEnumerable<SearchItemsByDto>>> ItemsIncategoryPriceAsc([FromQuery] string category)
-        {
-            try
-            {
-                var response = await _model.ItemsByCategoryPriceAsc(category);
-                return Ok(response);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
-        }
-        #endregion
-
-        #region ItemsInCategoryPriceDesc
-        [HttpGet("itemsincategorypricedesc")]
-        public async Task<ActionResult<IEnumerable<SearchItemsByDto>>> ItemsIncategoryPriceDesc([FromQuery] string category)
-        {
-            try
-            {
-                var response = await _model.ItemsByCategoryPriceDesc(category);
-                return Ok(response);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
     }

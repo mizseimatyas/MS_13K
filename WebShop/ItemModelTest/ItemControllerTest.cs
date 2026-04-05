@@ -140,28 +140,6 @@ namespace ModelTest
         }
         #endregion
 
-        #region ItemsInCategoryPriceDesc
-        [Fact]
-        public async Task ItemsInCategoryPriceDesc_Correct()
-        {
-            var response = await _client.GetAsync("api/items/itemsincategorypricedesc?category=Számítógépek");
-            response.EnsureSuccessStatusCode();
-            var items = await response.Content.ReadFromJsonAsync<List<SearchItemsByDto>>();
-            Assert.NotNull(items);
-            for (int i = 0; i < items.Count - 1; i++)
-            {
-                Assert.True(items[i].pricE >= items[i + 1].pricE);
-            }
-        }
-
-        [Fact]
-        public async Task ItemsInCategoryPriceDesc_NotFound()
-        {
-            var response = await _client.GetAsync("api/items/itemsincategorypricedesc?category=Nemjó");
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-        }
-        #endregion
-
         #region AddNewItem (Auth)
         [Fact]
         public async Task AddNewItem_ReturnsOk()
