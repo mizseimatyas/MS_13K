@@ -13,8 +13,8 @@ function getCategoryNameById(categoryId) {
 async function loadCategories() {
   const categories = await apiGetAllCategories();
   allCategories = Array.isArray(categories)
-    ? categories.map((category, index) => ({
-        categoryId: index + 1,
+    ? categories.map((category) => ({
+        categoryId: category.categoryId,
         categoryName: category.categoryName,
       }))
     : [];
@@ -29,6 +29,38 @@ function fillCategoryFilter() {
   allCategories.forEach((category) => {
     select.innerHTML += `<option>${category.categoryName}</option>`;
   });
+}
+
+function resetSearchSidebarState(selectedCategory = "Összes") {
+  const categoryFilter = document.getElementById("brandSelect");
+  const modelInput = document.getElementById("modelSelect");
+  const sortSelect = document.getElementById("sortSelect");
+  const minPriceInput = document.getElementById("minPriceInput");
+  const maxPriceInput = document.getElementById("maxPriceInput");
+  const minRange = document.getElementById("minRange");
+  const maxRange = document.getElementById("maxRange");
+  const productsWrapper = document.getElementById("productsWrapper");
+  const viewToggleBtn = document.getElementById("viewToggleBtn");
+
+  if (categoryFilter) categoryFilter.value = selectedCategory;
+  if (modelInput) modelInput.value = "";
+  if (sortSelect) sortSelect.selectedIndex = 0;
+
+  if (minPriceInput) minPriceInput.value = "0";
+  if (maxPriceInput) maxPriceInput.value = "2000000";
+
+  if (minRange) minRange.value = "0";
+  if (maxRange) maxRange.value = "2000000";
+
+  if (productsWrapper) {
+    productsWrapper.classList.remove("list-view");
+  }
+
+  if (viewToggleBtn) {
+    viewToggleBtn.textContent = "Lista nézet";
+  }
+
+  refreshPriceSliderUI();
 }
 
 function renderSearchSuggestions(suggestions) {
@@ -85,8 +117,11 @@ async function loadSearchSuggestions(query = "") {
   const itemMatchesRaw = (await apiGetItemsByNameFragment(trimmed)) || [];
   const matchedItems = itemMatchesRaw.map((item) => ({
     type: "item",
-    label: item.itemNamE,
-    categoryName: item.categoryNamE,
+    label: item.itemName ?? item.itemNamE ?? "Ismeretlen termék",
+    categoryName:
+      item.categoryName ??
+      item.categoryNamE ??
+      getCategoryNameById(item.categoryId),
   }));
 
   const dedupedItems = matchedItems.filter(
@@ -127,10 +162,7 @@ async function performSearch(rawQuery) {
 
     currentSearchResults = categoryItems.map(mapSearchResultToCardItem);
 
-    if (categoryFilter) {
-      categoryFilter.value = categoryMatch.categoryName;
-    }
-
+    resetSearchSidebarState(categoryMatch.categoryName);
     sessionStorage.setItem("selectedCategory", categoryMatch.categoryName);
 
     showSectionByName("search");
@@ -144,10 +176,7 @@ async function performSearch(rawQuery) {
   const nameMatches = (await apiGetItemsByNameFragment(query)) || [];
   currentSearchResults = nameMatches.map(mapSearchResultToCardItem);
 
-  if (categoryFilter) {
-    categoryFilter.value = "Összes";
-  }
-
+  resetSearchSidebarState("Összes");
   sessionStorage.setItem("selectedCategory", "Összes");
 
   showSectionByName("search");
@@ -173,6 +202,7 @@ async function handleCategoryFilterChange() {
       currentSearchMode = "general";
       currentSearchResults = allItems.map(mapAllItemToCardItem);
 
+      resetSearchSidebarState("Összes");
       applyFiltersAndRender();
       return;
     }
@@ -186,6 +216,7 @@ async function handleCategoryFilterChange() {
     currentSearchMode = "category";
     currentSearchResults = categoryItems.map(mapSearchResultToCardItem);
 
+    resetSearchSidebarState(selectedCategory);
     applyFiltersAndRender();
   } catch (error) {
     console.error("Kategória váltási hiba:", error);
