@@ -11,7 +11,7 @@
      <UserControl.Styles>
         <!-- Primary gomb stílus -->
         <Style Selector="Button.primary">
-            <Setter Property="Background" Value="#0078d4" />   <!-- erős kék -->
+            <Setter Property="Background" Value="#0078d4" />
             <Setter Property="Foreground" Value="White" />
             <Setter Property="CornerRadius" Value="6" />
             <Setter Property="Height" Value="40" />

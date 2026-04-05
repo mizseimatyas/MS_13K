@@ -24,14 +24,8 @@ namespace WebShop.Controllers
                 var response = await _model.AllCategories();
                 return Ok(response);
             }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
 
@@ -44,18 +38,9 @@ namespace WebShop.Controllers
                 await _model.AddNewCategory(categ);
                 return Ok();
             }
-            catch (ArgumentException)
-            {
-                return BadRequest();
-            }
-            catch (InvalidOperationException)
-            {
-                return Conflict();
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
+            catch (ArgumentException ex) { return BadRequest(ex.Message); }
+            catch (InvalidOperationException ex) { return Conflict(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
 
@@ -68,22 +53,10 @@ namespace WebShop.Controllers
                 await _model.ModifyCategory(dto);
                 return Ok();
             }
-            catch (ArgumentException) // Null, range, stb. mind 400
-            {
-                return BadRequest();
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (InvalidOperationException)
-            {
-                return Conflict();
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
+            catch (ArgumentException ex) { return BadRequest(ex.Message); }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (InvalidOperationException ex) { return Conflict(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
 
@@ -96,18 +69,9 @@ namespace WebShop.Controllers
                 await _model.DeleteCategory(categid);
                 return Ok();
             }
-            catch (ArgumentOutOfRangeException)
-            {
-                return BadRequest();
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
+            catch (ArgumentOutOfRangeException ex) { return BadRequest(ex.Message); }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
         #endregion
     }

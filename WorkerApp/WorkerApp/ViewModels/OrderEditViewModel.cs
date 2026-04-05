@@ -24,52 +24,43 @@ namespace WorkerApp.ViewModels
         public OrderAllDto Order
         {
             get => _order;
-            set
-            {
-                if (_order != value)
-                {
-                    _order = value;
-                    OnPropertyChanged();
-                }
-            }
+            set { _order = value; OnPropertyChanged(); }
         }
+
+        private OrderDetailsDto? _orderDetails;
+        public OrderDetailsDto? OrderDetails
+        {
+            get => _orderDetails;
+            set { _orderDetails = value; OnPropertyChanged(); OnPropertyChanged(nameof(IsDetailsLoaded)); }
+        }
+
+        private bool _isLoading;
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set { _isLoading = value; OnPropertyChanged(); OnPropertyChanged(nameof(IsDetailsLoaded)); }
+        }
+
+        public bool IsDetailsLoaded => !_isLoading && _orderDetails != null;
 
         public ObservableCollection<string> Statuses { get; } = new ObservableCollection<string>
         {
-            "Cancelled",
-            "DataConfirmed",
-            "PendingPayment",
-            "PaymentSuccess",
-            "Delivering",
-            "OrderCompleted"
+            "Cancelled", "DataConfirmed", "PendingPayment",
+            "PaymentSuccess", "Delivering", "OrderCompleted"
         };
 
         private string _selectedStatus;
         public string SelectedStatus
         {
             get => _selectedStatus;
-            set
-            {
-                if (_selectedStatus != value)
-                {
-                    _selectedStatus = value;
-                    OnPropertyChanged();
-                }
-            }
+            set { _selectedStatus = value; OnPropertyChanged(); }
         }
 
         private string _message;
         public string Message
         {
             get => _message;
-            set
-            {
-                if (_message != value)
-                {
-                    _message = value;
-                    OnPropertyChanged();
-                }
-            }
+            set { _message = value; OnPropertyChanged(); }
         }
 
         public ICommand SaveStatusCommand { get; }
@@ -88,12 +79,20 @@ namespace WorkerApp.ViewModels
 
             SaveStatusCommand = new Utils.RelayCommand(async _ => await SaveStatus());
             CancelEditCommand = new Utils.RelayCommand(_ => CancelEdit());
+
+            _ = LoadOrderDetails();
+        }
+
+        private async Task LoadOrderDetails()
+        {
+            IsLoading = true;
+            OrderDetails = await _ordersModel.GetOrderDetailsAsync(Order.OrderId);
+            IsLoading = false;
         }
 
         private async Task SaveStatus()
         {
             Message = string.Empty;
-
             var dto = new UpdateOrderStatusDto
             {
                 OrderId = Order.OrderId,
@@ -101,21 +100,11 @@ namespace WorkerApp.ViewModels
             };
 
             var ok = await _ordersModel.UpdateOrderStatusAsync(dto);
-            if (!ok)
-            {
-                Message = "Nem sikerült frissíteni a státuszt";
-                return;
-            }
+            if (!ok) { Message = "Nem sikerült frissíteni a státuszt"; return; }
 
             Order.Status = SelectedStatus;
             OnPropertyChanged(nameof(Order));
-
-            _main.CurrentPage = new OrdersListViewModel(
-                _main,
-                _role,
-                _itemsModel,
-                _ordersModel,
-                _authModel);
+            _main.CurrentPage = new OrdersListViewModel(_main, _role, _itemsModel, _ordersModel, _authModel);
         }
 
         private Task CancelEdit()

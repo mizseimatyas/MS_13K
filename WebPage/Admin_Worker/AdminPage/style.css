@@ -306,6 +306,10 @@ textarea {
 }
 
 
+#item-query-log {
+    margin-top: 0.75rem;
+}
+
 .search-form {
     display: flex;
     flex-wrap: wrap;
@@ -346,3 +350,84 @@ th.sortable.active-asc::after {
 th.sortable.active-desc::after {
   content: '▼';
 }
+
+.order-highlight {
+    background-color: #fef3c7;
+}
+
+.order-modal-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    align-items: stretch;
+}
+
+.order-status-row {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center;
+    gap: 0.75rem;
+    margin: 0 !important;
+}
+
+.order-status-row label,
+.order-status-label {
+    display: flex !important;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin: 0 !important;
+}
+
+.order-status-submit {
+    align-self: flex-end;
+}
+
+.order-modal-actions #order-modal-complete-btn {
+    align-self: center;
+}
+
+@media (max-width: 480px) {
+    .order-modal-actions .order-status-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .order-modal-actions .order-status-row button {
+        align-self: flex-start;
+    }
+}
+
+#toast-container {
+    position: fixed;
+    top: 1.25rem;
+    right: 1.25rem;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.toast {
+    min-width: 260px;
+    max-width: 360px;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    opacity: 0;
+    transform: translateX(40px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    cursor: pointer;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.toast.toast-success { background-color: #16a34a; }
+.toast.toast-error   { background-color: #b91c1c; }

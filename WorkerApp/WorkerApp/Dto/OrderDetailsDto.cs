@@ -1,10 +1,13 @@
-﻿using WebShop.Persistence;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace WebShop.Dto
+namespace WorkerApp.Dto
 {
-    public class OrderDto
+    public class OrderDetailsDto
     {
-        public int userId { get; set; }
         public int orderId { get; set; }
         public string targetAddress { get; set; }
         public DateTime date { get; set; }

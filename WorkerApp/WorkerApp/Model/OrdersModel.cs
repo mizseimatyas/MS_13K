@@ -35,5 +35,14 @@ namespace WorkerApp.Model
             var response = await _client.PutAsJsonAsync("api/Orders/updateorderstatus", dto);
             return response.IsSuccessStatusCode;
         }
+
+        public async Task<OrderDetailsDto?> GetOrderDetailsAsync(int orderId)
+        {
+            var response = await _client.GetAsync($"api/Orders/orderDetailsByOrderId?orderId={orderId}");
+            if (!response.IsSuccessStatusCode)
+                return null;
+
+            return await response.Content.ReadFromJsonAsync<OrderDetailsDto>();
+        }
     }
 }

@@ -1,8 +1,6 @@
-﻿using WebShop.Persistence;
-
-namespace WebShop.Dto
+﻿namespace WebShop.Dto
 {
-    public class OrderDto
+    public class AdminOrderDto
     {
         public int userId { get; set; }
         public int orderId { get; set; }

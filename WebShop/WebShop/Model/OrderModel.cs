@@ -13,6 +13,73 @@ namespace WebShop.Model
         }
 
         //For users
+
+        #region PlaceOrder
+        public async Task<OrderDto> PlaceOrder(int userId, string targetAddress)
+        {
+            if (userId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(userId), "Felhasználó azonosító csak pozitív lehet");
+            if (string.IsNullOrWhiteSpace(targetAddress))
+                throw new ArgumentException("Szállítási cím nem lehet üres", nameof(targetAddress));
+
+            var cartItems = await _context.Carts
+                .Include(x => x.Item)
+                .Where(x => x.UserId == userId)
+                .ToListAsync();
+
+            if (!cartItems.Any())
+                throw new KeyNotFoundException("Üres a kosár, nem lehet rendelést leadni");
+
+            foreach (var cartItem in cartItems)
+            {
+                if (cartItem.Item.Quantity < cartItem.Quantity)
+                    throw new InvalidOperationException(
+                        $"'{cartItem.Item.ItemName}' termékből nincs elegendő készlet " +
+                        $"(kért: {cartItem.Quantity}, elérhető: {cartItem.Item.Quantity})");
+            }
+
+            var order = new Order
+            {
+                UserId = userId,
+                TargetAddress = targetAddress,
+                Date = DateTime.UtcNow,
+                Status = OrderStatus.PendingPayment,
+                TotalPrice = cartItems.Sum(x => x.Quantity * x.Price),
+                OrderItems = cartItems.Select(x => new OrderItem
+                {
+                    ItemId = x.ItemId,
+                    ItemName = x.Item.ItemName,
+                    Quantity = x.Quantity,
+                    Price = x.Price
+                }).ToList()
+            };
+
+            foreach (var cartItem in cartItems)
+                cartItem.Item.Quantity -= cartItem.Quantity;
+
+            _context.Orders.Add(order);
+            _context.Carts.RemoveRange(cartItems);
+            await _context.SaveChangesAsync();
+
+            return new OrderDto
+            {
+                userId = userId,
+                orderId = order.OrderId,
+                targetAddress = order.TargetAddress,
+                date = order.Date,
+                status = order.Status.ToString(),
+                totalPrice = order.TotalPrice,
+                items = order.OrderItems.Select(x => new OrderItemDto
+                {
+                    itemId = x.ItemId,
+                    itemName = x.ItemName,
+                    quantity = x.Quantity,
+                    price = x.Price
+                }).ToList()
+            };
+        }
+        #endregion
+
         #region OrderHistoryByUserId
         public async Task<List<OrderAllDto>> OrderHistoryByUserId(int userId)
         {
@@ -96,10 +163,6 @@ namespace WebShop.Model
         }
         #endregion
 
-        //validate data
-        #region ConfirmData(WIP)
-        #endregion
-
         //For workers
 
         #region AllOrdersNewestFirst
@@ -128,26 +191,45 @@ namespace WebShop.Model
             if(string.IsNullOrWhiteSpace(dto.orderStatus))
                 throw new ArgumentException("Státusz nem lehet üres", nameof(dto.orderStatus));
 
-            var order = await _context.Orders.FindAsync(dto.orderId);
+            var order = await _context.Orders
+                .Include(x => x.OrderItems)
+                .FirstOrDefaultAsync(x => x.OrderId == dto.orderId);
             if (order == null)
                 throw new KeyNotFoundException($"Nem található rendelés #{dto.orderId} azonosítóval");
 
             if (!Enum.TryParse<OrderStatus>(dto.orderStatus, true, out var newStatus))
                 throw new ArgumentException($"Érvénytelen státusz: {dto.orderStatus}");
-
-            var oldStatus = order.Status;
             order.Status = newStatus;
-
-            if(newStatus == OrderStatus.Delivering && oldStatus == OrderStatus.PaymentSuccess)
-            {
-                foreach(var item in order.OrderItems)
-                {
-                    var product = await _context.Items.FindAsync(item.ItemId);
-                    if (product != null)
-                        product.Quantity -= item.Quantity;
-                }
-            }
             await _context.SaveChangesAsync();
+        }
+        #endregion
+
+        #region OrderDetailsById
+        public async Task<OrderDetailsDto> OrderDetailsByOrderId(int orderId)
+        {
+            if (orderId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(orderId), "Rendelés azonosító csak pozitív lehet");
+
+            var order = await _context.Orders.Include(x => x.OrderItems).FirstOrDefaultAsync(x => x.OrderId == orderId);
+
+            if (order == null)
+                throw new KeyNotFoundException($"Nem található rendelés #{orderId} azonosítóval");
+
+            return new OrderDetailsDto
+            {
+                orderId = order.OrderId,
+                targetAddress = order.TargetAddress,
+                date = order.Date,
+                status = order.Status.ToString(),
+                totalPrice = order.TotalPrice,
+                items = order.OrderItems.Select(y => new OrderItemDto
+                {
+                    itemId = y.ItemId,
+                    itemName = y.ItemName,
+                    quantity = y.Quantity,
+                    price = y.Price
+                }).ToList()
+            };
         }
 
         #endregion
@@ -158,23 +240,14 @@ namespace WebShop.Model
             if(orderId <= 0)
                 throw new ArgumentOutOfRangeException(nameof(orderId), "Rendelés azonosító csak pozitív lehet");
 
-            var order = await _context.Orders.Include(x=> x.OrderItems).FirstOrDefaultAsync(y=> y.OrderId == orderId);
+            var order = await _context.Orders.FirstOrDefaultAsync(y => y.OrderId == orderId);
 
-            if(order == null)
+            if (order == null)
                 throw new KeyNotFoundException($"Nem található rendelés #{orderId} azonosítóval");
 
             if (order.Status == OrderStatus.OrderCompleted)
                 throw new InvalidOperationException("Teljesített rendelés nem törölhető");
 
-            if(order.Status != OrderStatus.Cancelled)
-            {
-                foreach(var item in order.OrderItems)
-                {
-                    var product = await _context.Items.FindAsync(item.ItemId);
-                    if (product != null)
-                        product.Quantity += item.Quantity;
-                }
-            }
             order.Status = OrderStatus.OrderCompleted;
             await _context.SaveChangesAsync();
         }
