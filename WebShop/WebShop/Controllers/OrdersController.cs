@@ -16,6 +16,21 @@ namespace WebShop.Controllers
             _model = model;
         }
 
+        [HttpPost("placeorder")]
+        public async Task<ActionResult<OrderDto>> PlaceOrder([FromBody] PlaceOrderRequestDto dto)
+        {
+            try
+            {
+                var response = await _model.PlaceOrder(dto.userId, dto.targetAddress);
+                return Ok(response);
+            }
+            catch (ArgumentOutOfRangeException ex) { return BadRequest(ex.Message); }
+            catch (ArgumentException ex) { return BadRequest(ex.Message); }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (InvalidOperationException ex) { return Conflict(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
+        }
+
         #region OrderHistory
         [HttpGet("orderhistory")]
         public async Task<ActionResult<List<OrderAllDto>>> OrderHistory([FromQuery] int userid)

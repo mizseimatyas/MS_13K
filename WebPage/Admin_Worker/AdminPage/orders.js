@@ -12,6 +12,14 @@ function closeOrderModal() {
 orderModalCloseX?.addEventListener('click', () => closeOrderModal());
 orderModal?.addEventListener('click', e => { if (e.target === orderModal) closeOrderModal(); });
 
+function formatDate(raw) {
+    if (!raw) return '–';
+    return new Date(raw).toLocaleString('hu-HU', {
+        year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit'
+    });
+}
+
 function renderOrdersTable(orders) {
     const container = document.getElementById('orders-table-container');
     if (!container) return;
@@ -28,7 +36,7 @@ function renderOrdersTable(orders) {
     orders.forEach(o => {
         html += `<tr data-order-id="${o.orderId}">
             <td>${o.orderId}</td>
-            <td>${o.date}</td>
+            <td>${formatDate(o.date)}</td>
             <td>${o.status}</td>
             <td>${o.totalPrice}</td>
             <td>${o.targetAddress}</td>
@@ -70,15 +78,19 @@ async function loadOrderDetailsToModal(orderId) {
         const completeBtn      = document.getElementById('order-modal-complete-btn');
         const detailsContainer = document.getElementById('order-modal-details');
         const itemsContainer   = document.getElementById('order-modal-items');
+        const updateForm       = document.getElementById('order-modal-update-status-form'); 
+        const submitBtn        = updateForm?.querySelector('button[type="submit"]');
+        const isTerminal = order.status === 'OrderCompleted' || order.status === 'Cancelled';
 
         if (hiddenId) hiddenId.value = order.orderId;
-        if (statusSelect) statusSelect.value = order.status || '';
-        if (completeBtn) { completeBtn.disabled = false; completeBtn.dataset.orderId = order.orderId; }
+        if (statusSelect) { statusSelect.value = order.status || ''; statusSelect.disabled = isTerminal; }
+        if (submitBtn)    submitBtn.disabled = isTerminal;
+        if (completeBtn)  { completeBtn.disabled = isTerminal; completeBtn.dataset.orderId = order.orderId; }
 
         if (detailsContainer) {
             detailsContainer.innerHTML = `
                 <p><strong>Rendelés ID:</strong> ${order.orderId}</p>
-                <p><strong>Dátum:</strong> ${order.date}</p>
+                <p><strong>Dátum:</strong> ${formatDate(order.date)}</p>
                 <p><strong>Státusz:</strong> ${order.status}</p>
                 <p><strong>Célcím:</strong> ${order.targetAddress}</p>
                 <p><strong>Végösszeg:</strong> ${order.totalPrice}</p>`;
