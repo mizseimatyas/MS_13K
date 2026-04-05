@@ -96,5 +96,48 @@ namespace WebShop.Model
         }
         #endregion
 
+        #region AddToCart
+        public async Task AddToCart(AddToCartDto dto)
+        {
+            if (dto is null)
+                throw new ArgumentNullException(nameof(dto));
+            if (dto.userId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(dto.userId), "Felhasználó azonosító csak pozitív lehet");
+            if (dto.itemId <= 0)
+                throw new ArgumentOutOfRangeException(nameof(dto.itemId), "Termék azonosító csak pozitív lehet");
+            if (dto.quantity <= 0)
+                throw new ArgumentOutOfRangeException(nameof(dto.quantity), "Mennyiség csak pozitív lehet");
+
+            var item = await _context.Items.FindAsync(dto.itemId);
+            if (item is null)
+                throw new KeyNotFoundException($"Nem található termék #{dto.itemId} azonosítóval");
+
+            var cartItem = await _context.Carts
+                .FirstOrDefaultAsync(x => x.UserId == dto.userId && x.ItemId == dto.itemId);
+
+            int totalRequested = dto.quantity + (cartItem?.Quantity ?? 0);
+            if (totalRequested > item.Quantity)
+                throw new InvalidOperationException(
+                    $"Nincs elegendő készlet (kért összesen: {totalRequested}, elérhető: {item.Quantity})");
+
+            if (cartItem is not null)
+            {
+                cartItem.Quantity += dto.quantity;
+            }
+            else
+            {
+                _context.Carts.Add(new Cart
+                {
+                    UserId = dto.userId,
+                    ItemId = dto.itemId,
+                    Quantity = dto.quantity,
+                    Price = item.Price
+                });
+            }
+
+            await _context.SaveChangesAsync();
+        }
+        #endregion
+
     }
 }
