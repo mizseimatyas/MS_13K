@@ -26,21 +26,23 @@ function mapAllItemToCardItem(item) {
 }
 
 function mapSearchResultToCardItem(item) {
-  const normalizedName = (item.itemNamE || item.itemName || "").toLowerCase();
+  const normalizedName = (item.itemName ?? item.itemNamE ?? "").toLowerCase();
 
   const matchedFullItem = allProducts.find(
     (full) => (full.itemName || "").toLowerCase() === normalizedName,
   );
 
   return {
-    itemId: item.itemId ?? item.id ?? matchedFullItem?.itemId ?? null,
-    itemName: item.itemNamE ?? item.itemName ?? "Ismeretlen termék",
+    itemId: item.itemId ?? matchedFullItem?.itemId ?? null,
+    itemName: item.itemName ?? item.itemNamE ?? "Ismeretlen termék",
     categoryName:
-      item.categoryNamE ?? item.categoryName ?? "Ismeretlen kategória",
+      item.categoryName ??
+      item.categoryNamE ??
+      getCategoryNameById(item.categoryId ?? matchedFullItem?.categoryId),
     description:
       item.description ?? matchedFullItem?.description ?? "Nincs leírás",
     quantity: item.quantity ?? matchedFullItem?.quantity ?? 0,
-    price: Number(item.pricE ?? item.price ?? 0),
+    price: Number(item.price ?? item.pricE ?? matchedFullItem?.price ?? 0),
   };
 }
 
@@ -162,18 +164,29 @@ async function loadHomeProducts() {
 
 async function openProductDetailById(itemId) {
   if (!itemId) return;
+
+  sessionStorage.setItem("selectedProductId", String(itemId));
+
   const product = await apiGetItemById(itemId);
   if (!product) return;
 
   const fullItem = allProducts.find((item) => item.itemId === Number(itemId));
-  const categoryName = fullItem
-    ? getCategoryNameById(fullItem.categoryId)
-    : "Ismeretlen kategória";
 
-  document.getElementById("detailProductTitle").textContent = product.itemName;
+  const categoryName =
+    product.categoryName ||
+    getCategoryNameById(product.categoryId ?? fullItem?.categoryId) ||
+    "Ismeretlen kategória";
+
+  const quantity = Number(product.quantity ?? fullItem?.quantity ?? 0);
+  const isOutOfStock = quantity <= 0;
+
+  document.getElementById("detailProductTitle").textContent =
+    product.itemName || "Ismeretlen termék";
+
   document.getElementById("detailProductPrice").textContent = formatPrice(
-    product.price,
+    product.price ?? 0,
   );
+
   window.currentDetailProduct = {
     itemId: product.itemId ?? product.id ?? fullItem?.itemId ?? null,
     itemName:
@@ -182,31 +195,30 @@ async function openProductDetailById(itemId) {
       fullItem?.itemName ??
       "Ismeretlen termék",
     price: Number(product.price ?? fullItem?.price ?? 0),
-    maxQuantity: Number(product.quantity ?? fullItem?.quantity ?? 0),
+    maxQuantity: quantity,
   };
-  document.querySelector(".product-gallery-image").innerHTML =
-    `<span>${product.itemName}</span>`;
+
+  document.querySelector(".product-gallery-image").innerHTML = `
+    <span>${product.itemName || "Ismeretlen termék"}</span>
+  `;
+
   document.getElementById("detailSpecText").textContent =
     product.description || "Nincs leírás.";
-  document.getElementById("detailDescText").textContent =
-    `${product.itemName} a(z) ${categoryName} kategóriába tartozik. Jelenlegi elérhető mennyiség: ${product.quantity} db.`;
+
+  document.getElementById("detailDescText").textContent = `
+    ${product.itemName || "Ez a termék"} a(z) ${categoryName} kategóriába tartozik. 
+    Jelenlegi készlet: ${isOutOfStock ? "A termék elfogyott" : `${quantity} db`}.
+  `;
+
   document.getElementById("detailStockBox").innerHTML = `
-  <div class="stock-title">Készlet</div>
-  <div class="stock-item">
-    ${
-      Number(product.quantity) > 0
-        ? `Elérhető: ${product.quantity} db`
-        : `A termék elfogyott`
-    }
-  </div>
-  <div class="stock-item">Kategória: ${categoryName}</div>
-`;
+    <div class="stock-title">
+      Készlet: ${isOutOfStock ? "A termék elfogyott" : `${quantity} db`}
+    </div>
+    <div class="stock-item">Kategória: ${categoryName}</div>
+  `;
 
   const detailAddToCartBtn = document.getElementById("detailAddToCartBtn");
-
   if (detailAddToCartBtn) {
-    const isOutOfStock = Number(product.quantity) <= 0;
-
     detailAddToCartBtn.disabled = isOutOfStock;
     detailAddToCartBtn.textContent = isOutOfStock ? "Elfogyott" : "Kosárba";
     detailAddToCartBtn.style.opacity = isOutOfStock ? "0.5" : "1";
@@ -223,4 +235,11 @@ function initProductDetailOpening() {
     const itemId = trigger.dataset.id;
     if (itemId) openProductDetailById(itemId);
   });
+}
+
+async function restoreProductDetailAfterRefresh() {
+  const savedProductId = sessionStorage.getItem("selectedProductId");
+  if (!savedProductId) return;
+
+  await openProductDetailById(savedProductId);
 }

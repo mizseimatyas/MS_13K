@@ -594,7 +594,18 @@ async function renderCartDropdown() {
     )
     .join("");
 
-  cartTotalPrice.textContent = formatCartPrice(getCartTotal(cart));
+  const currentUser = window.getCurrentUser?.();
+
+  try {
+    if (currentUser?.userid) {
+      const backendTotal = await apiGetCartTotalPrice(currentUser.userid);
+      cartTotalPrice.textContent = formatCartPrice(backendTotal);
+    } else {
+      cartTotalPrice.textContent = formatCartPrice(getCartTotal(cart));
+    }
+  } catch (error) {
+    cartTotalPrice.textContent = formatCartPrice(getCartTotal(cart));
+  }
 }
 
 async function addToCart(product) {
@@ -620,21 +631,29 @@ async function addToCart(product) {
     (x) => String(x.itemId) === String(product.itemId),
   );
 
-  const nextQuantity = existingItem ? existingItem.quantity + 1 : 1;
+  const currentQuantity = existingItem ? existingItem.quantity : 0;
   const maxQuantity = Number(product.maxQuantity ?? Infinity);
 
-  if (nextQuantity > maxQuantity) {
+  if (currentQuantity + 1 > maxQuantity) {
     alert(`Legfeljebb ${maxQuantity} db tehető a kosárba ebből a termékből.`);
     return;
   }
 
   try {
-    await apiModifyCartItem({
-      userId: currentUser.userid,
-      itemId: Number(product.itemId),
-      quantity: nextQuantity,
-      price: Number(product.price),
-    });
+    if (existingItem) {
+      await apiModifyCartItem({
+        userId: currentUser.userid,
+        itemId: Number(product.itemId),
+        quantity: currentQuantity + 1,
+        price: Number(product.price),
+      });
+    } else {
+      await apiAddToCart({
+        userId: currentUser.userid,
+        itemId: Number(product.itemId),
+        quantity: 1,
+      });
+    }
 
     await renderCartDropdown();
 
@@ -809,6 +828,7 @@ function initCartUI() {
 }
 
 window.renderCartDropdown = renderCartDropdown;
+window.renderOrdersList = renderOrdersList;
 window.addToCart = addToCart;
 
 async function renderCheckoutSection() {
@@ -897,7 +917,16 @@ async function renderCheckoutSection() {
     )
     .join("");
 
-  checkoutTotalPrice.textContent = formatCartPrice(getCartTotal(cart));
+  try {
+    if (currentUser?.userid) {
+      const backendTotal = await apiGetCartTotalPrice(currentUser.userid);
+      checkoutTotalPrice.textContent = formatCartPrice(backendTotal);
+    } else {
+      checkoutTotalPrice.textContent = formatCartPrice(getCartTotal(cart));
+    }
+  } catch (error) {
+    checkoutTotalPrice.textContent = formatCartPrice(getCartTotal(cart));
+  }
 }
 
 async function renderOrdersList() {

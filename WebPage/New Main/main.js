@@ -37,6 +37,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (categoryFilter) categoryFilter.value = "Összes";
 
     sessionStorage.removeItem("selectedCategory");
+    sessionStorage.removeItem("selectedProductId");
 
     showSectionByName("home");
     await loadHomeProducts();
@@ -66,16 +67,22 @@ document.addEventListener("DOMContentLoaded", async () => {
   initHistoryHandling();
   initSearch();
   initAuth();
-  initCartUI();
-  renderOrdersList();
 
   await loadAllProducts();
   await loadCategories();
   await loadHomeProducts();
   await checkAuthState();
 
+  initCartUI();
+  await renderOrdersList();
+  await renderCartDropdown();
+
   if (initialSection === "search") {
     await restoreSearchViewAfterRefresh();
+  }
+
+  if (initialSection === "productDetail") {
+    await restoreProductDetailAfterRefresh();
   }
 
   requestAnimationFrame(() => {

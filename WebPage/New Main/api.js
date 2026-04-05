@@ -104,7 +104,7 @@ async function apiGetCurrentUser() {
     credentials: "include",
   });
 
-  if (response.status === 401) {
+  if (response.status === 401 || response.status === 404) {
     return null;
   }
 
@@ -220,4 +220,23 @@ async function apiPlaceOrder(payload) {
   } catch {
     return text || null;
   }
+}
+
+async function apiAddToCart(payload) {
+  const response = await fetch(`${API_BASE}/Carts/addtocart`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+
+  const text = await response.text();
+
+  if (!response.ok) {
+    throw new Error(text || "A termék kosárba helyezése nem sikerült.");
+  }
+
+  return text || true;
 }

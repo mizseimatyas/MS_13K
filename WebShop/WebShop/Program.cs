@@ -5,14 +5,15 @@ using WebShop.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var isDev = builder.Environment.IsDevelopment();
-
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("DevCors", policy =>
     {
         policy
-            .WithOrigins("http://127.0.0.1:5500")
+            .WithOrigins(
+                "http://127.0.0.1:5500",
+                "http://localhost:5500"
+            )
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
@@ -37,9 +38,11 @@ builder.Services
     .AddCookie(options =>
     {
         options.Cookie.Name = "webshop_auth";
-        options.Cookie.SameSite = isDev ? SameSiteMode.Lax : SameSiteMode.None;
-        options.Cookie.SecurePolicy = isDev ? CookieSecurePolicy.SameAsRequest : CookieSecurePolicy.Always;
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SameSite = SameSiteMode.None;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
         options.SlidingExpiration = true;
+
         options.Events = new CookieAuthenticationEvents
         {
             OnRedirectToLogin = ctx =>
