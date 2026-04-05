@@ -1,0 +1,60 @@
+.header {
+  position: relative;
+  z-index: 1000;
+  background-color: rgb(62, 160, 160);
+}
+
+.sidebar,
+.rightbar {
+  padding: 15px;
+  background-color: rgb(62, 160, 160);
+}
+
+.content {
+  padding: 15px 30px 30px 30px;
+  background-color: rgb(62, 160, 160);
+}
+
+.section-top {
+  display: flex;
+  justify-content: center;
+}
+
+.content-title {
+  width: auto;
+  margin-bottom: 0;
+  padding-inline: 20px;
+}
+
+.home-layout,
+.search-layout {
+  height: calc(100vh - 76px - 32px);
+}
+
+.home-row,
+.search-row {
+  height: 100%;
+}
+
+#homepage .sidebar,
+#homepage .content,
+#homepage .rightbar,
+#searchSection .sidebar,
+#searchSection .content,
+#searchSection .rightbar {
+  height: 100%;
+}
+
+#homepage .sidebar,
+#homepage .rightbar,
+#searchSection .sidebar,
+#searchSection .rightbar {
+  position: sticky;
+  top: 0;
+}
+
+#homepage .content,
+#searchSection .content {
+  overflow-y: auto;
+  overflow-x: hidden;
+}

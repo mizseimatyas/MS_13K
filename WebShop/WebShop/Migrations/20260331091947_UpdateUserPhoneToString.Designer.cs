@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using WebShop.Persistence;
@@ -11,9 +12,11 @@ using WebShop.Persistence;
 namespace WebShop.Migrations
 {
     [DbContext(typeof(DataDbContext))]
-    partial class DataDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260331091947_UpdateUserPhoneToString")]
+    partial class UpdateUserPhoneToString
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -200,14 +203,8 @@ namespace WebShop.Migrations
                     b.Property<string>("Address")
                         .HasColumnType("text");
 
-                    b.Property<string>("City")
-                        .HasColumnType("text");
-
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
                         .HasColumnType("text");
 
                     b.Property<string>("Password")
@@ -219,9 +216,6 @@ namespace WebShop.Migrations
 
                     b.Property<string>("Role")
                         .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ZipCode")
                         .HasColumnType("text");
 
                     b.HasKey("UserId");

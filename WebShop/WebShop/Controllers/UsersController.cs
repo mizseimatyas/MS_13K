@@ -3,7 +3,10 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
+using System.Numerics;
 using System.Security.Claims;
+using WebShop.Dto;
 using WebShop.Model;
 
 namespace WebShop.Controllers
@@ -18,14 +21,47 @@ namespace WebShop.Controllers
             _model = model;
         }
 
-        [HttpPost("userregistry")]
-        public async Task<ActionResult> Registration(
-            [FromQuery] string email,
-            [FromQuery] string password)
+        [Authorize]
+        [HttpGet("me")]
+        public async Task<ActionResult<UserDto>> GetMe()
         {
             try
             {
-                await _model.Registration(email, password);
+                var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                if (string.IsNullOrWhiteSpace(userIdClaim))
+                    return Unauthorized();
+
+                if (!int.TryParse(userIdClaim, out int userId))
+                    return Unauthorized();
+
+                var response = await _model.GetMe(userId);
+                return Ok(response);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return BadRequest();
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpPost("userregistry")]
+        public async Task<ActionResult> Registration(
+            [FromQuery] string email,
+            [FromQuery] string password,
+            [FromQuery] string? address,
+            [FromQuery] string? phone)
+        {
+            try
+            {
+                await _model.Registration(email, password, address, phone);
                 return Ok();
             }
             catch (InvalidOperationException ex) { return BadRequest(ex.Message); }
@@ -59,6 +95,46 @@ namespace WebShop.Controllers
             }
             catch (ArgumentException ex) { return BadRequest(ex.Message); }
             catch (Exception ex) { return BadRequest(ex.Message); }
+        }
+
+        [Authorize]
+        [HttpPut("updateprofile")]
+        public async Task<ActionResult> UpdateProfile([FromBody] UpdateProfileDto dto)
+        {
+            try
+            {
+                var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (string.IsNullOrWhiteSpace(userIdClaim))
+                    return Unauthorized("Hiányzó felhasználói azonosító.");
+
+                if (!int.TryParse(userIdClaim, out int userId))
+                    return Unauthorized("Érvénytelen felhasználói azonosító.");
+
+                await _model.UpdateProfile(
+                    userId,
+                    dto.email,
+                    dto.name,
+                    dto.city,
+                    dto.zipCode,
+                    dto.address,
+                    dto.phone
+                );
+
+                return Ok();
+            }
+            catch (InvalidOperationException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (ArgumentException e)
+            {
+                return BadRequest(e.Message);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Váratlan hiba történt.");
+            }
         }
 
         [Authorize]
