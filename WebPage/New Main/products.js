@@ -182,6 +182,7 @@ async function openProductDetailById(itemId) {
       fullItem?.itemName ??
       "Ismeretlen termék",
     price: Number(product.price ?? fullItem?.price ?? 0),
+    maxQuantity: Number(product.quantity ?? fullItem?.quantity ?? 0),
   };
   document.querySelector(".product-gallery-image").innerHTML =
     `<span>${product.itemName}</span>`;
@@ -190,10 +191,27 @@ async function openProductDetailById(itemId) {
   document.getElementById("detailDescText").textContent =
     `${product.itemName} a(z) ${categoryName} kategóriába tartozik. Jelenlegi elérhető mennyiség: ${product.quantity} db.`;
   document.getElementById("detailStockBox").innerHTML = `
-    <div class="stock-title">Készlet</div>
-    <div class="stock-item">Elérhető: ${product.quantity} db</div>
-    <div class="stock-item">Kategória: ${categoryName}</div>
-  `;
+  <div class="stock-title">Készlet</div>
+  <div class="stock-item">
+    ${
+      Number(product.quantity) > 0
+        ? `Elérhető: ${product.quantity} db`
+        : `A termék elfogyott`
+    }
+  </div>
+  <div class="stock-item">Kategória: ${categoryName}</div>
+`;
+
+  const detailAddToCartBtn = document.getElementById("detailAddToCartBtn");
+
+  if (detailAddToCartBtn) {
+    const isOutOfStock = Number(product.quantity) <= 0;
+
+    detailAddToCartBtn.disabled = isOutOfStock;
+    detailAddToCartBtn.textContent = isOutOfStock ? "Elfogyott" : "Kosárba";
+    detailAddToCartBtn.style.opacity = isOutOfStock ? "0.5" : "1";
+    detailAddToCartBtn.style.cursor = isOutOfStock ? "not-allowed" : "pointer";
+  }
 
   showSectionByName("productDetail");
 }

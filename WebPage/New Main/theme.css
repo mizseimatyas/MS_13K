@@ -53,6 +53,10 @@
   background: rgb(60, 60, 60);
 }
 
+.dark-mode .product-gallery-image span {
+  color: white;
+}
+
 .dark-mode .search-input,
 .dark-mode .filter-input,
 .dark-mode .price-input,
@@ -107,23 +111,13 @@
 .dark-mode .register-box h2,
 .dark-mode .login-box h2,
 .dark-mode .detail-text-box h3,
-.dark-mode .detail-text-box p,
-.dark-mode .gallery-arrow,
-.dark-mode .product-gallery-image {
+.dark-mode .detail-text-box p {
   color: white;
 }
 
 .dark-mode .product-gallery-image {
   border-color: rgb(28, 28, 28);
   background-color: rgb(60, 60, 60);
-}
-
-.dark-mode .gallery-dot {
-  background-color: rgb(75, 75, 75);
-}
-
-.dark-mode .gallery-dot.active {
-  background-color: #4fa3ff;
 }
 
 .dark-mode .profile-section {

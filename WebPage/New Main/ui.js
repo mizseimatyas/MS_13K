@@ -570,9 +570,10 @@ function addToCart(product) {
     return;
   }
 
-  if (!product || product.itemId === null || product.itemId === undefined) {
-    console.error("Hiányzó itemId a kosárhoz adásnál:", product);
-    alert("A termék nem adható kosárhoz, mert hiányzik az azonosítója.");
+  const maxQuantity = Number(product.maxQuantity ?? 0);
+
+  if (maxQuantity <= 0) {
+    alert("Ez a termék jelenleg nincs készleten.");
     return;
   }
 
@@ -582,6 +583,11 @@ function addToCart(product) {
   );
 
   if (existingItem) {
+    if (existingItem.quantity >= maxQuantity) {
+      alert(`Legfeljebb ${maxQuantity} db tehető a kosárba ebből a termékből.`);
+      return;
+    }
+
     existingItem.quantity += 1;
   } else {
     cart.push({
@@ -589,11 +595,17 @@ function addToCart(product) {
       itemName: product.itemName,
       price: Number(product.price),
       quantity: 1,
+      maxQuantity: maxQuantity,
     });
   }
 
   saveCartState(cart);
   renderCartDropdown();
+
+  const cartMenu = document.getElementById("cartMenu");
+  if (cartMenu) {
+    cartMenu.classList.add("show");
+  }
 }
 
 function updateCartQuantity(itemId, delta) {
@@ -602,11 +614,22 @@ function updateCartQuantity(itemId, delta) {
   cart = cart
     .map((item) => {
       if (String(item.itemId) === String(itemId)) {
+        const newQuantity = item.quantity + delta;
+        const maxQuantity = Number(item.maxQuantity ?? Infinity);
+
+        if (delta > 0 && newQuantity > maxQuantity) {
+          alert(
+            `Legfeljebb ${maxQuantity} db tehető a kosárba ebből a termékből.`,
+          );
+          return item;
+        }
+
         return {
           ...item,
-          quantity: item.quantity + delta,
+          quantity: newQuantity,
         };
       }
+
       return item;
     })
     .filter((item) => item.quantity > 0);
@@ -643,6 +666,18 @@ function initCartUI() {
   const checkoutBtn = document.getElementById("checkoutBtn");
   const detailAddToCartBtn = document.getElementById("detailAddToCartBtn");
   const placeOrderBtn = document.getElementById("placeOrderBtn");
+
+  document
+    .getElementById("ordersList")
+    ?.addEventListener("click", async (e) => {
+      const detailsBtn = e.target.closest(".order-details-btn");
+      if (!detailsBtn) return;
+
+      const orderId = Number(detailsBtn.dataset.orderId);
+      if (orderId > 0) {
+        await toggleOrderDetails(orderId);
+      }
+    });
 
   cartBtn?.addEventListener("click", (e) => {
     e.stopPropagation();
@@ -685,7 +720,9 @@ function initCartUI() {
     showSectionByName("checkout");
   });
 
-  detailAddToCartBtn?.addEventListener("click", () => {
+  detailAddToCartBtn?.addEventListener("click", (e) => {
+    e.stopPropagation();
+
     if (!window.currentDetailProduct) {
       alert("Ehhez a termékhez most nincs betöltött adat.");
       return;
@@ -696,7 +733,13 @@ function initCartUI() {
 
   document.addEventListener("click", (e) => {
     const cartWrapper = document.querySelector(".cart-dropdown-wrapper");
-    if (cartWrapper && !cartWrapper.contains(e.target)) {
+    const cartMenu = document.getElementById("cartMenu");
+
+    const clickedInsideWrapper = cartWrapper && cartWrapper.contains(e.target);
+
+    const clickedInsideCartMenu = cartMenu && cartMenu.contains(e.target);
+
+    if (!clickedInsideWrapper && !clickedInsideCartMenu) {
       closeCartMenu();
     }
   });
@@ -738,7 +781,6 @@ function renderCheckoutSection() {
   const shippingName = document.getElementById("shippingName");
   const shippingPhone = document.getElementById("shippingPhone");
   const shippingEmail = document.getElementById("shippingEmail");
-
   const sameAsCustomerData = document.getElementById("sameAsCustomerData");
 
   const checkoutItems = document.getElementById("checkoutItems");
@@ -765,22 +807,31 @@ function renderCheckoutSection() {
   if (shippingPhone) shippingPhone.value = "";
   if (shippingEmail) shippingEmail.value = "";
 
-  if (sameAsCustomerData && !sameAsCustomerData.dataset.bound) {
-    sameAsCustomerData.addEventListener("change", () => {
+  if (sameAsCustomerData) {
+    sameAsCustomerData.onchange = () => {
+      const freshUser = window.getCurrentUser?.() || {};
+
+      const freshAddress = freshUser.address || "";
+      const freshName = freshUser.name || "";
+      const freshPhone = freshUser.phone || "";
+      const freshEmail = freshUser.email || "";
+
       if (sameAsCustomerData.checked) {
-        if (shippingAddress) shippingAddress.value = userAddress;
-        if (shippingName) shippingName.value = userName;
-        if (shippingPhone) shippingPhone.value = userPhone;
-        if (shippingEmail) shippingEmail.value = userEmail;
+        if (shippingAddress) shippingAddress.value = freshAddress;
+        if (shippingName) shippingName.value = freshName;
+        if (shippingPhone) shippingPhone.value = freshPhone;
+        if (shippingEmail) shippingEmail.value = freshEmail;
       } else {
         if (shippingAddress) shippingAddress.value = "";
         if (shippingName) shippingName.value = "";
         if (shippingPhone) shippingPhone.value = "";
         if (shippingEmail) shippingEmail.value = "";
       }
-    });
+    };
 
-    sameAsCustomerData.dataset.bound = "true";
+    if (sameAsCustomerData.checked) {
+      sameAsCustomerData.onchange();
+    }
   }
 
   if (cart.length === 0) {
@@ -806,49 +857,109 @@ function renderCheckoutSection() {
   checkoutTotalPrice.textContent = formatCartPrice(getCartTotal(cart));
 }
 
-function renderOrdersList() {
+async function renderOrdersList() {
   const ordersList = document.getElementById("ordersList");
+  const currentUser = window.getCurrentUser?.();
+
   if (!ordersList) return;
 
-  const orders = getOrdersState();
-
-  if (orders.length === 0) {
-    ordersList.innerHTML = `<div class="text-muted">Még nincs leadott rendelésed.</div>`;
+  if (!currentUser?.userid) {
+    ordersList.innerHTML = `<div class="text-muted">A rendelések megtekintéséhez jelentkezz be.</div>`;
     return;
   }
 
-  ordersList.innerHTML = orders
-    .slice()
-    .reverse()
-    .map(
-      (order) => `
-        <div class="border rounded p-3">
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <strong>Rendelés időpontja</strong>
-            <span>${order.createdAt}</span>
-          </div>
+  try {
+    const orders = await apiGetOrderHistoryByUserId(currentUser.userid);
 
-          <div class="mb-2">
-            ${order.items
+    if (!orders || orders.length === 0) {
+      ordersList.innerHTML = `<div class="text-muted">Még nincs leadott rendelésed.</div>`;
+      return;
+    }
+
+    ordersList.innerHTML = orders
+      .map(
+        (order) => `
+          <div class="card p-3">
+            <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+              <div>
+                <div><strong>Rendelés azonosító:</strong> #${order.orderId}</div>
+                <div><strong>Rendelés időpontja:</strong> ${order.date}</div>
+                <div><strong>Státusz:</strong> ${order.status}</div>
+                <div><strong>Szállítási cím:</strong> ${order.targetAddress || "-"}</div>
+                <div><strong>Összesen:</strong> ${formatCartPrice(order.totalPrice || 0)}</div>
+              </div>
+
+              <div class="d-flex flex-column gap-2">
+                <button
+                  class="btn btn-primary order-details-btn"
+                  type="button"
+                  data-order-id="${order.orderId}"
+                >
+                  Részletek
+                </button>
+              </div>
+            </div>
+
+            <div id="order-details-${order.orderId}" class="mt-3 d-none"></div>
+          </div>
+        `,
+      )
+      .join("");
+  } catch (error) {
+    console.error(error);
+    ordersList.innerHTML = `<div class="text-muted">A rendelések betöltése nem sikerült.</div>`;
+  }
+}
+
+async function toggleOrderDetails(orderId) {
+  const currentUser = window.getCurrentUser?.();
+  const detailsBox = document.getElementById(`order-details-${orderId}`);
+
+  if (!currentUser?.userid || !detailsBox) return;
+
+  if (!detailsBox.classList.contains("d-none")) {
+    detailsBox.classList.add("d-none");
+    detailsBox.innerHTML = "";
+    return;
+  }
+
+  try {
+    const details = await apiGetOrderDetails(currentUser.userid, orderId);
+
+    detailsBox.innerHTML = `
+      <div class="border rounded p-3">
+        <div><strong>Státusz:</strong> ${details.status}</div>
+        <div><strong>Dátum:</strong> ${details.date}</div>
+        <div><strong>Szállítási cím:</strong> ${details.targetAddress || "-"}</div>
+        <div><strong>Összesen:</strong> ${formatCartPrice(details.totalPrice || 0)}</div>
+
+        <div class="mt-3">
+          <strong>Tételek:</strong>
+          <div class="mt-2">
+            ${(details.items || [])
               .map(
                 (item) => `
-                  <div class="d-flex justify-content-between">
-                    <span>${item.itemName} (${item.quantity} db)</span>
-                    <span>${formatCartPrice(Number(item.price) * item.quantity)}</span>
+                  <div class="d-flex justify-content-between border rounded p-2 mb-2">
+                    <div>
+                      <div><strong>${item.itemName}</strong></div>
+                      <div>Mennyiség: ${item.quantity}</div>
+                    </div>
+                    <div>${formatCartPrice((item.price || 0) * (item.quantity || 0))}</div>
                   </div>
                 `,
               )
               .join("")}
           </div>
-
-          <div class="d-flex justify-content-between">
-            <strong>Összesen:</strong>
-            <strong>${formatCartPrice(order.total)}</strong>
-          </div>
         </div>
-      `,
-    )
-    .join("");
+      </div>
+    `;
+
+    detailsBox.classList.remove("d-none");
+  } catch (error) {
+    console.error(error);
+    detailsBox.innerHTML = `<div class="text-danger">A rendelés részletei nem tölthetők be.</div>`;
+    detailsBox.classList.remove("d-none");
+  }
 }
 
 function placeOrder() {
@@ -890,10 +1001,10 @@ function placeOrder() {
       address: currentUser.address || "",
     },
     shipping: {
-      name: shippingName,
-      email: shippingEmail,
-      phone: shippingPhone,
       address: shippingAddress,
+      name: shippingName,
+      phone: shippingPhone,
+      email: shippingEmail,
     },
   };
 
