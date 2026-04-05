@@ -137,3 +137,33 @@ async function apiRegisterUser(email, password, address, phone) {
     return text || null;
   }
 }
+
+async function apiGetOrderHistoryByUserId(userId) {
+  return await fetchJSON(
+    `${API_BASE}/Orders/orderhistory?userid=${encodeURIComponent(userId)}`,
+  );
+}
+
+async function apiGetOrderDetails(userId, orderId) {
+  return await fetchJSON(
+    `${API_BASE}/Orders/orderdetails?userid=${encodeURIComponent(userId)}&orderId=${encodeURIComponent(orderId)}`,
+  );
+}
+
+async function apiCancelOrder(orderId, userId) {
+  const response = await fetch(
+    `${API_BASE}/Orders/usercancelorder?orderid=${encodeURIComponent(orderId)}&userid=${encodeURIComponent(userId)}`,
+    {
+      method: "PUT",
+      credentials: "include",
+    },
+  );
+
+  const text = await response.text();
+
+  if (!response.ok) {
+    throw new Error(text || "A rendelés törlése nem sikerült.");
+  }
+
+  return text || true;
+}
