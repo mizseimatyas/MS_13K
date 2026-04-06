@@ -13,12 +13,9 @@ namespace WorkerApp.Model
     {
         private readonly HttpClient _client;
 
-        public OrdersModel(string baseUrl)
+        public OrdersModel(HttpClient client)
         {
-            _client = new HttpClient
-            {
-                BaseAddress = new Uri(baseUrl)
-            };
+            _client = client;
         }
 
         public async Task<List<OrderAllDto>?> GetAllOrdersAsync()

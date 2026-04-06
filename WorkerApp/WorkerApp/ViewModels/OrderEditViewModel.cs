@@ -43,11 +43,7 @@ namespace WorkerApp.ViewModels
 
         public bool IsDetailsLoaded => !_isLoading && _orderDetails != null;
 
-        public ObservableCollection<string> Statuses { get; } = new ObservableCollection<string>
-        {
-            "Cancelled", "DataConfirmed", "PendingPayment",
-            "PaymentSuccess", "Delivering", "OrderCompleted"
-        };
+        public ObservableCollection<StatusOption> StatusOptions { get; }
 
         private string _selectedStatus;
         public string SelectedStatus
@@ -65,6 +61,7 @@ namespace WorkerApp.ViewModels
 
         public ICommand SaveStatusCommand { get; }
         public ICommand CancelEditCommand { get; }
+        public ICommand SelectStatusCommand { get; }
 
         public OrderEditViewModel(MainViewModel main, OrderAllDto order, string role, ItemsModel itemsModel, OrdersModel ordersModel, AuthModel authModel)
         {
@@ -77,8 +74,48 @@ namespace WorkerApp.ViewModels
             Order = order;
             SelectedStatus = order.Status;
 
+            var statusList = new[] { "Cancelled", "DataConfirmed", "PendingPayment",
+                          "PaymentSuccess", "Delivering", "OrderCompleted" };
+
+            var currentIndex = Array.IndexOf(statusList, order.Status);
+
+            StatusOptions = new ObservableCollection<StatusOption>(
+                statusList.Select((s, i) => new StatusOption(s)
+                {
+                    IsSelected = i == currentIndex,
+                    IsPast = i < currentIndex
+                })
+            );
+
+            foreach (var opt in StatusOptions)
+                opt.OnSelect = status =>
+                {
+                    var newIndex = statusList.ToList().IndexOf(status);
+                    foreach (var (o, i) in StatusOptions.Select((o, i) => (o, i)))
+                    {
+                        o.IsSelected = i == newIndex;
+                        o.IsPast = i < newIndex;
+                    }
+                    SelectedStatus = status;
+                };
+
+            SelectStatusCommand = new Utils.RelayCommand(param =>
+            {
+                if (param is string status)
+                {
+                    foreach (var opt in StatusOptions)
+                        opt.IsSelected = opt.Name == status;
+                    SelectedStatus = status;
+                }
+                return Task.CompletedTask;
+            });
+
             SaveStatusCommand = new Utils.RelayCommand(async _ => await SaveStatus());
-            CancelEditCommand = new Utils.RelayCommand(_ => CancelEdit());
+            CancelEditCommand = new Utils.RelayCommand(_ =>
+            {
+                _main.CurrentPage = new OrdersListViewModel(_main, _role, _itemsModel, _ordersModel, _authModel);
+                return Task.CompletedTask;
+            });
 
             _ = LoadOrderDetails();
         }
@@ -105,12 +142,6 @@ namespace WorkerApp.ViewModels
             Order.Status = SelectedStatus;
             OnPropertyChanged(nameof(Order));
             _main.CurrentPage = new OrdersListViewModel(_main, _role, _itemsModel, _ordersModel, _authModel);
-        }
-
-        private Task CancelEdit()
-        {
-            _main.CurrentPage = new OrdersListViewModel(_main, _role, _itemsModel, _ordersModel, _authModel);
-            return Task.CompletedTask;
         }
     }
 }
