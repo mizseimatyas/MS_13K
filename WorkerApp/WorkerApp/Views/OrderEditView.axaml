@@ -21,6 +21,38 @@
 		<Style Selector="Button.primary:pointerover">
 			<Setter Property="Background" Value="#005a9e" />
 		</Style>
+		<Style Selector="Button.status-btn">
+			<Setter Property="Foreground" Value="White" />
+			<Setter Property="CornerRadius" Value="6" />
+			<Setter Property="Padding" Value="14,8" />
+			<Setter Property="Margin" Value="4" />
+			<Setter Property="FontWeight" Value="SemiBold" />
+			<Setter Property="BorderThickness" Value="0" />
+			<Setter Property="Cursor" Value="Hand" />
+			<Setter Property="Background" Value="#28a745" />
+		</Style>
+
+		<Style Selector="Button.status-btn.past">
+			<Setter Property="Background" Value="#dc3545" />
+			<Setter Property="Cursor" Value="Arrow" />
+			<Setter Property="Opacity" Value="0.75" />
+		</Style>
+
+		<Style Selector="Button.status-btn.active">
+			<Setter Property="Background" Value="#0078d4" />
+			<Setter Property="Cursor" Value="Arrow" />
+		</Style>
+
+		<Style Selector="Button.status-btn:pointerover">
+			<Setter Property="Background" Value="#1e7e34" />
+		</Style>
+
+		<Style Selector="Button.status-btn.past:pointerover">
+			<Setter Property="Background" Value="#dc3545" />
+		</Style>
+		<Style Selector="Button.status-btn.active:pointerover">
+			<Setter Property="Background" Value="#0078d4" />
+		</Style>
 	</UserControl.Styles>
 
 	<Grid Margin="16">
@@ -116,15 +148,28 @@
 					<TextBlock Text="Új státusz"
                                FontWeight="SemiBold"
                                Foreground="#00324e" />
-					<ComboBox ItemsSource="{Binding Statuses}"
-                              SelectedItem="{Binding SelectedStatus}"
-                              Background="White"
-                              Foreground="Black"
-                              BorderBrush="#0078d4" />
+
+					<ItemsControl ItemsSource="{Binding StatusOptions}">
+						<ItemsControl.ItemsPanel>
+							<ItemsPanelTemplate>
+								<WrapPanel />
+							</ItemsPanelTemplate>
+						</ItemsControl.ItemsPanel>
+						<ItemsControl.ItemTemplate>
+							<DataTemplate x:DataType="vm:StatusOption">
+								<Button Content="{Binding Name}"
+										Classes="status-btn"
+										Classes.active="{Binding IsSelected}"
+										Classes.past="{Binding IsPast}"
+										Command="{Binding SelectCommand}" />
+							</DataTemplate>
+						</ItemsControl.ItemTemplate>
+					</ItemsControl>
 
 					<TextBlock Text="{Binding Message}"
                                Foreground="#c00000"
                                Margin="0,4,0,0" />
+
 				</StackPanel>
 			</ScrollViewer>
 		</Border>

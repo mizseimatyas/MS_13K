@@ -122,6 +122,6 @@
     <Button Content="Mentés"
             Classes="primary"
             Command="{Binding SaveCommand}" />
-</StackPanel>
+    </StackPanel>
     </Grid>
 </UserControl>
