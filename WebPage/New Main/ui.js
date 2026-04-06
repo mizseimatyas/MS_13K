@@ -504,18 +504,51 @@ function initHistoryHandling() {
   });
 }
 
-const CART_STORAGE_KEY = "woltmarket_cart";
+async function getCartState() {
+  const currentUser = window.getCurrentUser?.();
 
-function getCartState() {
+  if (!currentUser?.userid) {
+    return [];
+  }
+
   try {
-    return JSON.parse(localStorage.getItem(CART_STORAGE_KEY)) || [];
-  } catch {
+    const response = await apiGetCartInventory(currentUser.userid);
+    return response?.itemList || [];
+  } catch (error) {
     return [];
   }
 }
 
-function saveCartState(cart) {
-  localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+async function saveCartState(cart) {
+  const currentUser = window.getCurrentUser?.();
+  if (!currentUser?.userid) return;
+
+  const currentBackendCart = await getCartState();
+
+  const backendMap = new Map(
+    currentBackendCart.map((item) => [String(item.itemId), item]),
+  );
+  const nextMap = new Map(cart.map((item) => [String(item.itemId), item]));
+
+  for (const item of cart) {
+    await apiModifyCartItem({
+      userId: currentUser.userid,
+      itemId: Number(item.itemId),
+      quantity: Number(item.quantity),
+      price: Number(item.price),
+    });
+  }
+
+  for (const oldItem of currentBackendCart) {
+    if (!nextMap.has(String(oldItem.itemId))) {
+      await apiModifyCartItem({
+        userId: currentUser.userid,
+        itemId: Number(oldItem.itemId),
+        quantity: 0,
+        price: Number(oldItem.price),
+      });
+    }
+  }
 }
 
 function formatCartPrice(value) {
@@ -529,13 +562,13 @@ function getCartTotal(cart) {
   );
 }
 
-function renderCartDropdown() {
+async function renderCartDropdown() {
   const cartItemsContainer = document.getElementById("cartItems");
   const cartTotalPrice = document.getElementById("cartTotalPrice");
 
   if (!cartItemsContainer || !cartTotalPrice) return;
 
-  const cart = getCartState();
+  const cart = await getCartState();
 
   if (cart.length === 0) {
     cartItemsContainer.innerHTML = `<div class="cart-empty">A kosár üres.</div>`;
@@ -561,81 +594,105 @@ function renderCartDropdown() {
     )
     .join("");
 
-  cartTotalPrice.textContent = formatCartPrice(getCartTotal(cart));
+  const currentUser = window.getCurrentUser?.();
+
+  try {
+    if (currentUser?.userid) {
+      const backendTotal = await apiGetCartTotalPrice(currentUser.userid);
+      cartTotalPrice.textContent = formatCartPrice(backendTotal);
+    } else {
+      cartTotalPrice.textContent = formatCartPrice(getCartTotal(cart));
+    }
+  } catch (error) {
+    cartTotalPrice.textContent = formatCartPrice(getCartTotal(cart));
+  }
 }
 
-function addToCart(product) {
+async function addToCart(product) {
   if (!window.isUserLoggedIn || !window.isUserLoggedIn()) {
     alert("A kosár használatához először be kell jelentkezned.");
     return;
   }
 
-  const maxQuantity = Number(product.maxQuantity ?? 0);
-
-  if (maxQuantity <= 0) {
-    alert("Ez a termék jelenleg nincs készleten.");
+  if (!product || product.itemId === null || product.itemId === undefined) {
+    console.error("Hiányzó itemId a kosárhoz adásnál:", product);
+    alert("A termék nem adható kosárhoz, mert hiányzik az azonosítója.");
     return;
   }
 
-  const cart = getCartState();
+  const currentUser = window.getCurrentUser?.();
+  if (!currentUser?.userid) {
+    alert("A kosár használatához először be kell jelentkezned.");
+    return;
+  }
+
+  const cart = await getCartState();
   const existingItem = cart.find(
     (x) => String(x.itemId) === String(product.itemId),
   );
 
-  if (existingItem) {
-    if (existingItem.quantity >= maxQuantity) {
-      alert(`Legfeljebb ${maxQuantity} db tehető a kosárba ebből a termékből.`);
-      return;
-    }
+  const currentQuantity = existingItem ? existingItem.quantity : 0;
+  const maxQuantity = Number(product.maxQuantity ?? Infinity);
 
-    existingItem.quantity += 1;
-  } else {
-    cart.push({
-      itemId: product.itemId,
-      itemName: product.itemName,
-      price: Number(product.price),
-      quantity: 1,
-      maxQuantity: maxQuantity,
-    });
+  if (currentQuantity + 1 > maxQuantity) {
+    alert(`Legfeljebb ${maxQuantity} db tehető a kosárba ebből a termékből.`);
+    return;
   }
 
-  saveCartState(cart);
-  renderCartDropdown();
+  try {
+    if (existingItem) {
+      await apiModifyCartItem({
+        userId: currentUser.userid,
+        itemId: Number(product.itemId),
+        quantity: currentQuantity + 1,
+        price: Number(product.price),
+      });
+    } else {
+      await apiAddToCart({
+        userId: currentUser.userid,
+        itemId: Number(product.itemId),
+        quantity: 1,
+      });
+    }
 
-  const cartMenu = document.getElementById("cartMenu");
-  if (cartMenu) {
-    cartMenu.classList.add("show");
+    await renderCartDropdown();
+
+    closeProfileMenu();
+    closeMobileMenu();
+
+    const cartMenu = document.getElementById("cartMenu");
+    if (cartMenu) {
+      cartMenu.classList.add("show");
+    }
+  } catch (error) {
+    console.error(error);
+    alert(error.message || "A kosár módosítása nem sikerült.");
   }
 }
 
-function updateCartQuantity(itemId, delta) {
-  let cart = getCartState();
+async function updateCartQuantity(itemId, delta) {
+  const currentUser = window.getCurrentUser?.();
+  if (!currentUser?.userid) return;
 
-  cart = cart
-    .map((item) => {
-      if (String(item.itemId) === String(itemId)) {
-        const newQuantity = item.quantity + delta;
-        const maxQuantity = Number(item.maxQuantity ?? Infinity);
+  const cart = await getCartState();
+  const item = cart.find((x) => String(x.itemId) === String(itemId));
+  if (!item) return;
 
-        if (delta > 0 && newQuantity > maxQuantity) {
-          alert(
-            `Legfeljebb ${maxQuantity} db tehető a kosárba ebből a termékből.`,
-          );
-          return item;
-        }
+  const newQuantity = item.quantity + delta;
 
-        return {
-          ...item,
-          quantity: newQuantity,
-        };
-      }
+  try {
+    await apiModifyCartItem({
+      userId: currentUser.userid,
+      itemId: Number(item.itemId),
+      quantity: Number(newQuantity),
+      price: Number(item.price),
+    });
 
-      return item;
-    })
-    .filter((item) => item.quantity > 0);
-
-  saveCartState(cart);
-  renderCartDropdown();
+    await renderCartDropdown();
+  } catch (error) {
+    console.error(error);
+    alert(error.message || "A kosár módosítása nem sikerült.");
+  }
 }
 
 function closeCartMenu() {
@@ -671,11 +728,30 @@ function initCartUI() {
     .getElementById("ordersList")
     ?.addEventListener("click", async (e) => {
       const detailsBtn = e.target.closest(".order-details-btn");
-      if (!detailsBtn) return;
+      if (detailsBtn) {
+        const orderId = Number(detailsBtn.dataset.orderId);
+        if (orderId > 0) {
+          await toggleOrderDetails(orderId);
+        }
+        return;
+      }
 
-      const orderId = Number(detailsBtn.dataset.orderId);
-      if (orderId > 0) {
-        await toggleOrderDetails(orderId);
+      const cancelBtn = e.target.closest(".cancel-order-btn");
+      if (cancelBtn) {
+        const currentUser = window.getCurrentUser?.();
+        const orderId = Number(cancelBtn.dataset.orderId);
+
+        if (!currentUser?.userid || orderId <= 0) return;
+
+        try {
+          await apiCancelOrder(orderId, currentUser.userid);
+          await renderOrdersList();
+          await loadAllProducts();
+          alert("A rendelést töröltük.");
+        } catch (error) {
+          console.error(error);
+          alert(error.message || "A rendelés törlése nem sikerült.");
+        }
       }
     });
 
@@ -702,8 +778,8 @@ function initCartUI() {
     }
   });
 
-  checkoutBtn?.addEventListener("click", () => {
-    const cart = getCartState();
+  checkoutBtn?.addEventListener("click", async () => {
+    const cart = await getCartState();
 
     if (!window.isUserLoggedIn || !window.isUserLoggedIn()) {
       alert("A rendeléshez először be kell jelentkezned.");
@@ -716,7 +792,7 @@ function initCartUI() {
     }
 
     closeCartMenu();
-    renderCheckoutSection();
+    await renderCheckoutSection();
     showSectionByName("checkout");
   });
 
@@ -752,25 +828,12 @@ function initCartUI() {
 }
 
 window.renderCartDropdown = renderCartDropdown;
+window.renderOrdersList = renderOrdersList;
 window.addToCart = addToCart;
 
-const ORDERS_STORAGE_KEY = "woltmarket_orders";
-
-function getOrdersState() {
-  try {
-    return JSON.parse(localStorage.getItem(ORDERS_STORAGE_KEY)) || [];
-  } catch {
-    return [];
-  }
-}
-
-function saveOrdersState(orders) {
-  localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders));
-}
-
-function renderCheckoutSection() {
+async function renderCheckoutSection() {
   const currentUser = window.getCurrentUser?.();
-  const cart = getCartState();
+  const cart = await getCartState();
 
   const checkoutAddress = document.getElementById("checkoutAddress");
   const checkoutName = document.getElementById("checkoutName");
@@ -854,7 +917,16 @@ function renderCheckoutSection() {
     )
     .join("");
 
-  checkoutTotalPrice.textContent = formatCartPrice(getCartTotal(cart));
+  try {
+    if (currentUser?.userid) {
+      const backendTotal = await apiGetCartTotalPrice(currentUser.userid);
+      checkoutTotalPrice.textContent = formatCartPrice(backendTotal);
+    } else {
+      checkoutTotalPrice.textContent = formatCartPrice(getCartTotal(cart));
+    }
+  } catch (error) {
+    checkoutTotalPrice.textContent = formatCartPrice(getCartTotal(cart));
+  }
 }
 
 async function renderOrdersList() {
@@ -879,24 +951,40 @@ async function renderOrdersList() {
     ordersList.innerHTML = orders
       .map(
         (order) => `
-          <div class="card p-3">
-            <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
-              <div>
-                <div><strong>Rendelés azonosító:</strong> #${order.orderId}</div>
-                <div><strong>Rendelés időpontja:</strong> ${order.date}</div>
-                <div><strong>Státusz:</strong> ${order.status}</div>
-                <div><strong>Szállítási cím:</strong> ${order.targetAddress || "-"}</div>
-                <div><strong>Összesen:</strong> ${formatCartPrice(order.totalPrice || 0)}</div>
-              </div>
+          <div class="border rounded p-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <strong>Rendelés #${order.orderId}</strong>
+              <span>${new Date(order.date).toLocaleString("hu-HU")}</span>
+            </div>
 
-              <div class="d-flex flex-column gap-2">
+            <div class="mb-2">
+              <div><strong>Státusz:</strong> ${order.status}</div>
+              <div><strong>Szállítási cím:</strong> ${order.targetAddress}</div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center">
+              <strong>${formatCartPrice(order.totalPrice)}</strong>
+              <div class="d-flex gap-2">
                 <button
-                  class="btn btn-primary order-details-btn"
-                  type="button"
+                  class="btn btn-primary btn-sm order-details-btn"
                   data-order-id="${order.orderId}"
+                  type="button"
                 >
                   Részletek
                 </button>
+                ${
+                  order.status === "PendingPayment"
+                    ? `
+                      <button
+                        class="btn btn-danger btn-sm cancel-order-btn"
+                        data-order-id="${order.orderId}"
+                        type="button"
+                      >
+                        Törlés
+                      </button>
+                    `
+                    : ""
+                }
               </div>
             </div>
 
@@ -907,7 +995,7 @@ async function renderOrdersList() {
       .join("");
   } catch (error) {
     console.error(error);
-    ordersList.innerHTML = `<div class="text-muted">A rendelések betöltése nem sikerült.</div>`;
+    ordersList.innerHTML = `<div class="text-muted">Még nincs leadott rendelésed.</div>`;
   }
 }
 
@@ -929,7 +1017,7 @@ async function toggleOrderDetails(orderId) {
     detailsBox.innerHTML = `
       <div class="border rounded p-3">
         <div><strong>Státusz:</strong> ${details.status}</div>
-        <div><strong>Dátum:</strong> ${details.date}</div>
+        <div><strong>Dátum:</strong> ${new Date(details.date).toLocaleString("hu-HU")}</div>
         <div><strong>Szállítási cím:</strong> ${details.targetAddress || "-"}</div>
         <div><strong>Összesen:</strong> ${formatCartPrice(details.totalPrice || 0)}</div>
 
@@ -942,7 +1030,7 @@ async function toggleOrderDetails(orderId) {
                   <div class="d-flex justify-content-between border rounded p-2 mb-2">
                     <div>
                       <div><strong>${item.itemName}</strong></div>
-                      <div>Mennyiség: ${item.quantity}</div>
+                      <div>Mennyiség: ${item.quantity} db</div>
                     </div>
                     <div>${formatCartPrice((item.price || 0) * (item.quantity || 0))}</div>
                   </div>
@@ -962,8 +1050,7 @@ async function toggleOrderDetails(orderId) {
   }
 }
 
-function placeOrder() {
-  const cart = getCartState();
+async function placeOrder() {
   const currentUser = window.getCurrentUser?.();
 
   const shippingAddress =
@@ -975,10 +1062,12 @@ function placeOrder() {
   const shippingEmail =
     document.getElementById("shippingEmail")?.value.trim() || "";
 
-  if (!currentUser) {
+  if (!currentUser?.userid) {
     alert("A rendeléshez be kell jelentkezned.");
     return;
   }
+
+  const cart = await getCartState();
 
   if (cart.length === 0) {
     alert("A kosár üres.");
@@ -990,32 +1079,20 @@ function placeOrder() {
     return;
   }
 
-  const newOrder = {
-    createdAt: new Date().toLocaleString("hu-HU"),
-    total: getCartTotal(cart),
-    items: cart,
-    user: {
-      name: currentUser.name || "",
-      email: currentUser.email || "",
-      phone: currentUser.phone || "",
-      address: currentUser.address || "",
-    },
-    shipping: {
-      address: shippingAddress,
-      name: shippingName,
-      phone: shippingPhone,
-      email: shippingEmail,
-    },
-  };
+  try {
+    await apiPlaceOrder({
+      userId: currentUser.userid,
+      targetAddress: shippingAddress,
+    });
 
-  const orders = getOrdersState();
-  orders.push(newOrder);
-  saveOrdersState(orders);
+    await renderCartDropdown();
+    await renderOrdersList();
+    await loadAllProducts();
 
-  localStorage.removeItem(CART_STORAGE_KEY);
-  renderCartDropdown();
-  renderOrdersList();
-
-  alert("Sikeres rendelés!");
-  showSectionByName("home");
+    alert("Sikeres rendelés!");
+    showSectionByName("orders");
+  } catch (error) {
+    console.error(error);
+    alert(error.message || "A rendelés leadása nem sikerült.");
+  }
 }

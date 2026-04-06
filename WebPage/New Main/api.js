@@ -104,7 +104,7 @@ async function apiGetCurrentUser() {
     credentials: "include",
   });
 
-  if (response.status === 401) {
+  if (response.status === 401 || response.status === 404) {
     return null;
   }
 
@@ -163,6 +163,79 @@ async function apiCancelOrder(orderId, userId) {
 
   if (!response.ok) {
     throw new Error(text || "A rendelés törlése nem sikerült.");
+  }
+
+  return text || true;
+}
+
+async function apiGetCartInventory(userId) {
+  return await fetchJSON(
+    `${API_BASE}/Carts/cartinventory?userid=${encodeURIComponent(userId)}`,
+  );
+}
+
+async function apiGetCartTotalPrice(userId) {
+  return await fetchJSON(
+    `${API_BASE}/Carts/cartinventorytotalprice?userid=${encodeURIComponent(userId)}`,
+  );
+}
+
+async function apiModifyCartItem(payload) {
+  const response = await fetch(`${API_BASE}/Carts/modifycart`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+
+  const text = await response.text();
+
+  if (!response.ok) {
+    throw new Error(text || "A kosár módosítása nem sikerült.");
+  }
+
+  return text || true;
+}
+
+async function apiPlaceOrder(payload) {
+  const response = await fetch(`${API_BASE}/Orders/placeorder`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+
+  const text = await response.text();
+
+  if (!response.ok) {
+    throw new Error(text || "A rendelés leadása nem sikerült.");
+  }
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    return text || null;
+  }
+}
+
+async function apiAddToCart(payload) {
+  const response = await fetch(`${API_BASE}/Carts/addtocart`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify(payload),
+  });
+
+  const text = await response.text();
+
+  if (!response.ok) {
+    throw new Error(text || "A termék kosárba helyezése nem sikerült.");
   }
 
   return text || true;
