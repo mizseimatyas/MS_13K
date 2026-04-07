@@ -40,6 +40,8 @@ function setLoggedOutUI() {
 
   if (loggedOutProfileMenu) loggedOutProfileMenu.classList.remove("d-none");
   if (loggedInProfileMenu) loggedInProfileMenu.classList.add("d-none");
+
+  clearProfileSection();
 }
 
 function setLoggedInUI(user) {
@@ -70,6 +72,17 @@ function setLoggedInUI(user) {
 
   fillProfileSection(user);
   toggleProfileEditMode(false);
+}
+
+function clearProfileSection() {
+  fillProfileSection({
+    name: "",
+    email: "",
+    phone: "",
+    city: "",
+    zipCode: "",
+    address: "",
+  });
 }
 
 function fillProfileSection(user) {
@@ -119,9 +132,14 @@ async function checkAuthState() {
     } else {
       setLoggedOutUI();
     }
+
+    await window.renderCartDropdown?.();
+    await window.renderOrdersList?.();
   } catch (error) {
     console.error("Auth state hiba:", error);
     setLoggedOutUI();
+    await window.renderCartDropdown?.();
+    await window.renderOrdersList?.();
   }
 }
 
@@ -158,11 +176,8 @@ function initAuth() {
 
     try {
       await apiLoginUser(email, password);
-      const user = await apiGetCurrentUser();
-      if (user) {
-        setLoggedInUI(user);
-        showSectionByName("profile");
-      }
+      await checkAuthState();
+      showSectionByName("profile");
     } catch (error) {
       console.error(error);
       alert("Hibás bejelentkezési adatok.");
@@ -172,9 +187,9 @@ function initAuth() {
   logoutBtn?.addEventListener("click", async () => {
     try {
       await apiLogoutUser();
-      localStorage.removeItem("woltmarket_cart");
-      window.renderCartDropdown?.();
       setLoggedOutUI();
+      await window.renderCartDropdown?.();
+      await window.renderOrdersList?.();
       showSectionByName("home");
     } catch (error) {
       console.error(error);
@@ -241,13 +256,15 @@ function initAuth() {
     showSectionByName("profile");
   });
 
-  profileMenuOrdersBtn?.addEventListener("click", () => {
+  profileMenuOrdersBtn?.addEventListener("click", async () => {
     const profileMenu = document.getElementById("profileMenu");
     profileMenu?.classList.remove("show");
+    await window.renderOrdersList?.();
     showSectionByName("orders");
   });
 
-  mobileOrdersBtn?.addEventListener("click", () => {
+  mobileOrdersBtn?.addEventListener("click", async () => {
+    await window.renderOrdersList?.();
     showSectionByName("orders");
     closeMobileMenu();
   });
