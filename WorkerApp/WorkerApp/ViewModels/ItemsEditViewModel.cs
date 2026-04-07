@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.Input;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -54,8 +55,8 @@ namespace WorkerApp.ViewModels
             set { if (_price != value) { _price = value; OnPropertyChanged(); } }
         }
 
-        public ICommand SaveCommand { get; }
-        public ICommand CancelCommand { get; }
+        public IAsyncRelayCommand SaveCommand { get; }
+        public IRelayCommand CancelCommand { get; }
 
         public ItemsEditViewModel(
             MainViewModel main,
@@ -79,8 +80,11 @@ namespace WorkerApp.ViewModels
             Description = item.Description;
             Price = item.Price;
 
-            SaveCommand = new Utils.RelayCommand(async _ => await Save());
-            CancelCommand = new Utils.RelayCommand(_ => Cancel());
+            SaveCommand = new AsyncRelayCommand(Save);
+            CancelCommand = new RelayCommand(() =>
+            {
+                _main.CurrentPage = new ItemsListViewModel(_main, _role, _itemsModel, _ordersModel, _authModel);
+            });
         }
 
         private async Task Save()
@@ -96,10 +100,5 @@ namespace WorkerApp.ViewModels
             _main.CurrentPage = new ItemsListViewModel(_main, _role, _itemsModel, _ordersModel, _authModel);
         }
 
-        private Task Cancel()
-        {
-            _main.CurrentPage = new ItemsListViewModel(_main, _role, _itemsModel, _ordersModel, _authModel);
-            return Task.CompletedTask;
-        }
     }
 }

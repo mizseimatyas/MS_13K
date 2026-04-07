@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.Input;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -9,7 +10,6 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using WorkerApp.Dto;
 using WorkerApp.Model;
-using WorkerApp.Utils;
 
 namespace WorkerApp.ViewModels
 {
@@ -37,9 +37,9 @@ namespace WorkerApp.ViewModels
             }
         }
 
-        public ICommand LoadItemsCommand { get; }
-        public ICommand BackCommand { get; }
-        public ICommand EditItemCommand { get; }
+        public IAsyncRelayCommand LoadItemsCommand { get; }
+        public IRelayCommand BackCommand { get; }
+        public IRelayCommand EditItemCommand { get; }
 
         public ItemsListViewModel(
             MainViewModel main,
@@ -54,13 +54,12 @@ namespace WorkerApp.ViewModels
             _ordersModel = ordersModel;
             _authModel = authModel;
 
-            LoadItemsCommand = new Utils.RelayCommand(async _ => await LoadItems());
-            BackCommand = new Utils.RelayCommand(_ =>
+            LoadItemsCommand = new AsyncRelayCommand(LoadItems);
+            BackCommand = new RelayCommand(() =>
             {
                 _main.CurrentPage = new SelectionViewModel(_main, _role, _itemsModel, _ordersModel, _authModel);
-                return Task.CompletedTask;
             });
-            EditItemCommand = new Utils.RelayCommand(_ => GoEditItem());
+            EditItemCommand = new RelayCommand(GoEditItem);
 
             _ = LoadItems();
         }
@@ -77,10 +76,9 @@ namespace WorkerApp.ViewModels
             }
         }
 
-        private Task GoEditItem()
+        private void GoEditItem()
         {
-            if (SelectedItem == null)
-                return Task.CompletedTask;
+            if (SelectedItem == null) return;
 
             _main.CurrentPage = new ItemsEditViewModel(
                 _main,
@@ -89,8 +87,6 @@ namespace WorkerApp.ViewModels
                 _ordersModel,
                 _authModel,
                 SelectedItem);
-
-            return Task.CompletedTask;
         }
     }
 }

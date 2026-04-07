@@ -36,22 +36,20 @@ namespace WorkerApp.ViewModels
             _orders = orders;
             _auth = auth;
 
-            OpenItemsCommand = new Utils.RelayCommand(_ =>
+            OpenItemsCommand = new RelayCommand(() =>
             {
                 _main.CurrentPage = new ItemsListViewModel(_main, _role, _items, _orders, _auth);
-                return Task.CompletedTask;
             });
 
-            OpenOrdersCommand = new Utils.RelayCommand(_ =>
+            OpenOrdersCommand = new RelayCommand(() =>
             {
                 _main.CurrentPage = new OrdersListViewModel(_main, _role, _items, _orders, _auth);
-                return Task.CompletedTask;
+
             });
 
-            LogoutCommand = new Utils.RelayCommand(_ =>
+            LogoutCommand = new RelayCommand(() =>
             {
                 _main.CurrentPage = new LoginViewModel(_main, _auth, _items, _orders);
-                return Task.CompletedTask;
             });
         }
     }
