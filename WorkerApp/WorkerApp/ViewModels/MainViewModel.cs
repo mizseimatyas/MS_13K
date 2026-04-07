@@ -1,7 +1,6 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Threading.Tasks;
-using System.Windows.Input;
 using WorkerApp.Model;
 
 namespace WorkerApp.ViewModels;
@@ -22,7 +21,7 @@ public partial class MainViewModel : ViewModelBase
         }
     }
 
-    public ICommand ExitCommand { get; }
+    public IRelayCommand ExitCommand { get; }
 
     private readonly AuthModel _authModel;
     private readonly ItemsModel _itemsModel;
@@ -37,10 +36,9 @@ public partial class MainViewModel : ViewModelBase
         // itt már garantáltan nem null semmi
         CurrentPage = new LoginViewModel(this, _authModel, _itemsModel, _ordersModel);
 
-        ExitCommand = new Utils.RelayCommand(_ =>
+        ExitCommand = new RelayCommand(() =>
         {
             Environment.Exit(0);
-            return Task.CompletedTask;
         });
     }
 }

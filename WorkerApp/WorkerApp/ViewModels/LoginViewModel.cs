@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using WorkerApp.Dto;
 using WorkerApp.Model;
-using WorkerApp.Utils;
 
 namespace WorkerApp.ViewModels
 {
@@ -92,8 +91,7 @@ namespace WorkerApp.ViewModels
             _items = items;
             _orders = orders;
 
-            LoginWithSelectedRoleCommand =
-                new Utils.RelayCommand(async _ => await ExecuteLogin());
+            LoginWithSelectedRoleCommand = new AsyncRelayCommand(ExecuteLogin);
         }
 
         private async Task ExecuteLogin()

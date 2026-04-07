@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.Input;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -33,10 +34,10 @@ namespace WorkerApp.ViewModels
         public StatusOption(string name)
         {
             Name = name;
-            SelectCommand = new Utils.RelayCommand(_ =>
+            SelectCommand = new RelayCommand(() =>
             {
+                if (IsPast) return;
                 OnSelect?.Invoke(Name);
-                return Task.CompletedTask;
             });
         }
     }

@@ -22,7 +22,7 @@ public partial class App : Application
         {
             const string baseUrl = "https://localhost:7149/";
 
-            var handler = new System.Net.Http.HttpClientHandler
+            var handler = new HttpClientHandler
             {
                 UseCookies = true,
                 CookieContainer = new System.Net.CookieContainer()
