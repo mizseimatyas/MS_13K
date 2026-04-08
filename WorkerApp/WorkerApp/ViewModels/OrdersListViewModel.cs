@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.Input;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -49,13 +50,12 @@ namespace WorkerApp.ViewModels
             _ordersModel = ordersModel;
             _authModel = authModel;
 
-            LoadOrdersCommand = new Utils.RelayCommand(async _ => await LoadOrders());
-            EditOrderCommand = new Utils.RelayCommand(async _ => await GoEditOrder());
+            LoadOrdersCommand = new RelayCommand(async () => await LoadOrders());
+            EditOrderCommand = new RelayCommand(async () => await GoEditOrder());
 
-            BackCommand = new Utils.RelayCommand(_ =>
+            BackCommand = new RelayCommand(() =>
             {
                 _main.CurrentPage = new SelectionViewModel(_main, _role, _itemsModel, _ordersModel, _authModel);
-                return Task.CompletedTask;
             });
 
             _ = LoadOrders();
