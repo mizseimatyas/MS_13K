@@ -60,7 +60,7 @@ document.getElementById('login-form').addEventListener('submit', async e => {
         }
 
         // Sikeres login → átirányítás az admin felületre
-        window.location.href = '/WebPage/Admin_Worker/AdminPage/index.html';
+        window.location.href = '../AdminPage/index.html';
     } catch (err) {
         log.textContent = `Hiba bejelentkezés közben: ${err.message}`;
     }

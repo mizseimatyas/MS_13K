@@ -65,7 +65,7 @@ namespace WebShop.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteWorker(int id)
+        public async Task<ActionResult> DeleteWorker([FromQuery]int id)
         {
             try
             {
@@ -79,7 +79,7 @@ namespace WebShop.Controllers
         [Authorize(Roles = "Admin")]
         [HttpPut("changedata/{id}")]
         public async Task<ActionResult> UpdateWorker(
-            int id,
+            [FromQuery]int id,
             [FromBody] ModifyWorkerDto dto)
         {
             try
