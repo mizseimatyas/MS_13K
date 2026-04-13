@@ -16,6 +16,7 @@ namespace WebShop.Controllers
             _model = model;
         }
 
+        #region PlaceOrder
         [HttpPost("placeorder")]
         public async Task<ActionResult<OrderDto>> PlaceOrder([FromBody] PlaceOrderRequestDto dto)
         {
@@ -24,12 +25,13 @@ namespace WebShop.Controllers
                 var response = await _model.PlaceOrder(dto.userId, dto.targetAddress);
                 return Ok(response);
             }
-            catch (ArgumentOutOfRangeException ex) { return BadRequest(ex.Message); }
-            catch (ArgumentException ex) { return BadRequest(ex.Message); }
+            catch (ArgumentOutOfRangeException) { return StatusCode(StatusCodes.Status406NotAcceptable); }
+            catch (ArgumentException) { return StatusCode(StatusCodes.Status406NotAcceptable); }
             catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
             catch (InvalidOperationException ex) { return Conflict(ex.Message); }
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
+        #endregion
 
         #region OrderHistory
         [HttpGet("orderhistory")]
@@ -40,7 +42,7 @@ namespace WebShop.Controllers
                 var response = await _model.OrderHistoryByUserId(userid);
                 return Ok(response);
             }
-            catch (ArgumentOutOfRangeException ex) { return BadRequest(ex.Message); }
+            catch (ArgumentOutOfRangeException) { return StatusCode(StatusCodes.Status406NotAcceptable); }
             catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
@@ -57,7 +59,7 @@ namespace WebShop.Controllers
                 var response = await _model.OrderDetailsByUserId(userid, orderId);
                 return Ok(response);
             }
-            catch (ArgumentOutOfRangeException ex) { return BadRequest(ex.Message); }
+            catch (ArgumentOutOfRangeException) { return StatusCode(StatusCodes.Status406NotAcceptable); }
             catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
@@ -74,7 +76,7 @@ namespace WebShop.Controllers
                 await _model.CancelOrderByUserWithOrderId(orderid, userid);
                 return Ok();
             }
-            catch (ArgumentOutOfRangeException ex) { return BadRequest(ex.Message); }
+            catch (ArgumentOutOfRangeException) { return StatusCode(StatusCodes.Status406NotAcceptable); }
             catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
             catch (InvalidOperationException ex) { return Conflict(ex.Message); }
             catch (Exception ex) { return BadRequest(ex.Message); }
@@ -91,7 +93,7 @@ namespace WebShop.Controllers
                 var response = await _model.OrderDetailsByOrderId(orderId);
                 return Ok(response);
             }
-            catch (ArgumentOutOfRangeException ex) { return BadRequest(ex.Message); }
+            catch (ArgumentOutOfRangeException) { return StatusCode(StatusCodes.Status406NotAcceptable); }
             catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
@@ -120,7 +122,7 @@ namespace WebShop.Controllers
                 await _model.UpdateOrderStatus(dto);
                 return Ok();
             }
-            catch (ArgumentException ex) { return BadRequest(ex.Message); }
+            catch (ArgumentException) { return StatusCode(StatusCodes.Status406NotAcceptable); }
             catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
             catch (InvalidOperationException ex) { return Conflict(ex.Message); }
             catch (Exception ex) { return BadRequest(ex.Message); }
@@ -136,7 +138,7 @@ namespace WebShop.Controllers
                 await _model.CompleteOrder(orderid);
                 return Ok();
             }
-            catch (ArgumentOutOfRangeException ex) { return BadRequest(ex.Message); }
+            catch (ArgumentOutOfRangeException) { return StatusCode(StatusCodes.Status406NotAcceptable); }
             catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
             catch (InvalidOperationException ex) { return Conflict(ex.Message); }
             catch (Exception ex) { return BadRequest(ex.Message); }
