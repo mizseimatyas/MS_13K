@@ -137,8 +137,8 @@ namespace WebShop.Controllers
                 await _model.AddNewItem(dto);
                 return Ok();
             }
-            catch (ArgumentNullException ex) { return BadRequest(ex.Message); }
-            catch (ArgumentException ex) { return BadRequest(ex.Message); }
+            catch (ArgumentNullException ex) { return StatusCode(StatusCodes.Status406NotAcceptable); }
+            catch (ArgumentException ex) { return StatusCode(StatusCodes.Status406NotAcceptable); }
             catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
             catch (InvalidOperationException ex) { return Conflict(ex.Message); }
             catch (Exception ex) { return BadRequest(ex.Message); }
@@ -154,9 +154,9 @@ namespace WebShop.Controllers
                 await _model.ModifyItem(dto);
                 return Ok();
             }
-            catch (ArgumentNullException ex) { return BadRequest(ex.Message); }
-            catch (ArgumentOutOfRangeException ex) { return BadRequest(ex.Message); }
-            catch (ArgumentException ex) { return BadRequest(ex.Message); }
+            catch (ArgumentNullException) { return StatusCode(StatusCodes.Status406NotAcceptable); }
+            catch (ArgumentOutOfRangeException) { return StatusCode(StatusCodes.Status406NotAcceptable); }
+            catch (ArgumentException) { return StatusCode(StatusCodes.Status406NotAcceptable); }
             catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
             catch (InvalidOperationException ex) { return Conflict(ex.Message); }
             catch (Exception ex) { return BadRequest(ex.Message); }
