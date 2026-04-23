@@ -57,15 +57,19 @@
               </button>
 
               <div id="profileMenu" class="profile-menu">
-                <ul class="profile-list" id="loggedOutProfileMenu">
-                  <li id="loginBtn">Bejelentkezés</li>
-                  <li id="registerBtn">Regisztráció</li>
-                </ul>
+                <nav>
+                  <ul class="profile-list" id="loggedOutProfileMenu">
+                    <li><a href="#" id="loginBtn">Bejelentkezés</a></li>
+                    <li><a href="#" id="registerBtn">Regisztráció</a></li>
+                  </ul>
 
-                <ul class="profile-list d-none" id="loggedInProfileMenu">
-                  <li id="profileMenuProfileBtn">Profil</li>
-                  <li id="profileMenuOrdersBtn">Rendeléseim</li>
-                </ul>
+                  <ul class="profile-list d-none" id="loggedInProfileMenu">
+                    <li><a href="#" id="profileMenuProfileBtn">Profil</a></li>
+                    <li>
+                      <a href="#" id="profileMenuOrdersBtn">Rendeléseim</a>
+                    </li>
+                  </ul>
+                </nav>
               </div>
             </div>
           </div>
@@ -98,14 +102,20 @@
         </div>
 
         <div id="mobileMenu" class="mobile-menu">
-          <ul class="mobile-list">
-            <li id="mobileThemeBtn">Dark/Light</li>
-            <li id="mobileCartBtn" class="d-none">Kosár</li>
-            <li id="mobileLoginBtn">Bejelentkezés</li>
-            <li id="mobileRegisterBtn">Regisztráció</li>
-            <li id="mobileProfileBtn" class="d-none">Profil</li>
-            <li id="mobileOrdersBtn" class="d-none">Rendeléseim</li>
-          </ul>
+          <nav>
+            <ul class="mobile-list">
+              <li><a href="#" id="mobileThemeBtn">Dark/Light</a></li>
+              <li><a href="#" id="mobileCartBtn" class="d-none">Kosár</a></li>
+              <li><a href="#" id="mobileLoginBtn">Bejelentkezés</a></li>
+              <li><a href="#" id="mobileRegisterBtn">Regisztráció</a></li>
+              <li>
+                <a href="#" id="mobileProfileBtn" class="d-none">Profil</a>
+              </li>
+              <li>
+                <a href="#" id="mobileOrdersBtn" class="d-none">Rendeléseim</a>
+              </li>
+            </ul>
+          </nav>
         </div>
       </div>
     </div>
@@ -129,61 +139,15 @@
               </button>
             </div>
 
-            <div class="list-group" id="categoryList">
-              <button class="list-group-item list-group-item-action">
-                Számítógépek és laptopok
-              </button>
-              <button class="list-group-item list-group-item-action">
-                PC alkatrészek
-              </button>
-              <button class="list-group-item list-group-item-action">
-                Monitorok
-              </button>
-              <button class="list-group-item list-group-item-action">
-                Perifériák
-              </button>
-              <button class="list-group-item list-group-item-action">
-                Gaming
-              </button>
-              <button class="list-group-item list-group-item-action">
-                Mobiltelefonok
-              </button>
-              <button class="list-group-item list-group-item-action">
-                Tabletek
-              </button>
-              <button class="list-group-item list-group-item-action">
-                Audió
-              </button>
-              <button class="list-group-item list-group-item-action">
-                Kamerák és fényképezőgépek
-              </button>
-              <button class="list-group-item list-group-item-action">
-                Hálózati eszközök
-              </button>
-              <button class="list-group-item list-group-item-action">
-                Adattárolás
-              </button>
-              <button class="list-group-item list-group-item-action">
-                Nyomtatók és szkennerek
-              </button>
-            </div>
+            <div class="list-group" id="categoryList"></div>
           </div>
 
-          <div class="col-lg-8 col-md-6 content">
+          <div class="col-lg-10 col-md-9 content">
             <div class="section-top mb-3">
               <h4 class="content-title">Kiemelt termékek</h4>
             </div>
 
             <div class="row g-3" id="homeProductsWrapper"></div>
-          </div>
-
-          <div class="col-lg-2 col-md-3 rightbar">
-            <h4>Hírdetések</h4>
-            <div class="ads">
-              <div class="ad">Ad 1</div>
-              <div class="ad">Ad 2</div>
-              <div class="ad">Ad 3</div>
-            </div>
           </div>
         </div>
       </div>
@@ -286,7 +250,7 @@
             </button>
           </div>
 
-          <div class="col-lg-8 col-md-6 content">
+          <div class="col-lg-10 col-md-9 content">
             <div
               class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4"
             >
@@ -294,15 +258,6 @@
             </div>
 
             <div class="row g-4" id="productsWrapper"></div>
-          </div>
-
-          <div class="col-lg-2 col-md-3 rightbar">
-            <h4>Top ajánlatok</h4>
-            <div class="ads mt-3">
-              <div class="ad">Laptop akciók</div>
-              <div class="ad">Gaming hét</div>
-              <div class="ad">Új modellek</div>
-            </div>
           </div>
         </div>
       </div>

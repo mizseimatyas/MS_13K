@@ -213,7 +213,8 @@ function initAuth() {
     }
   });
 
-  mobileProfileBtn?.addEventListener("click", () => {
+  mobileProfileBtn?.addEventListener("click", (e) => {
+    e.preventDefault();
     if (currentUser) {
       showSectionByName("profile");
       closeMobileMenu();
@@ -250,20 +251,23 @@ function initAuth() {
     }
   });
 
-  profileMenuProfileBtn?.addEventListener("click", () => {
+  profileMenuProfileBtn?.addEventListener("click", (e) => {
+    e.preventDefault();
     const profileMenu = document.getElementById("profileMenu");
     profileMenu?.classList.remove("show");
     showSectionByName("profile");
   });
 
-  profileMenuOrdersBtn?.addEventListener("click", async () => {
+  profileMenuOrdersBtn?.addEventListener("click", async (e) => {
+    e.preventDefault();
     const profileMenu = document.getElementById("profileMenu");
     profileMenu?.classList.remove("show");
     await window.renderOrdersList?.();
     showSectionByName("orders");
   });
 
-  mobileOrdersBtn?.addEventListener("click", async () => {
+  mobileOrdersBtn?.addEventListener("click", async (e) => {
+    e.preventDefault();
     await window.renderOrdersList?.();
     showSectionByName("orders");
     closeMobileMenu();

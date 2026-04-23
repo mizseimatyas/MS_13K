@@ -128,16 +128,25 @@
 
 .mobile-list li,
 .profile-list li {
-  padding: 10px;
   margin-bottom: 5px;
+  list-style: none;
+}
+
+.mobile-list li a,
+.profile-list li a {
+  display: block;
+  width: 100%;
+  padding: 10px;
   border-radius: 5px;
   text-align: center;
+  text-decoration: none;
+  color: inherit;
   cursor: pointer;
   background-color: rgb(62, 160, 160);
 }
 
-.mobile-list li:hover,
-.profile-list li:hover {
+.mobile-list li a:hover,
+.profile-list li a:hover {
   background-color: darkgrey;
 }
 

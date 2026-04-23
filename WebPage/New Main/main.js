@@ -36,24 +36,29 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (searchInput) searchInput.value = "";
     if (categoryFilter) categoryFilter.value = "Összes";
 
-    sessionStorage.removeItem("selectedCategory");
     sessionStorage.removeItem("selectedProductId");
 
     showSectionByName("home");
     await loadHomeProducts();
   });
-  document
-    .getElementById("registerBtn")
-    ?.addEventListener("click", () => showSectionByName("register"));
+  document.getElementById("registerBtn")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    showSectionByName("register");
+  });
   document
     .getElementById("mobileRegisterBtn")
-    ?.addEventListener("click", () => showSectionByName("register"));
-  document
-    .getElementById("loginBtn")
-    ?.addEventListener("click", () => showSectionByName("login"));
-  document
-    .getElementById("mobileLoginBtn")
-    ?.addEventListener("click", () => showSectionByName("login"));
+    ?.addEventListener("click", (e) => {
+      e.preventDefault();
+      showSectionByName("register");
+    });
+  document.getElementById("loginBtn")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    showSectionByName("login");
+  });
+  document.getElementById("mobileLoginBtn")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    showSectionByName("login");
+  });
 
   handleResponsiveMenu();
   initSidebarButtons();

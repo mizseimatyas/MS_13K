@@ -12,13 +12,16 @@ function getCategoryNameById(categoryId) {
 
 async function loadCategories() {
   const categories = await apiGetAllCategories();
+
   allCategories = Array.isArray(categories)
     ? categories.map((category) => ({
         categoryId: category.categoryId,
         categoryName: category.categoryName,
       }))
     : [];
+
   fillCategoryFilter();
+  renderSidebarCategories();
 }
 
 function fillCategoryFilter() {
@@ -29,6 +32,25 @@ function fillCategoryFilter() {
   allCategories.forEach((category) => {
     select.innerHTML += `<option>${category.categoryName}</option>`;
   });
+}
+
+function renderSidebarCategories() {
+  const categoryList = document.getElementById("categoryList");
+  if (!categoryList) return;
+
+  categoryList.innerHTML = allCategories
+    .map(
+      (category) => `
+        <button
+          class="list-group-item list-group-item-action"
+          type="button"
+          data-category="${category.categoryName}"
+        >
+          ${category.categoryName}
+        </button>
+      `,
+    )
+    .join("");
 }
 
 function resetSearchSidebarState(selectedCategory = "Összes") {
