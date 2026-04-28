@@ -8,7 +8,7 @@ using WebShop.Dto;
 using WebShop.Model;
 using WebShop.Persistence;
 
-namespace ModelTest
+namespace ModelTest.UnitTesztek
 {
     public class ItemModelTest
     {

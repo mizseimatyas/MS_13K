@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WebShop.Dto;
 
-namespace ModelTest
+namespace ModelTest.IntegraciosTesztek
 {
     public class OrderControllerTest : IClassFixture<CustomApplicationFactory>
     {
@@ -40,7 +40,7 @@ namespace ModelTest
         {
             var response = await _client.GetAsync("api/orders/orderhistory?userid=0");
 
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotAcceptable, response.StatusCode);
         }
 
         [Fact]
@@ -71,7 +71,7 @@ namespace ModelTest
         {
             var response = await _client.GetAsync("api/orders/orderdetails?userid=0&orderId=0");
 
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotAcceptable, response.StatusCode);
         }
 
         [Fact]
@@ -97,7 +97,7 @@ namespace ModelTest
         {
             var response = await _client.PutAsync("api/orders/usercancelorder?orderid=0&userid=0", null);
 
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotAcceptable, response.StatusCode);
         }
 
         [Fact]

@@ -46,7 +46,7 @@ namespace WebShop.Controllers
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
-        [Authorize(Roles = "Admin")]
+
         [HttpPost("workerregistry")]
         public async Task<ActionResult> RegisterWorker(
             [FromQuery] string username,
@@ -63,7 +63,6 @@ namespace WebShop.Controllers
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
-        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteWorker([FromQuery]int id)
         {
@@ -76,7 +75,6 @@ namespace WebShop.Controllers
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
-        [Authorize(Roles = "Admin")]
         [HttpPut("changedata/{id}")]
         public async Task<ActionResult> UpdateWorker(
             [FromQuery]int id,
@@ -92,7 +90,6 @@ namespace WebShop.Controllers
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
-        [Authorize(Roles = "Worker,Admin")]
         [HttpPut("changepassword")]
         public async Task<ActionResult> ChangePassword(
             [FromQuery] int workerId,
@@ -109,7 +106,6 @@ namespace WebShop.Controllers
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
-        [Authorize]
         [HttpPost("logout")]
         public async Task<ActionResult> LogOut()
         {

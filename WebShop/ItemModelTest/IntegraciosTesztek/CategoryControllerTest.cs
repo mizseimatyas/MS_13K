@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WebShop.Dto;
 
-namespace ModelTest
+namespace ModelTest.IntegraciosTesztek
 {
     public class CategoryControllerTest : IClassFixture<CustomApplicationFactory>
     {
@@ -117,7 +117,7 @@ namespace ModelTest
             var response = await workerClient.PutAsJsonAsync(
                 "api/categories/modifycategory", dto);
 
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotAcceptable, response.StatusCode);
         }
 
         [Fact]
@@ -149,7 +149,7 @@ namespace ModelTest
             var response = await workerClient.PutAsJsonAsync(
                 "api/categories/modifycategory", dto);
 
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotAcceptable, response.StatusCode);
         }
 
         [Fact]
@@ -191,7 +191,7 @@ namespace ModelTest
             var response = await workerClient.DeleteAsync(
                 "api/categories/deletecategory?categid=-1");
 
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotAcceptable, response.StatusCode);
         }
 
         [Fact]

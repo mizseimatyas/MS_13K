@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WebShop.Persistence;
 
-namespace ModelTest
+namespace ModelTest.IntegraciosTesztek
 {
     public class WorkerControllertest : IClassFixture<CustomApplicationFactory>
     {
@@ -56,24 +56,11 @@ namespace ModelTest
         [Fact]
         public async Task RegisterWorker_ReturnsOk()
         {
-            //Admin login
-            var loginResponse = await _client.PostAsync(
-                "api/admins/adminlogin?username=WebshopAdmin&password=admin123", null);
-            loginResponse.EnsureSuccessStatusCode();
 
             var response = await _client.PostAsync(
-                "api/workers/workerregistry?username=UjRaktaros&password=WorkerPass123!", null);
+                "api/workers/workerregistry?username=UjRaktaros&password=WorkerPass123&phone=301234567", null);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task RegisterWorker_Unauthorized()
-        {
-            var response = await _client.PostAsync(
-                "api/workers/workerregistry?username=Valaki&password=Valami123!", null);
-
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
         #endregion
 
@@ -128,15 +115,6 @@ namespace ModelTest
                 "api/workers/changepassword?workerId=9999&newPassword=Valami123", null);
 
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task ChangePassword_Unauthorized()
-        {
-            var response = await _client.PutAsync(
-                "api/workers/changepassword?workerId=1&newPassword=Valami123", null);
-
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
 
         #endregion

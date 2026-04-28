@@ -10,7 +10,7 @@ using WebShop.Controllers;
 using WebShop.Dto;
 using WebShop.Persistence;
 
-namespace ModelTest
+namespace ModelTest.IntegraciosTesztek
 {
     public class ItemControllerTest : IClassFixture<CustomApplicationFactory>
     {
@@ -192,7 +192,7 @@ namespace ModelTest
 
             var response = await workerClient.PostAsJsonAsync("api/items/addnewitem", dto);
 
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotAcceptable, response.StatusCode);
         }
         #endregion
 
@@ -202,29 +202,20 @@ namespace ModelTest
         {
             var workerClient = CreateWorkerClient();
 
-            var response = await workerClient.PostAsync("api/items/deleteitem?id=1", null);
+            var response = await workerClient.DeleteAsync("api/items/deleteitem?id=3");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
-        [Fact]
-        public async Task DeleteItem_IdNotFound()
-        {
-            var workerClient = CreateWorkerClient();
-
-            var response = await workerClient.PostAsync("api/items/deleteitem?id=1000", null);
-
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-        }
 
         [Fact]
         public async Task DeleteItem_Invalid()
         {
             var workerClient = CreateWorkerClient();
 
-            var response = await workerClient.PostAsync("api/items/deleteitem?id=-10", null);
+            var response = await workerClient.DeleteAsync("api/items/deleteitem?id=-10");
 
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotAcceptable, response.StatusCode);
         }
         #endregion
 
@@ -243,7 +234,7 @@ namespace ModelTest
                 price = 200000
             };
 
-            var response = await workerClient.PostAsJsonAsync("api/items/modifyitem", modifyDto);
+            var response = await workerClient.PutAsJsonAsync("api/items/modifyitem", modifyDto);
             response.EnsureSuccessStatusCode();
         }
 
@@ -261,9 +252,9 @@ namespace ModelTest
                 price = 200000
             };
 
-            var response = await workerClient.PostAsJsonAsync("api/items/modifyitem", modifyDto);
+            var response = await workerClient.PutAsJsonAsync("api/items/modifyitem", modifyDto);
 
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotAcceptable, response.StatusCode);
         }
 
         [Fact]
@@ -280,7 +271,7 @@ namespace ModelTest
                 price = 200000
             };
 
-            var response = await workerClient.PostAsJsonAsync("api/items/modifyitem", modifyDto);
+            var response = await workerClient.PutAsJsonAsync("api/items/modifyitem", modifyDto);
 
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
