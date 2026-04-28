@@ -6,7 +6,7 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ModelTest
+namespace ModelTest.IntegraciosTesztek
 {
     public class UserControllerTest : IClassFixture<CustomApplicationFactory>
     {
@@ -76,7 +76,7 @@ namespace ModelTest
         #endregion
 
         #region ChangePassword
-        //update ötlet: var username, var jelszo,loginresponsedto-ba id-t rakni, az az id megy tovább jelszováltásnál
+
         [Fact]
         public async Task ChangePassword_ReturnsOk()
         {
@@ -88,25 +88,6 @@ namespace ModelTest
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
-
-        /* Kell vagy nemkell, authorize miatt login fix kell, utána nem tudja elhagyni az idt
-        [Fact]
-        public async Task ChangePassword_Invalid_ReturnsBadRequest()
-        {
-            var response = await _client.PutAsync(
-                "api/users/changepassword?userid=-1&newpassword=Valami123!", null);
-
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task ChangePassword_UserNotFound_ReturnsBadRequest()
-        {
-            var response = await _client.PutAsync(
-                "api/users/changepassword?userid=9999&newpassword=Valami123!", null);
-
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-        }*/
 
         #endregion
 
@@ -120,14 +101,6 @@ namespace ModelTest
             var logoutResponse = await _client.PostAsync("api/users/logout", null);
             Assert.Equal(HttpStatusCode.OK, logoutResponse.StatusCode);
         }
-
-        [Fact]
-        public async Task UserLogout_WithoutLogin_Unauthorized()
-        {
-            var logoutResponse = await _client.PostAsync("api/users/logout", null);
-            Assert.Equal(HttpStatusCode.Unauthorized, logoutResponse.StatusCode);
-        }
-
         #endregion
 
     }

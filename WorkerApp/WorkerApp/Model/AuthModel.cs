@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text;
 using System.Threading.Tasks;
 using WorkerApp.Dto;
 
@@ -13,12 +12,9 @@ namespace WorkerApp.Model
     {
         private readonly HttpClient _client;
 
-        public AuthModel(string baseUrl)
+        public AuthModel(HttpClient client)
         {
-            _client = new HttpClient
-            {
-                BaseAddress = new Uri(baseUrl)
-            };
+            _client = client;
         }
 
         public async Task<LoginResponseDto?> LoginAsync(string username, string password, string roleKey)

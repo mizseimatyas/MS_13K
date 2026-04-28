@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using WebShop.Persistence;
 using WebShop.Utils;
 
-namespace ModelTest
+namespace ModelTest.IntegraciosTesztek
 {
     public class AdminControllerTest : IClassFixture<CustomApplicationFactory>
     {
@@ -71,7 +71,7 @@ namespace ModelTest
 
             var result = await response.Content.ReadFromJsonAsync<AdminLoginResponseDto>();
             Assert.NotNull(result);
-            Assert.Equal("Admin", result.Role);
+            Assert.Equal("Admin", result.role);
             Assert.Equal("Belepve", result.message);
         }
 
@@ -109,16 +109,6 @@ namespace ModelTest
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
-        /* Jó kérdés, Actual: Ok, Expected: Forbidden
-        [Fact]
-        public async Task RegisterAdmin_Unauthorized()
-        {
-            var response = await _client.PostAsync(
-                "api/admins/adminregistry?username=valaki&password=Valami123!", null);
-
-            Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
-        }
-        */
         #endregion
 
         #region ChangePassword
@@ -152,7 +142,7 @@ namespace ModelTest
             var response = await _client.PutAsync(
                 "api/admins/changepassword?adminId=-1&newPassword=asd", null);
 
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotAcceptable, response.StatusCode);
         }
 
         [Fact]
@@ -190,6 +180,6 @@ namespace ModelTest
     public class AdminLoginResponseDto
     {
         public string message { get; set; }
-        public string Role { get; set; }
+        public string role { get; set; }
     }
 }

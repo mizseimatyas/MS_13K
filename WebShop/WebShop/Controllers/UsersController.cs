@@ -38,18 +38,9 @@ namespace WebShop.Controllers
                 var response = await _model.GetMe(userId);
                 return Ok(response);
             }
-            catch (ArgumentOutOfRangeException)
-            {
-                return BadRequest();
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch
-            {
-                return BadRequest();
-            }
+            catch (ArgumentOutOfRangeException) { return StatusCode(StatusCodes.Status406NotAcceptable); }
+            catch (KeyNotFoundException) { return NotFound(); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
         [HttpPost("userregistry")]
@@ -64,8 +55,8 @@ namespace WebShop.Controllers
                 await _model.Registration(email, password, address, phone);
                 return Ok();
             }
-            catch (InvalidOperationException ex) { return BadRequest(ex.Message); }
-            catch (ArgumentException ex) { return BadRequest(ex.Message); }
+            catch (InvalidOperationException ex) { return Conflict(ex.Message); }
+            catch (ArgumentException) { return StatusCode(StatusCodes.Status406NotAcceptable); }
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
@@ -93,7 +84,7 @@ namespace WebShop.Controllers
 
                 return Ok(new { message = "Belepve", Role = user.Role });
             }
-            catch (ArgumentException ex) { return BadRequest(ex.Message); }
+            catch (ArgumentException) { return StatusCode(StatusCodes.Status406NotAcceptable); }
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
@@ -123,18 +114,9 @@ namespace WebShop.Controllers
 
                 return Ok();
             }
-            catch (InvalidOperationException e)
-            {
-                return BadRequest(e.Message);
-            }
-            catch (ArgumentException e)
-            {
-                return BadRequest(e.Message);
-            }
-            catch (Exception)
-            {
-                return BadRequest("Váratlan hiba történt.");
-            }
+            catch (InvalidOperationException ex) { return Conflict(ex.Message); }
+            catch (ArgumentException) { return StatusCode(StatusCodes.Status406NotAcceptable); }
+            catch (Exception) { return BadRequest("Váratlan hiba történt."); }
         }
 
         [Authorize]
@@ -144,12 +126,12 @@ namespace WebShop.Controllers
             [FromQuery] string newpassword)
         {
             try
-            {
+            { 
                 await _model.ChangePassword(userid, newpassword);
                 return Ok();
             }
-            catch (ArgumentOutOfRangeException ex) { return BadRequest(ex.Message); }
-            catch (ArgumentException ex) { return BadRequest(ex.Message); }
+            catch (ArgumentOutOfRangeException) { return StatusCode(StatusCodes.Status406NotAcceptable); }
+            catch (ArgumentException) { return StatusCode(StatusCodes.Status406NotAcceptable); }
             catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
             catch (Exception ex) { return BadRequest(ex.Message); }
         }

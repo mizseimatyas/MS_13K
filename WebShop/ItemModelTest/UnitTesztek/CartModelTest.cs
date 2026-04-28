@@ -9,7 +9,7 @@ using WebShop.Model;
 using WebShop.Persistence;
 using Xunit.Abstractions;
 
-namespace ModelTest
+namespace ModelTest.UnitTesztek
 {
     public class CartModelTest
     {

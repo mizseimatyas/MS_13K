@@ -9,7 +9,7 @@ using WebShop.Model;
 using WebShop.Persistence;
 using WebShop.Utils;
 
-namespace ModelTest
+namespace ModelTest.UnitTesztek
 {
     public class UserModelTest
     {

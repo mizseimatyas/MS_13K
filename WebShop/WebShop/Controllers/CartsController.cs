@@ -24,7 +24,7 @@ namespace WebShop.Controllers
                 var response = await _model.CartInventoryByUserId(userid);
                 return Ok(response);
             }
-            catch (ArgumentOutOfRangeException ex) { return BadRequest(ex.Message); }
+            catch (ArgumentOutOfRangeException) { return StatusCode(StatusCodes.Status406NotAcceptable); }
             catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
@@ -39,7 +39,7 @@ namespace WebShop.Controllers
                 var response = await _model.CartInventoryTotalPrice(userid);
                 return Ok(response);
             }
-            catch (ArgumentOutOfRangeException ex) { return BadRequest(ex.Message); }
+            catch (ArgumentOutOfRangeException) { return StatusCode(StatusCodes.Status406NotAcceptable); }
             catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
@@ -54,7 +54,7 @@ namespace WebShop.Controllers
                 await _model.ModifyCartItems(dto);
                 return Ok();
             }
-            catch (ArgumentException ex) { return BadRequest(ex.Message); }
+            catch (ArgumentException) { return StatusCode(StatusCodes.Status406NotAcceptable); }
             catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
             catch (InvalidOperationException ex) { return Conflict(ex.Message); }
             catch (Exception ex) { return BadRequest(ex.Message); }
@@ -70,8 +70,8 @@ namespace WebShop.Controllers
                 await _model.AddToCart(dto);
                 return Ok();
             }
-            catch (ArgumentNullException ex) { return BadRequest(ex.Message); }
-            catch (ArgumentOutOfRangeException ex) { return BadRequest(ex.Message); }
+            catch (ArgumentNullException) { return StatusCode(StatusCodes.Status406NotAcceptable); }
+            catch (ArgumentOutOfRangeException) { return StatusCode(StatusCodes.Status406NotAcceptable); }
             catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
             catch (InvalidOperationException ex) { return Conflict(ex.Message); }
             catch (Exception ex) { return BadRequest(ex.Message); }

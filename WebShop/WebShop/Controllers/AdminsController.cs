@@ -19,6 +19,7 @@ namespace WebShop.Controllers
         }
 
 
+        [Authorize]
         [HttpGet("me")]
         public ActionResult GetMe()
         {
@@ -51,7 +52,7 @@ namespace WebShop.Controllers
 
                 return Ok(new { message = "Belepve", Role = admin.Role });
             }
-            catch (ArgumentException ex) { return BadRequest(ex.Message); }
+            catch (ArgumentException) { return StatusCode(StatusCodes.Status406NotAcceptable); }
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
@@ -66,7 +67,7 @@ namespace WebShop.Controllers
                 await _model.AdminRegistration(username, password);
                 return Ok();
             }
-            catch (ArgumentException ex) { return BadRequest(ex.Message); }
+            catch (ArgumentException) { return StatusCode(StatusCodes.Status406NotAcceptable); }
             catch (InvalidOperationException ex) { return Conflict(ex.Message); }
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
@@ -82,8 +83,20 @@ namespace WebShop.Controllers
                 await _model.ChangePassword(adminId, newPassword);
                 return Ok();
             }
-            catch (ArgumentOutOfRangeException ex) { return BadRequest(ex.Message); }
-            catch (ArgumentException ex) { return BadRequest(ex.Message); }
+            catch (ArgumentOutOfRangeException) { return StatusCode(StatusCodes.Status406NotAcceptable); }
+            catch (ArgumentException) { return StatusCode(StatusCodes.Status406NotAcceptable); }
+            catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
+            catch (Exception ex) { return BadRequest(ex.Message); }
+        }
+
+        [HttpGet("allusers")]
+        public async Task<ActionResult<IEnumerable<UserDto>>> AllUsers()
+        {
+            try
+            {
+                var response = await _model.AllUsers();
+                return Ok(response);
+            }
             catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
             catch (Exception ex) { return BadRequest(ex.Message); }
         }

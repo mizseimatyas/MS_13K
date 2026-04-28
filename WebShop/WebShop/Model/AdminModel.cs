@@ -81,6 +81,26 @@ namespace WebShop.Model
         }
         #endregion
 
+        #region GetAllUsers
+        public async Task<IEnumerable<UserDto>> AllUsers()
+        {
+            var users = await _context.Users.Select(x => new UserDto
+            {
+                userid = x.UserId,
+                email = x.Email,
+                phone = x.Phone,
+                name = x.Name,
+                city = x.City,
+                zipCode = x.ZipCode,
+                address = x.Address
+            }).ToListAsync();
+
+            if (users.Count == 0)
+                throw new KeyNotFoundException("Nincsenek felhasználók");
+            return users;
+        }
+        #endregion
+
         #region GetAllWorkers
         public async Task<IEnumerable<WorkerDto>> AllWorkers()
         {

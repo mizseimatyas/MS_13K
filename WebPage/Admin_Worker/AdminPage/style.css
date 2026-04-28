@@ -113,6 +113,11 @@ body {
     margin-bottom: 0.25rem;
 }
 
+#logout-btn{
+    margin-top:auto; 
+    color:#f87171;
+}
+
 /* Forms */
 form {
     display: flex;
@@ -305,6 +310,28 @@ textarea {
     }
 }
 
+.two-col-panel {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+.two-col-panel-left {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.two-col-panel-right {
+    min-width: 0;
+}
+
+@media (max-width: 900px) {
+    .two-col-panel {
+        grid-template-columns: 1fr;
+    }
+}
 
 #item-query-log {
     margin-top: 0.75rem;

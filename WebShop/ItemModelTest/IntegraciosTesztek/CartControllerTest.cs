@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WebShop.Dto;
 
-namespace ModelTest
+namespace ModelTest.IntegraciosTesztek
 {
     public class CartControllerTest : IClassFixture<CustomApplicationFactory>
     {
@@ -57,7 +57,7 @@ namespace ModelTest
         {
             var response = await _client.GetAsync("api/carts/cartinventorytotalprice?userid=0");
 
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotAcceptable, response.StatusCode);
         }
 
         [Fact]
@@ -98,7 +98,7 @@ namespace ModelTest
 
             var response = await _client.PutAsJsonAsync("api/carts/modifycart", dto);
 
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotAcceptable, response.StatusCode);
         }
 
         [Fact]
@@ -114,7 +114,7 @@ namespace ModelTest
 
             var response = await _client.PutAsJsonAsync("api/carts/modifycart", dto);
 
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotAcceptable, response.StatusCode);
         }
 
         [Fact]
@@ -130,10 +130,9 @@ namespace ModelTest
 
             var response = await _client.PutAsJsonAsync("api/carts/modifycart", dto);
 
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotAcceptable, response.StatusCode);
         }
 
-        //update(kész): raktar mennyisegnel nagyobb
         [Fact]
         public async Task ModifyCartItems_QuantityTooHigh()
         {

@@ -42,11 +42,11 @@ namespace WebShop.Controllers
 
                 return Ok(new { message = "Belepve", Role = worker.Role });
             }
-            catch (ArgumentException ex) { return BadRequest(ex.Message); }
+            catch (ArgumentException) { return StatusCode(StatusCodes.Status406NotAcceptable); }
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
-        [Authorize(Roles = "Admin")]
+
         [HttpPost("workerregistry")]
         public async Task<ActionResult> RegisterWorker(
             [FromQuery] string username,
@@ -59,13 +59,12 @@ namespace WebShop.Controllers
                 return Ok();
             }
             catch (InvalidOperationException ex) { return Conflict(ex.Message); }
-            catch (ArgumentException ex) { return BadRequest(ex.Message); }
+            catch (ArgumentException) { return StatusCode(StatusCodes.Status406NotAcceptable); }
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
-        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteWorker(int id)
+        public async Task<ActionResult> DeleteWorker([FromQuery]int id)
         {
             try
             {
@@ -76,10 +75,9 @@ namespace WebShop.Controllers
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
-        [Authorize(Roles = "Admin")]
         [HttpPut("changedata/{id}")]
         public async Task<ActionResult> UpdateWorker(
-            int id,
+            [FromQuery]int id,
             [FromBody] ModifyWorkerDto dto)
         {
             try
@@ -88,11 +86,10 @@ namespace WebShop.Controllers
                 return Ok();
             }
             catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
-            catch (ArgumentException ex) { return BadRequest(ex.Message); }
+            catch (ArgumentException) { return StatusCode(StatusCodes.Status406NotAcceptable); }
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
-        [Authorize(Roles = "Worker,Admin")]
         [HttpPut("changepassword")]
         public async Task<ActionResult> ChangePassword(
             [FromQuery] int workerId,
@@ -103,13 +100,12 @@ namespace WebShop.Controllers
                 await _model.ChangePassword(workerId, newPassword);
                 return Ok();
             }
-            catch (ArgumentOutOfRangeException ex) { return BadRequest(ex.Message); }
-            catch (ArgumentException ex) { return BadRequest(ex.Message); }
+            catch (ArgumentOutOfRangeException) { return StatusCode(StatusCodes.Status406NotAcceptable); }
+            catch (ArgumentException) { return StatusCode(StatusCodes.Status406NotAcceptable); }
             catch (KeyNotFoundException ex) { return NotFound(ex.Message); }
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
 
-        [Authorize]
         [HttpPost("logout")]
         public async Task<ActionResult> LogOut()
         {

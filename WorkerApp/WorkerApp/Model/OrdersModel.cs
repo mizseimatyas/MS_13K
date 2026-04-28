@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Text;
 using System.Threading.Tasks;
 using WorkerApp.Dto;
 
@@ -13,12 +11,9 @@ namespace WorkerApp.Model
     {
         private readonly HttpClient _client;
 
-        public OrdersModel(string baseUrl)
+        public OrdersModel(HttpClient client)
         {
-            _client = new HttpClient
-            {
-                BaseAddress = new Uri(baseUrl)
-            };
+            _client = client;
         }
 
         public async Task<List<OrderAllDto>?> GetAllOrdersAsync()
