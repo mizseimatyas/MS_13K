@@ -12,8 +12,8 @@
 .dark-mode .profile-menu,
 .dark-mode .mobile-list,
 .dark-mode .profile-list,
-.dark-mode .mobile-list li,
-.dark-mode .profile-list li,
+.dark-mode .mobile-list li a,
+.dark-mode .profile-list li a,
 .dark-mode .product-detail-wrapper {
   background-color: rgb(3, 60, 75);
 }
@@ -25,8 +25,8 @@
   background-color: rgb(28, 28, 28);
 }
 
-.dark-mode .profile-list li:hover,
-.dark-mode .mobile-list li:hover {
+.dark-mode .profile-list li a:hover,
+.dark-mode .mobile-list li a:hover {
   background-color: rgb(39, 39, 39);
 }
 
