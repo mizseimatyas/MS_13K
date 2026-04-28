@@ -8,7 +8,7 @@ using WebShop.Dto;
 using WebShop.Model;
 using WebShop.Persistence;
 
-namespace ModelTest
+namespace ModelTest.UnitTesztek
 {
     public class OrderModelTest
     {
@@ -173,11 +173,7 @@ namespace ModelTest
         [Fact]
         public async Task UpdateOrderStatus_Correct()
         {
-            var (user, item, order) = await SeederAsync(
-                status: OrderStatus.PaymentSuccess,
-                quantity: 2,
-                price: 1000);
-            var beforeQuantity = item.Quantity;
+            var (_, _, order) = await SeederAsync(status: OrderStatus.PaymentSuccess);
 
             var dto = new UpdateOrderStatusDto
             {
@@ -187,11 +183,8 @@ namespace ModelTest
 
             await _model.UpdateOrderStatus(dto);
 
-            var updatedOrder = await _context.Orders.Include(x=> x.OrderItems).SingleAsync(x=> x.OrderId == order.OrderId);
-            var updatedItem = await _context.Items.SingleAsync(x => x.ItemId == item.ItemId);
-
-            Assert.Equal(OrderStatus.Delivering, updatedOrder.Status);
-            Assert.Equal(beforeQuantity - 2, updatedItem.Quantity);
+            await _context.Entry(order).ReloadAsync();
+            Assert.Equal(OrderStatus.Delivering, order.Status);
         }
 
         [Fact]

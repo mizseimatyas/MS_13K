@@ -41,6 +41,30 @@ public partial class App : Application
             desktop.MainWindow = new MainWindow { DataContext = mainVm };
         }
 
-        base.OnFrameworkInitializationCompleted();
+        else if(ApplicationLifetime is ISingleViewApplicationLifetime singleView)
+        {
+            const string baseUrl = "https://localhost:7149/";
+
+            var handler = new HttpClientHandler
+            {
+                UseCookies = true,
+                CookieContainer = new System.Net.CookieContainer()
+            };
+            var sharedClient = new HttpClient(handler)
+            {
+                BaseAddress = new Uri(baseUrl)
+            };
+
+            var authModel = new AuthModel(sharedClient);
+            var itemsModel = new ItemsModel(sharedClient);
+            var ordersModel = new OrdersModel(sharedClient);
+
+            var mainVm = new MainViewModel(authModel, itemsModel, ordersModel);
+
+            singleView.MainView = new MainView { DataContext = mainVm };
+        }
+
+            base.OnFrameworkInitializationCompleted();
     }
+
 }
