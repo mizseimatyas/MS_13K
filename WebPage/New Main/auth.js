@@ -1,8 +1,10 @@
 let currentUser = null;
+// isUserLoggedIn feladatát végző blokk.
 window.isUserLoggedIn = function () {
   return !!currentUser;
 };
 
+// getCurrentUser feladatát végző blokk.
 window.getCurrentUser = function () {
   return currentUser;
 };
@@ -15,6 +17,7 @@ const loggedInProfileMenu = document.getElementById("loggedInProfileMenu");
 const editProfileBtn = document.getElementById("editProfileBtn");
 const saveProfileBtn = document.getElementById("saveProfileBtn");
 
+// Kijelentkezett felület beállítása.
 function setLoggedOutUI() {
   currentUser = null;
 
@@ -44,6 +47,7 @@ function setLoggedOutUI() {
   clearProfileSection();
 }
 
+// Bejelentkezett felület beállítása.
 function setLoggedInUI(user) {
   currentUser = user;
 
@@ -74,6 +78,7 @@ function setLoggedInUI(user) {
   toggleProfileEditMode(false);
 }
 
+// Profil mezők törlése.
 function clearProfileSection() {
   fillProfileSection({
     name: "",
@@ -85,6 +90,7 @@ function clearProfileSection() {
   });
 }
 
+// Profil mezők feltöltése.
 function fillProfileSection(user) {
   const name = document.getElementById("profileName");
   const email = document.getElementById("profileEmail");
@@ -101,6 +107,7 @@ function fillProfileSection(user) {
   if (address) address.value = user.address || "";
 }
 
+// Profil szerkesztési mód váltása.
 function toggleProfileEditMode(editMode) {
   const editableIds = [
     "profileName",
@@ -123,6 +130,7 @@ function toggleProfileEditMode(editMode) {
   if (saveBtn) saveBtn.classList.toggle("d-none", !editMode);
 }
 
+// Bejelentkezési állapot ellenőrzése.
 async function checkAuthState() {
   try {
     const user = await apiGetCurrentUser();
@@ -143,6 +151,7 @@ async function checkAuthState() {
   }
 }
 
+// Bejelentkezés/regisztráció eseménykezelőinek indítása.
 function initAuth() {
   const logoutBtn = document.getElementById("logoutBtn");
   const profileBtn = document.getElementById("profileBtn");

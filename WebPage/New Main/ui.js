@@ -1,3 +1,5 @@
+// Oldalszekciók összegyűjtése.
+// Összegyűjti az oldal összes szekcióját.
 function getSections() {
   return {
     home: document.getElementById("homepage"),
@@ -11,11 +13,13 @@ function getSections() {
   };
 }
 
+// Szekció lekérése név alapján.
 function getSectionByName(name) {
   const sections = getSections();
   return sections[name] || sections.home;
 }
 
+// Szekciónév meghatározása elem alapján.
 function getSectionNameByElement(sectionElement) {
   const sections = getSections();
   for (const [name, element] of Object.entries(sections)) {
@@ -24,22 +28,27 @@ function getSectionNameByElement(sectionElement) {
   return "home";
 }
 
+// Mobil menü bezárása.
 function closeMobileMenu() {
   const mobileMenu = document.getElementById("mobileMenu");
   if (mobileMenu) mobileMenu.style.display = "none";
 }
 
+// Profil menü bezárása.
 function closeProfileMenu() {
   const profileMenu = document.getElementById("profileMenu");
   if (profileMenu) profileMenu.classList.remove("show");
 }
 
+// Összes menü bezárása.
 function closeAllMenus() {
   closeMobileMenu();
   closeProfileMenu();
   closeCartMenu();
 }
 
+// Mobil menü nyitása/zárása.
+// Mobil menü nyitása/zárása.
 function toggleMenu() {
   const menu = document.getElementById("mobileMenu");
   if (!menu) return;
@@ -48,6 +57,8 @@ function toggleMenu() {
   if (!isOpen) menu.style.display = "block";
 }
 
+// Profil menü nyitása/zárása.
+// Profil menü megjelenítése vagy elrejtése.
 function toggleProfileMenu() {
   const menu = document.getElementById("profileMenu");
   if (!menu) return;
@@ -56,6 +67,7 @@ function toggleProfileMenu() {
   if (!isOpen) menu.classList.add("show");
 }
 
+// Reszponzív menü kezelése.
 function handleResponsiveMenu() {
   const menu = document.getElementById("mobileMenu");
   const desktopMenu = document.querySelector(".desktop-menu");
@@ -83,6 +95,7 @@ function handleResponsiveMenu() {
   }
 }
 
+// Oldalsáv gombjainak inicializálása.
 function initSidebarButtons() {
   const categoryList = document.getElementById("categoryList");
   if (!categoryList) return;
@@ -100,6 +113,7 @@ function initSidebarButtons() {
   });
 }
 
+// Kategórialista lenyitásának kezelése.
 function initCategoryToggle() {
   const categoryToggleBtn = document.getElementById("categoryToggleBtn");
   const categoryList = document.getElementById("categoryList");
@@ -115,6 +129,7 @@ function initCategoryToggle() {
   });
 }
 
+// Oldalgörgetés beállítása.
 function updateBodyScroll(sectionToShow) {
   const searchSection = document.getElementById("searchSection");
   const isMobile = window.innerWidth <= 768;
@@ -125,6 +140,8 @@ function updateBodyScroll(sectionToShow) {
   }
 }
 
+// Kiválasztott szekció megjelenítése.
+// Megjeleníti a kiválasztott oldalszekciót.
 function showSection(sectionToShow, pushToHistory = true) {
   const sections = getSections();
   Object.values(sections).forEach((section) =>
@@ -146,10 +163,12 @@ function showSection(sectionToShow, pushToHistory = true) {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
+// Szekció megjelenítése név alapján.
 function showSectionByName(sectionName, pushToHistory = true) {
   showSection(getSectionByName(sectionName), pushToHistory);
 }
 
+// Lista/rács nézet váltó inicializálása.
 function initViewToggle() {
   const viewToggleBtn = document.getElementById("viewToggleBtn");
   const productsWrapper = document.getElementById("productsWrapper");
@@ -163,10 +182,13 @@ function initViewToggle() {
   });
 }
 
+// Témaváltó gombok inicializálása.
+// Inicializálja a dark/light mód kapcsolókat.
 function initThemeButtons() {
   const desktopThemeBtn = document.getElementById("themeBtn");
   const mobileThemeBtn = document.getElementById("mobileThemeBtn");
 
+  // updateThemeButtons feladatát végző blokk.
   function updateThemeButtons() {
     if (!desktopThemeBtn) return;
     desktopThemeBtn.classList.toggle(
@@ -179,6 +201,7 @@ function initThemeButtons() {
     );
   }
 
+  // toggleTheme feladatát végző blokk.
   function toggleTheme() {
     document.body.classList.toggle("dark-mode");
     updateThemeButtons();
@@ -194,6 +217,8 @@ function initThemeButtons() {
   updateThemeButtons();
 }
 
+// Árfilterek inicializálása.
+// Inicializálja az ár szerinti szűrőket.
 function initPriceFilters() {
   const minRange = document.getElementById("minRange");
   const maxRange = document.getElementById("maxRange");
@@ -212,21 +237,26 @@ function initPriceFilters() {
 
   if (!minRange || !maxRange || !minInput || !maxInput || !sliderFill) return;
 
+  // clamp feladatát végző blokk.
   function clamp(value, min, max) {
     const num = parseInt(value, 10);
     if (isNaN(num)) return min;
     return Math.min(Math.max(num, min), max);
   }
 
+  // parsePrice feladatát végző blokk.
   function parsePrice(value) {
     const cleaned = String(value).replace(/[^\d]/g, "");
     return cleaned ? parseInt(cleaned, 10) : 0;
   }
 
+  // Ár formázása magyar pénznem szerint.
+  // A számot magyar forint formátumra alakítja.
   function formatPrice(value) {
     return Number(value).toLocaleString("hu-HU");
   }
 
+  // updateSliderFill feladatát végző blokk.
   function updateSliderFill() {
     const min = parseInt(minRange.value, 10);
     const max = parseInt(maxRange.value, 10);
@@ -236,6 +266,7 @@ function initPriceFilters() {
     sliderFill.style.width = `${maxPercent - minPercent}%`;
   }
 
+  // updateUI feladatát végző blokk.
   function updateUI(min, max) {
     minRange.value = min;
     maxRange.value = max;
@@ -244,6 +275,7 @@ function initPriceFilters() {
     updateSliderFill();
   }
 
+  // normalizeValues feladatát végző blokk.
   function normalizeValues(min, max, changed) {
     min = clamp(min, MIN_LIMIT, MAX_LIMIT);
     max = clamp(max, MIN_LIMIT, MAX_LIMIT);
@@ -254,11 +286,13 @@ function initPriceFilters() {
     return { min, max };
   }
 
+  // syncFromRanges feladatát végző blokk.
   function syncFromRanges(changed) {
     const normalized = normalizeValues(minRange.value, maxRange.value, changed);
     updateUI(normalized.min, normalized.max);
   }
 
+  // syncFromInputs feladatát végző blokk.
   function syncFromInputs(changed) {
     const min =
       minInput.value.trim() === "" ? MIN_LIMIT : parsePrice(minInput.value);
@@ -268,11 +302,13 @@ function initPriceFilters() {
     updateUI(normalized.min, normalized.max);
   }
 
+  // handleTyping feladatát végző blokk.
   function handleTyping(input) {
     const raw = input.value.replace(/[^\d]/g, "");
     input.value = raw ? formatPrice(raw) : "";
   }
 
+  // resetFilters feladatát végző blokk.
   async function resetFilters() {
     const searchInput = document.getElementById("searchInput");
     if (searchInput) {
@@ -365,6 +401,8 @@ function initPriceFilters() {
   updateUI(MIN_LIMIT, MAX_LIMIT);
 }
 
+// Árslider vizuális frissítése.
+// Frissíti az ár slider vizuális állapotát.
 function refreshPriceSliderUI() {
   const minRange = document.getElementById("minRange");
   const maxRange = document.getElementById("maxRange");
@@ -384,6 +422,8 @@ function refreshPriceSliderUI() {
   sliderFill.style.width = `${((max - min) / 2000000) * 100}%`;
 }
 
+// Telefonszám formázás inicializálása.
+// Formázza és ellenőrzi a telefonszám bevitelt.
 function initPhoneInput() {
   const phoneInput = document.getElementById("phoneInput");
   if (!phoneInput) return;
@@ -391,12 +431,14 @@ function initPhoneInput() {
   const PREFIX = "+36 ";
   const PREFIX_LENGTH = PREFIX.length;
 
+  // getDigits feladatát végző blokk.
   function getDigits(value) {
     let digits = value.replace(/\D/g, "");
     if (digits.startsWith("36")) digits = digits.slice(2);
     return digits.slice(0, 9);
   }
 
+  // formatPhone feladatát végző blokk.
   function formatPhone(value) {
     const digits = getDigits(value);
     let formatted = PREFIX;
@@ -406,6 +448,7 @@ function initPhoneInput() {
     return formatted;
   }
 
+  // moveCaretToEnd feladatát végző blokk.
   function moveCaretToEnd() {
     requestAnimationFrame(() => {
       const end = phoneInput.value.length;
@@ -464,6 +507,7 @@ function initPhoneInput() {
   });
 }
 
+// Külső kattintások kezelése.
 function initOutsideClickHandlers() {
   document.addEventListener("click", (e) => {
     const mobileMenu = document.getElementById("mobileMenu");
@@ -496,6 +540,7 @@ function initOutsideClickHandlers() {
   });
 }
 
+// Böngésző előzmények kezelése.
 function initHistoryHandling() {
   window.addEventListener("popstate", (event) => {
     const sectionName = event.state?.section || "home";
@@ -503,6 +548,7 @@ function initHistoryHandling() {
   });
 }
 
+// Kosár állapotának lekérése.
 async function getCartState() {
   const currentUser = window.getCurrentUser?.();
 
@@ -518,6 +564,7 @@ async function getCartState() {
   }
 }
 
+// Kosár állapotának mentése.
 async function saveCartState(cart) {
   const currentUser = window.getCurrentUser?.();
   if (!currentUser?.userid) return;
@@ -550,10 +597,12 @@ async function saveCartState(cart) {
   }
 }
 
+// Kosárár formázása.
 function formatCartPrice(value) {
   return `${Number(value).toLocaleString("hu-HU")} Ft`;
 }
 
+// Kosár végösszegének kiszámítása.
 function getCartTotal(cart) {
   return cart.reduce(
     (sum, item) => sum + Number(item.price) * item.quantity,
@@ -561,6 +610,7 @@ function getCartTotal(cart) {
   );
 }
 
+// Kosár lenyíló menü kirajzolása.
 async function renderCartDropdown() {
   const cartItemsContainer = document.getElementById("cartItems");
   const cartTotalPrice = document.getElementById("cartTotalPrice");
@@ -607,6 +657,7 @@ async function renderCartDropdown() {
   }
 }
 
+// Termék hozzáadása a kosárhoz.
 async function addToCart(product) {
   if (!window.isUserLoggedIn || !window.isUserLoggedIn()) {
     alert("A kosár használatához először be kell jelentkezned.");
@@ -669,6 +720,7 @@ async function addToCart(product) {
   }
 }
 
+// Kosármennyiség módosítása.
 async function updateCartQuantity(itemId, delta) {
   const currentUser = window.getCurrentUser?.();
   if (!currentUser?.userid) return;
@@ -694,11 +746,13 @@ async function updateCartQuantity(itemId, delta) {
   }
 }
 
+// Kosár menü bezárása.
 function closeCartMenu() {
   const cartMenu = document.getElementById("cartMenu");
   if (cartMenu) cartMenu.classList.remove("show");
 }
 
+// Kosár menü nyitása/zárása.
 function toggleCartMenu() {
   const cartMenu = document.getElementById("cartMenu");
   if (!cartMenu) return;
@@ -716,6 +770,7 @@ function toggleCartMenu() {
   }
 }
 
+// Kosár UI inicializálása.
 function initCartUI() {
   const cartBtn = document.getElementById("cartBtn");
   const cartItems = document.getElementById("cartItems");
@@ -830,6 +885,7 @@ window.renderCartDropdown = renderCartDropdown;
 window.renderOrdersList = renderOrdersList;
 window.addToCart = addToCart;
 
+// Checkout szekció kirajzolása.
 async function renderCheckoutSection() {
   const currentUser = window.getCurrentUser?.();
   const cart = await getCartState();
@@ -928,6 +984,7 @@ async function renderCheckoutSection() {
   }
 }
 
+// Rendelések listájának kirajzolása.
 async function renderOrdersList() {
   const ordersList = document.getElementById("ordersList");
   const currentUser = window.getCurrentUser?.();
@@ -998,6 +1055,7 @@ async function renderOrdersList() {
   }
 }
 
+// Rendelés részleteinek nyitása/zárása.
 async function toggleOrderDetails(orderId) {
   const currentUser = window.getCurrentUser?.();
   const detailsBox = document.getElementById(`order-details-${orderId}`);
@@ -1049,6 +1107,7 @@ async function toggleOrderDetails(orderId) {
   }
 }
 
+// Rendelés véglegesítése.
 async function placeOrder() {
   const currentUser = window.getCurrentUser?.();
 

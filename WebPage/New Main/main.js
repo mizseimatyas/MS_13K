@@ -1,9 +1,11 @@
+// Ablakméret változásakor frissíti a reszponzív felületet.
 window.addEventListener("resize", () => {
   handleResponsiveMenu();
   const visibleSection = document.querySelector(".page-section:not(.d-none)");
   updateBodyScroll(visibleSection);
 });
 
+// Az oldal betöltése után lefutó fő inicializáló blokk.
 document.addEventListener("DOMContentLoaded", async () => {
   const sections = getSections();
   Object.values(sections).forEach((section) =>
