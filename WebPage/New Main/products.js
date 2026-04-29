@@ -1,10 +1,14 @@
 let allProducts = [];
 let currentSearchResults = [];
 
+// Ár formázása magyar pénznem szerint.
+// A számot magyar forint formátumra alakítja.
 function formatPrice(price) {
   return Number(price).toLocaleString("hu-HU") + " Ft";
 }
 
+// Tömb elemeinek véletlen sorrendbe keverése.
+// Összekeveri a tömb elemeit véletlenszerű sorrendbe.
 function shuffleArray(array) {
   const copy = [...array];
   for (let i = copy.length - 1; i > 0; i--) {
@@ -14,6 +18,7 @@ function shuffleArray(array) {
   return copy;
 }
 
+// Termékadatok kártyaformátumra alakítása.
 function mapAllItemToCardItem(item) {
   return {
     itemId: item.itemId,
@@ -25,6 +30,7 @@ function mapAllItemToCardItem(item) {
   };
 }
 
+// Keresési találat kártyaformátumra alakítása.
 function mapSearchResultToCardItem(item) {
   const normalizedName = (item.itemName ?? item.itemNamE ?? "").toLowerCase();
 
@@ -46,11 +52,14 @@ function mapSearchResultToCardItem(item) {
   };
 }
 
+// Összes termék betöltése.
 async function loadAllProducts() {
   const items = await apiGetAllItems();
   allProducts = Array.isArray(items) ? items : [];
 }
 
+// Főoldali termékek kirajzolása.
+// Kirendereli a főoldali termékeket.
 function renderHomeProducts(products) {
   const wrapper = document.getElementById("homeProductsWrapper");
   if (!wrapper) return;
@@ -73,6 +82,8 @@ function renderHomeProducts(products) {
     .join("");
 }
 
+// Keresési találatok kirajzolása.
+// Kirendereli a keresési találatokat.
 function renderSearchProducts(products) {
   const wrapper = document.getElementById("productsWrapper");
   if (!wrapper) return;
@@ -107,6 +118,8 @@ function renderSearchProducts(products) {
     .join("");
 }
 
+// Szűrők és rendezés alkalmazása.
+// Alkalmazza az összes szűrőt és frissíti a terméklistát.
 function applyFiltersAndRender() {
   const categorySelect = document.getElementById("brandSelect");
   const modelInput = document.getElementById("modelSelect");
@@ -157,11 +170,13 @@ function applyFiltersAndRender() {
   renderSearchProducts(filtered);
 }
 
+// Főoldali kiemelt termékek betöltése.
 async function loadHomeProducts() {
   if (!allProducts.length) await loadAllProducts();
   renderHomeProducts(shuffleArray(allProducts).slice(0, 24));
 }
 
+// Termékrészletek megnyitása.
 async function openProductDetailById(itemId) {
   if (!itemId) return;
 
@@ -228,6 +243,7 @@ async function openProductDetailById(itemId) {
   showSectionByName("productDetail");
 }
 
+// Termékkártya kattintások kezelése.
 function initProductDetailOpening() {
   document.addEventListener("click", (event) => {
     const trigger = event.target.closest(".open-product-detail");
@@ -237,6 +253,7 @@ function initProductDetailOpening() {
   });
 }
 
+// Termékrészlet visszaállítása frissítés után.
 async function restoreProductDetailAfterRefresh() {
   const savedProductId = sessionStorage.getItem("selectedProductId");
   if (!savedProductId) return;

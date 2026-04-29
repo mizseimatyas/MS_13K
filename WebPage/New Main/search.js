@@ -3,6 +3,7 @@ let currentSuggestions = [];
 let selectedSuggestionIndex = -1;
 let currentSearchMode = "general";
 
+// Kategórianév megkeresése azonosító alapján.
 function getCategoryNameById(categoryId) {
   const found = allCategories.find(
     (category) => category.categoryId === categoryId,
@@ -10,6 +11,8 @@ function getCategoryNameById(categoryId) {
   return found?.categoryName || "Ismeretlen kategória";
 }
 
+// Kategóriák betöltése.
+// Betölti az összes kategóriát az API-ból.
 async function loadCategories() {
   const categories = await apiGetAllCategories();
 
@@ -24,6 +27,7 @@ async function loadCategories() {
   renderSidebarCategories();
 }
 
+// Kategória legördülő feltöltése.
 function fillCategoryFilter() {
   const select = document.getElementById("brandSelect");
   if (!select) return;
@@ -34,6 +38,7 @@ function fillCategoryFilter() {
   });
 }
 
+// Oldalsáv kategóriáinak kirajzolása.
 function renderSidebarCategories() {
   const categoryList = document.getElementById("categoryList");
   if (!categoryList) return;
@@ -53,6 +58,7 @@ function renderSidebarCategories() {
     .join("");
 }
 
+// Keresési szűrők alaphelyzetbe állítása.
 function resetSearchSidebarState(selectedCategory = "Összes") {
   const categoryFilter = document.getElementById("brandSelect");
   const modelInput = document.getElementById("modelSelect");
@@ -85,6 +91,7 @@ function resetSearchSidebarState(selectedCategory = "Összes") {
   refreshPriceSliderUI();
 }
 
+// Keresési javaslatok megjelenítése.
 function renderSearchSuggestions(suggestions) {
   const box = document.getElementById("searchSuggestions");
   if (!box) return;
@@ -112,6 +119,7 @@ function renderSearchSuggestions(suggestions) {
   box.classList.remove("d-none");
 }
 
+// Aktív keresési javaslat kijelölése.
 function updateSuggestionSelection() {
   const items = document.querySelectorAll(".search-suggestion-item");
   items.forEach((item, index) => {
@@ -119,6 +127,7 @@ function updateSuggestionSelection() {
   });
 }
 
+// Keresési javaslatok betöltése.
 async function loadSearchSuggestions(query = "") {
   const trimmed = query.trim().toLowerCase();
 
@@ -154,6 +163,8 @@ async function loadSearchSuggestions(query = "") {
   renderSearchSuggestions([...matchedCategories, ...dedupedItems].slice(0, 20));
 }
 
+// Termék- vagy kategóriakeresés végrehajtása.
+// Elindítja a keresést kategória vagy terméknév alapján.
 async function performSearch(rawQuery) {
   const query = rawQuery.trim();
   if (!query) return;
@@ -206,6 +217,7 @@ async function performSearch(rawQuery) {
   applyFiltersAndRender();
 }
 
+// Kategóriaszűrő módosításának kezelése.
 async function handleCategoryFilterChange() {
   const categoryFilter = document.getElementById("brandSelect");
   const searchInput = document.getElementById("searchInput");
@@ -247,16 +259,19 @@ async function handleCategoryFilterChange() {
   }
 }
 
+// Keresési javaslatok elrejtése.
 function hideSearchSuggestions() {
   document.getElementById("searchSuggestions")?.classList.add("d-none");
 }
 
+// Kereső inicializálása.
 function initSearch() {
   const searchButton = document.getElementById("search_icon");
   const searchInput = document.getElementById("searchInput");
   const suggestionsBox = document.getElementById("searchSuggestions");
   const categoryFilter = document.getElementById("brandSelect");
 
+  // submitSearch feladatát végző blokk.
   function submitSearch() {
     const value = searchInput?.value.trim() || "";
     if (!value) return;
@@ -324,6 +339,7 @@ function initSearch() {
   });
 }
 
+// Keresési nézet visszaállítása.
 async function restoreSearchViewAfterRefresh() {
   const categoryFilter = document.getElementById("brandSelect");
   const searchInput = document.getElementById("searchInput");
